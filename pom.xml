@@ -12,7 +12,7 @@
     <artifactId>shadowkickboxing</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>shadowkickboxing</name>
-    <description>App for shadow kickbox training and to practice the Spring framework.</description>
+    <description>App for shadow kickboxing training and to practice the Spring framework.</description>
 
     <properties>
         <java.version>11</java.version>
