@@ -1,0 +1,65 @@
+CREATE TABLE body_part (
+    body_part_id INT PRIMARY KEY,
+    name VARCHAR(20)
+);
+
+INSERT INTO body_part VALUES (1, 'left arm');
+INSERT INTO body_part VALUES (2, 'right arm');
+INSERT INTO body_part VALUES (3, 'both arms');
+INSERT INTO body_part VALUES (4, 'left leg');
+INSERT INTO body_part VALUES (5, 'right leg');
+INSERT INTO body_part VALUES (6, 'both legs');
+INSERT INTO body_part VALUES (7, 'body');
+INSERT INTO body_part VALUES (8, 'head');
+
+# ---
+# ---
+# ---
+
+CREATE TABLE body_parts_delay (
+    body_part_id_1 INT,
+    body_part_id_2 INT,
+    min_delay_millis INT,
+    PRIMARY KEY (body_part_id_1, body_part_id_2),
+    FOREIGN KEY (body_part_id_1) REFERENCES body_part(body_part_id) ON DELETE CASCADE,
+    FOREIGN KEY (body_part_id_2) REFERENCES body_part(body_part_id) ON DELETE CASCADE
+);
+
+INSERT INTO body_parts_delay VALUES (4, 5, 500);
+INSERT INTO body_parts_delay VALUES (5, 4, 500);
+
+# ---
+# ---
+# ---
+
+CREATE TABLE height (
+    height_id INT PRIMARY KEY,
+    name VARCHAR(20)
+);
+
+INSERT INTO height VALUES (1, 'high');
+INSERT INTO height VALUES (2, 'middle');
+INSERT INTO height VALUES (3, 'low');
+
+# ---
+# ---
+# ---
+
+CREATE TABLE offensive_move (
+    move_id INT PRIMARY KEY,
+    version INT,
+    name VARCHAR(40),
+    body_part INT,
+    height INT,
+    min_execution_millis INT,
+    call_frequency_weight DECIMAL(4,3) CHECK (call_frequency_weight <= 1 AND call_frequency_weight > 0),
+    FOREIGN KEY (body_part) REFERENCES body_part(body_part_id) ON DELETE CASCADE,
+    FOREIGN KEY (height) REFERENCES height(height_id) ON DELETE CASCADE
+);
+
+INSERT INTO offensive_move VALUES (1, 1, 'jab', 1, 1, 250, 1.000);
+INSERT INTO offensive_move VALUES (2, 1, 'double jab', 1, 1, 400, 0.750);
+INSERT INTO offensive_move VALUES (3, 1, 'cross', 2, 1, 300, 0.500);
+INSERT INTO offensive_move VALUES (4, 1, 'left hook head', 1, 1, 500, 0.250);
+INSERT INTO offensive_move VALUES (5, 1, 'right hook head', 2, 1, 500, 0.250);
+INSERT INTO offensive_move VALUES
