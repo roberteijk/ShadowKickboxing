@@ -1,8 +1,8 @@
-# ShadowKickboxing
+# ShadowKickboxing (WIP + not functioning yet)
 
 ## Introduction
 
-App for shadow kickboxing training and to practice the Spring framework.
+App for shadow kickboxing training and to practice the Spring framework. This project is still in early development.
 
 
 ## Acknowledgements
@@ -13,10 +13,9 @@ App for shadow kickboxing training and to practice the Spring framework.
 * During rest, the remaining time will be announced. A bell with sound at the end of each round.
 
 
-#### SQL
+#### Data / SQL
 
-* AUTO_INCREMENT is not used in relational database except for the fight table. This is partly because of foreign keys, partly because of unknown future implementations and changes.
-
+* @GeneratedValue(strategy=GenerationType.AUTO) is not used for the majority of entities. For the most part, the database will be seeded manually. Only a small part will be dynamic.
 
 ## Temporary notes
 
