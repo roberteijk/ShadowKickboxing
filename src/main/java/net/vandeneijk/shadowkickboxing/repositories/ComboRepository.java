@@ -7,6 +7,6 @@ package net.vandeneijk.shadowkickboxing.repositories;
 import net.vandeneijk.shadowkickboxing.models.Combo;
 import org.springframework.data.repository.CrudRepository;
 
-public interface ComboRepository extends CrudRepository<Combo, Integer> {
+public interface ComboRepository extends CrudRepository<Combo, Long> {
 
 }

@@ -15,7 +15,7 @@ import java.util.Collection;
 public class OffensiveMove {
 
     @Id
-    private Integer offensiveMoveId;
+    private Long offensiveMoveId;
 
     @NotNull
     private String description;
@@ -39,16 +39,15 @@ public class OffensiveMove {
 
     protected OffensiveMove() {}
 
-    public OffensiveMove(Integer offensiveMoveId, String description, BodyPart bodyPartForOffensiveMove, Height height, Integer minExecutionMillis, Collection<Audio> audioCollection) {
+    public OffensiveMove(Long offensiveMoveId, String description, BodyPart bodyPartForOffensiveMove, Height height, Integer minExecutionMillis) {
         this.offensiveMoveId = offensiveMoveId;
         this.description = description;
         this.bodyPartForOffensiveMove = bodyPartForOffensiveMove;
         this.height = height;
         this.minExecutionMillis = minExecutionMillis;
-        this.audioCollection = audioCollection;
     }
 
-    public Integer getOffensiveMoveId() {
+    public Long getOffensiveMoveId() {
         return offensiveMoveId;
     }
 
@@ -74,5 +73,13 @@ public class OffensiveMove {
 
     public void setAudioCollection(Collection<Audio> audioCollection) {
         this.audioCollection = audioCollection;
+    }
+
+    public Collection<ComboOffensiveMove> getComboOffensiveMoves() {
+        return comboOffensiveMoves;
+    }
+
+    public void setComboOffensiveMoves(Collection<ComboOffensiveMove> comboOffensiveMoves) {
+        this.comboOffensiveMoves = comboOffensiveMoves;
     }
 }

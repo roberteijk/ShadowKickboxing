@@ -15,7 +15,7 @@ import java.util.Collection;
 public class Combo {
 
     @Id
-    private Integer comboId;
+    private Long comboId;
 
     @NotNull
     private String description;
@@ -35,11 +35,11 @@ public class Combo {
 
     protected Combo() {}
 
-    public Combo(Integer comboId, String description, RuleSet ruleSetForCombo, Double callFrequencyWeight) {
+    public Combo(Long comboId, String description, RuleSet ruleSetForCombo, Double callFrequencyWeight) {
         this(comboId, description, ruleSetForCombo, callFrequencyWeight, 1.0);
     }
 
-    public Combo(Integer comboId, String description, RuleSet ruleSetForCombo, Double callFrequencyWeight, Double timingMultiplier) {
+    public Combo(Long comboId, String description, RuleSet ruleSetForCombo, Double callFrequencyWeight, Double timingMultiplier) {
         this.comboId = comboId;
         this.description = description;
         this.ruleSetForCombo = ruleSetForCombo;
@@ -47,7 +47,7 @@ public class Combo {
         this.timingMultiplier = timingMultiplier;
     }
 
-    public Integer getComboId() {
+    public Long getComboId() {
         return comboId;
     }
 
@@ -65,5 +65,13 @@ public class Combo {
 
     public Double getTimingMultiplier() {
         return timingMultiplier;
+    }
+
+    public Collection<ComboOffensiveMove> getComboOffensiveMoves() {
+        return comboOffensiveMoves;
+    }
+
+    public void setComboOffensiveMoves(Collection<ComboOffensiveMove> comboOffensiveMoves) {
+        this.comboOffensiveMoves = comboOffensiveMoves;
     }
 }

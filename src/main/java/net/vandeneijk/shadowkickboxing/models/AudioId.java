@@ -8,15 +8,16 @@ import java.io.Serializable;
 
 public class AudioId implements Serializable {
 
-    private OffensiveMove offensiveMove;
-    private Language language;
+    private Long offensiveMove;
+    private Long language;
 
     protected AudioId() {}
 
-    public AudioId(OffensiveMove offensiveMove, Language language) {
+    public AudioId(Long offensiveMove, Long language) {
         this.offensiveMove = offensiveMove;
         this.language = language;
     }
+
 
     @Override
     public boolean equals(Object o) {

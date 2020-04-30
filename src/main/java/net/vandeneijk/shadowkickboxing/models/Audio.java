@@ -4,10 +4,7 @@
 
 package net.vandeneijk.shadowkickboxing.models;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -15,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class Audio {
 
     @Id
-    @ManyToOne()
+    @ManyToOne
     private OffensiveMove offensiveMove;
 
     @Id
@@ -23,6 +20,7 @@ public class Audio {
     private Language language;
 
     @NotNull
+    @Column(columnDefinition = "blob")
     private byte[] audioFragment;
 
     protected Audio() {}

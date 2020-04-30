@@ -14,7 +14,7 @@ import java.util.Collection;
 public class Language {
 
     @Id
-    private Integer languageId;
+    private Long languageId;
 
     @NotNull
     private String description;
@@ -24,12 +24,12 @@ public class Language {
 
     protected Language() {}
 
-    public Language(Integer languageId, String description) {
+    public Language(Long languageId, String description) {
         this.languageId = languageId;
         this.description = description;
     }
 
-    public Integer getLanguageId() {
+    public Long getLanguageId() {
         return languageId;
     }
 

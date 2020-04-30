@@ -8,12 +8,12 @@ import java.io.Serializable;
 
 public class BodyPartsDelayId implements Serializable {
 
-    private BodyPart bodyPartForDelayPrev;
-    private BodyPart bodyPartForDelayNext;
+    private Long bodyPartForDelayPrev;
+    private Long bodyPartForDelayNext;
 
     protected BodyPartsDelayId() {}
 
-    public BodyPartsDelayId(BodyPart bodyPartForDelayPrev, BodyPart bodyPartForDelayNext) {
+    public BodyPartsDelayId(Long bodyPartForDelayPrev, Long bodyPartForDelayNext) {
         this.bodyPartForDelayPrev = bodyPartForDelayPrev;
         this.bodyPartForDelayNext = bodyPartForDelayNext;
     }

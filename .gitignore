@@ -29,3 +29,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### RE77 Custom ###
+
+/src/main/resources/audio/

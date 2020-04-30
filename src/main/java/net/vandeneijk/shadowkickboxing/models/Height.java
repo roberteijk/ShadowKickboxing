@@ -14,7 +14,7 @@ import java.util.Collection;
 public class Height {
 
     @Id
-    private Integer heightId;
+    private Long heightId;
 
     @NotNull
     private String description;
@@ -24,12 +24,12 @@ public class Height {
 
     protected Height() {}
 
-    public Height(Integer heightId, String description) {
+    public Height(Long heightId, String description) {
         this.heightId = heightId;
         this.description = description;
     }
 
-    public Integer getHeightId() {
+    public Long getHeightId() {
         return heightId;
     }
 

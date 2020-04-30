@@ -14,7 +14,7 @@ import java.util.Collection;
 public class RuleSet {
 
     @Id
-    private Integer ruleSetId;
+    private Long ruleSetId;
 
     @NotNull
     private String description;
@@ -27,12 +27,12 @@ public class RuleSet {
 
     protected RuleSet() {}
 
-    public RuleSet(Integer ruleSetId, String description) {
+    public RuleSet(Long ruleSetId, String description) {
         this.ruleSetId = ruleSetId;
         this.description = description;
     }
 
-    public Integer getRuleSetId() {
+    public Long getRuleSetId() {
         return ruleSetId;
     }
 

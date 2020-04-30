@@ -14,7 +14,7 @@ import java.util.Collection;
 public class BodyPart {
 
     @Id
-    private Integer bodyPartId;
+    private Long bodyPartId;
 
     @NotNull
     private String description;
@@ -30,12 +30,12 @@ public class BodyPart {
 
     protected BodyPart() {}
 
-    public BodyPart(Integer bodyPartId, String description) {
+    public BodyPart(Long bodyPartId, String description) {
         this.bodyPartId = bodyPartId;
         this.description = description;
     }
 
-    public Integer getBodyPartId() {
+    public Long getBodyPartId() {
         return bodyPartId;
     }
 

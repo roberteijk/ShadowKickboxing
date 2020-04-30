@@ -8,13 +8,15 @@ import java.io.Serializable;
 
 public class ComboOffensiveMoveId implements Serializable {
 
-    private Combo comboForComboOffensiveMove;
-    private OffensiveMove offensiveMoveForComboOffensiveMove;
+//    private Combo comboForComboOffensiveMove;
+    private Long comboForComboOffensiveMove;
+//    private OffensiveMove offensiveMoveForComboOffensiveMove;
+    private Long offensiveMoveForComboOffensiveMove;
     private Integer sequenceIndex;
 
     protected ComboOffensiveMoveId() {}
 
-    public ComboOffensiveMoveId(Combo comboForComboOffensiveMove, OffensiveMove offensiveMoveForComboOffensiveMove, Integer sequenceIndex) {
+    public ComboOffensiveMoveId(Long comboForComboOffensiveMove, Long offensiveMoveForComboOffensiveMove, Integer sequenceIndex) {
         this.comboForComboOffensiveMove = comboForComboOffensiveMove;
         this.offensiveMoveForComboOffensiveMove = offensiveMoveForComboOffensiveMove;
         this.sequenceIndex = sequenceIndex;
