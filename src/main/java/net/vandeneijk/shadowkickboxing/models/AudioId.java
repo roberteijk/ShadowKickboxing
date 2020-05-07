@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 public class AudioId implements Serializable {
 
-    private Long offensiveMove;
+    private Long instruction;
     private Long language;
 
     protected AudioId() {}
 
-    public AudioId(Long offensiveMove, Long language) {
-        this.offensiveMove = offensiveMove;
+    public AudioId(Long instruction, Long language) {
+        this.instruction = instruction;
         this.language = language;
     }
 
@@ -26,13 +26,13 @@ public class AudioId implements Serializable {
 
         AudioId audioId = (AudioId) o;
 
-        if (!offensiveMove.equals(audioId.offensiveMove)) return false;
+        if (!instruction.equals(audioId.instruction)) return false;
         return language.equals(audioId.language);
     }
 
     @Override
     public int hashCode() {
-        int result = offensiveMove.hashCode();
+        int result = instruction.hashCode();
         result = 31 * result + language.hashCode();
         return result;
     }

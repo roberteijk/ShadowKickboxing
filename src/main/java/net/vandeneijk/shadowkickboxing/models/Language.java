@@ -1,8 +1,9 @@
 /**
- * Created by Robert van den Eijk on 19-4-2020.
+ * Created by Robert van den Eijk on 7-5-2020.
  */
 
 package net.vandeneijk.shadowkickboxing.models;
+
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

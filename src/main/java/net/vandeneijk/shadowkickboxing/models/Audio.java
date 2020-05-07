@@ -1,5 +1,5 @@
 /**
- * Created by Robert van den Eijk on 19-4-2020.
+ * Created by Robert van den Eijk on 7-5-2020.
  */
 
 package net.vandeneijk.shadowkickboxing.models;
@@ -13,11 +13,14 @@ public class Audio {
 
     @Id
     @ManyToOne
-    private OffensiveMove offensiveMove;
+    private Instruction instruction;
 
     @Id
     @ManyToOne
     private Language language;
+
+    @NotNull
+    private Integer lengthMillis;
 
     @NotNull
     @Column(columnDefinition = "blob")
@@ -25,18 +28,23 @@ public class Audio {
 
     protected Audio() {}
 
-    public Audio(OffensiveMove offensiveMove, Language language, byte[] audioFragment) {
-        this.offensiveMove = offensiveMove;
+    public Audio(Instruction instruction, Language language, @NotNull Integer lengthMillis, @NotNull byte[] audioFragment) {
+        this.instruction = instruction;
         this.language = language;
+        this.lengthMillis = lengthMillis;
         this.audioFragment = audioFragment;
     }
 
-    public OffensiveMove getOffensiveMove() {
-        return offensiveMove;
+    public Instruction getInstruction() {
+        return instruction;
     }
 
     public Language getLanguage() {
         return language;
+    }
+
+    public Integer getLengthMillis() {
+        return lengthMillis;
     }
 
     public byte[] getAudioFragment() {
