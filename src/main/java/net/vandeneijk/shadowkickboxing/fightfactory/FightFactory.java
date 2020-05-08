@@ -19,7 +19,7 @@ import java.util.List;
 public class FightFactory {
 
 
-    private InstructionRepository instructionRepository;
+    private final InstructionRepository instructionRepository;
 
     private List<Long> instructionCallWeightDistribution = new ArrayList<>();
 
@@ -39,7 +39,8 @@ public class FightFactory {
     }
 
     private Byte[] createRound() {
-        return new Byte[0];
+        Byte[] round = new Byte[0];
+        return round;
     }
 
 
