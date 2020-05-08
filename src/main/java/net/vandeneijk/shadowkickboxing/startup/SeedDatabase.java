@@ -12,57 +12,72 @@ import net.vandeneijk.shadowkickboxing.repositories.InstructionRepository;
 import net.vandeneijk.shadowkickboxing.repositories.LanguageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.util.Map;
 
 @Component
 public class SeedDatabase {
 
     private static final Logger log = LoggerFactory.getLogger(SeedDatabase.class);
+    private final LanguageRepository languageRepository;
+    private final InstructionRepository instructionRepository;
+    private final AudioRepository audioRepository;
 
-    @Bean
-    @Order(1)
-    public CommandLineRunner seedLanguage(LanguageRepository languageRepository) {
-        return (args) -> {
-            log.info("Seeding database with Language.");
-            languageRepository.save(new Language(0L, "English"));
-        };
+    @Autowired
+    public SeedDatabase(LanguageRepository languageRepository, InstructionRepository instructionRepository, AudioRepository audioRepository) {
+        this.languageRepository = languageRepository;
+        this.instructionRepository = instructionRepository;
+        this.audioRepository = audioRepository;
+
+        seedLanguage();
+        seedInstructionAndAudio();
     }
 
-    @Bean
-    @Order(2)
-    public CommandLineRunner seedInstruction(InstructionRepository instructionRepository, AudioRepository audioRepository, LanguageRepository languageRepository) {
-        return (args) -> {
-            log.info("Seeding database with Instruction and Audio.");
-            instructionRepository.save(new Instruction(0L, "jab", true, 1.0, 500, 1000));
-            audioRepository.save(new Audio(instructionRepository.findById(0L).get(), languageRepository.findById(0L).get(), 0, readFileToByteArray(new File(getClass().getClassLoader().getResource("audio/jab.mp3").getFile()))));
+    private void seedLanguage() {
+        log.info("Seeding database with Language.");
+        languageRepository.save(new Language(0L, "English"));
+    }
 
-            instructionRepository.save(new Instruction(1L, "double jab", true, 1.0, 800, 2000));
-            audioRepository.save(new Audio(instructionRepository.findById(1L).get(), languageRepository.findById(0L).get(), 0, readFileToByteArray(new File(getClass().getClassLoader().getResource("audio/double-jab.mp3").getFile()))));
+    private void seedInstructionAndAudio() {
+        log.info("Seeding database with Instruction and Audio.");
 
-            instructionRepository.save(new Instruction(2L, "cross", true, 0.6, 700, 1500));
-            audioRepository.save(new Audio(instructionRepository.findById(2L).get(), languageRepository.findById(0L).get(), 0, readFileToByteArray(new File(getClass().getClassLoader().getResource("audio/cross.mp3").getFile()))));
+        instructionRepository.save(new Instruction(0L, "jab", true, 1.0, 500, 1000));
+        File file = new File(getClass().getClassLoader().getResource("audio/jab.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(0L).get(), languageRepository.findById(0L).get(), getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
+        instructionRepository.save(new Instruction(1L, "double jab", true, 1.0, 800, 2000));
+        file = new File(getClass().getClassLoader().getResource("audio/double-jab.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(1L).get(), languageRepository.findById(0L).get(), getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-            instructionRepository.save(new Instruction(3L, "left hook head", true, 0.4, 800, 1500));
-            audioRepository.save(new Audio(instructionRepository.findById(3L).get(), languageRepository.findById(0L).get(), 0, readFileToByteArray(new File(getClass().getClassLoader().getResource("audio/left-hook-head.mp3").getFile()))));
-
-
-            instructionRepository.save(new Instruction(4L, "right hook head", true, 0.4, 800, 1500));
-            audioRepository.save(new Audio(instructionRepository.findById(4L).get(), languageRepository.findById(0L).get(), 0, readFileToByteArray(new File(getClass().getClassLoader().getResource("audio/right-hook-head.mp3").getFile()))));
+        instructionRepository.save(new Instruction(2L, "cross", true, 0.6, 700, 1500));
+        file = new File(getClass().getClassLoader().getResource("audio/cross.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(2L).get(), languageRepository.findById(0L).get(), getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
 
-            instructionRepository.save(new Instruction(5L, "left hook body", true, 0.3, 800, 1500));
-            audioRepository.save(new Audio(instructionRepository.findById(5L).get(), languageRepository.findById(0L).get(), 0, readFileToByteArray(new File(getClass().getClassLoader().getResource("audio/left-hook-body.mp3").getFile()))));
+        instructionRepository.save(new Instruction(3L, "left hook head", true, 0.4, 800, 1500));
+        file = new File(getClass().getClassLoader().getResource("audio/left-hook-head.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(3L).get(), languageRepository.findById(0L).get(), getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
 
-            instructionRepository.save(new Instruction(6L, "right hook body", true, 0.30, 800, 1500));
-            audioRepository.save(new Audio(instructionRepository.findById(6L).get(), languageRepository.findById(0L).get(), 0, readFileToByteArray(new File(getClass().getClassLoader().getResource("audio/right-hook-body.mp3").getFile()))));
-        };
+        instructionRepository.save(new Instruction(4L, "right hook head", true, 0.4, 800, 1500));
+        file = new File(getClass().getClassLoader().getResource("audio/right-hook-head.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(4L).get(), languageRepository.findById(0L).get(), getAudioFileLengthMillis(file), readFileToByteArray(file)));
+
+
+        instructionRepository.save(new Instruction(5L, "left hook body", true, 0.3, 800, 1500));
+        file = new File(getClass().getClassLoader().getResource("audio/left-hook-body.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(5L).get(), languageRepository.findById(0L).get(), getAudioFileLengthMillis(file), readFileToByteArray(file)));
+
+
+        instructionRepository.save(new Instruction(6L, "right hook body", true, 0.3, 800, 1500));
+        file = new File(getClass().getClassLoader().getResource("audio/right-hook-body.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(6L).get(), languageRepository.findById(0L).get(), getAudioFileLengthMillis(file), readFileToByteArray(file)));
     }
 
     private byte[] readFileToByteArray(File file) {
@@ -74,8 +89,20 @@ public class SeedDatabase {
             }
             return baos.toByteArray();
         } catch (IOException ioEx) {
-            log.error("Error reading audio file for seeding database. Exception: " + ioEx);
+            log.error("Error reading audio file to byte[] for seeding database. Exception: " + ioEx);
         }
         return new byte[0];
+    }
+
+
+    private int getAudioFileLengthMillis(File file) {
+        try {
+            AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(file);
+            Map<String, Object> properties = baseFileFormat.properties();
+            return ((Long) properties.get("duration")).intValue() / 1000;
+        } catch (UnsupportedAudioFileException | IOException miscEx) {
+            log.error("Error determining the length of an audio file for seeding database. Exception: " + miscEx);
+        }
+        return 0;
     }
 }
