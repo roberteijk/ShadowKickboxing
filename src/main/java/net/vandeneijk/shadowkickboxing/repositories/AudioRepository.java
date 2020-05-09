@@ -5,7 +5,11 @@
 package net.vandeneijk.shadowkickboxing.repositories;
 
 import net.vandeneijk.shadowkickboxing.models.Audio;
+import net.vandeneijk.shadowkickboxing.models.Instruction;
+import net.vandeneijk.shadowkickboxing.models.Language;
 import org.springframework.data.repository.CrudRepository;
 
 public interface AudioRepository extends CrudRepository<Audio, Long> {
+
+    public Audio findByInstructionAndLanguage(Instruction instruction, Language language);
 }
