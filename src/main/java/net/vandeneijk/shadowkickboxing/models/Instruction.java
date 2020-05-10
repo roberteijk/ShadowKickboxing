@@ -23,6 +23,12 @@ public class Instruction {
     private Boolean move;
 
     @NotNull
+    private Boolean canBlock;
+
+    @NotNull
+    private Boolean canEvade;
+
+    @NotNull
     private Double callFrequencyWeight;
 
     @NotNull
@@ -37,16 +43,18 @@ public class Instruction {
     protected Instruction() {}
 
     public Instruction(Long instructionId, @NotNull String description, @NotNull Boolean move) {
-        this(instructionId, description, move, 0.0, 0, 0);
+        this(instructionId, description, move, false, false, 1.0, 0, 0);
     }
 
-    public Instruction(Long instructionId, @NotNull String description, @NotNull Boolean move, @NotNull Double callFrequencyWeight, @NotNull Integer minExecutionTimeMillis, @NotNull Integer maxExecutionTimeMillis) {
+    public Instruction(Long instructionId, @NotNull String description, @NotNull Boolean move, @NotNull Boolean canBlock, @NotNull Boolean canEvade, @NotNull Double callFrequencyWeight, @NotNull Integer minExecutionTimeMillis, @NotNull Integer maxExecutionTimeMillis) {
         if (callFrequencyWeight < 0.01 || callFrequencyWeight > 1.0) throw new IllegalArgumentException("callFrequencyWeight should have a value between 0.01 and 1.0.");
         if (minExecutionTimeMillis < 0 || minExecutionTimeMillis > 10000) throw new IllegalArgumentException("minExecutionTimeMillis should have a value between 0 and 10000.");
         if (maxExecutionTimeMillis < 0 || maxExecutionTimeMillis > 10000) throw new IllegalArgumentException("maxExecutionTimeMillis should have a value between 0 and 10000.");
         this.instructionId = instructionId;
         this.description = description;
         this.move = move;
+        this.canBlock = canBlock;
+        this.canEvade = canEvade;
         this.callFrequencyWeight = callFrequencyWeight;
         this.minExecutionTimeMillis = minExecutionTimeMillis;
         this.maxExecutionTimeMillis = maxExecutionTimeMillis;
@@ -62,6 +70,14 @@ public class Instruction {
 
     public Boolean isMove() {
         return move;
+    }
+
+    public Boolean isCanBlock() {
+        return canBlock;
+    }
+
+    public Boolean isCanEvade() {
+        return canEvade;
     }
 
     public Double getCallFrequencyWeight() {

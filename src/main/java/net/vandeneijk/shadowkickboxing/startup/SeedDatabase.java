@@ -45,83 +45,91 @@ public class SeedDatabase {
     private void seedInstructionAndAudio() {
         log.info("Seeding database with Instruction and Audio.");
 
-        instructionRepository.save(new Instruction(0L, "silence", false, 1.0, 0, 0));
+        instructionRepository.save(new Instruction(0L, "silence", false));
         File file = new File(getClass().getClassLoader().getResource("audio/silence.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(0L).get(), languageRepository.findById(0L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(100L, "jab", true, 1.0, 300, 1000));
+        instructionRepository.save(new Instruction(20L, "block", false));
+        file = new File(getClass().getClassLoader().getResource("audio/block.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(20L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+
+        instructionRepository.save(new Instruction(21L, "evade", false));
+        file = new File(getClass().getClassLoader().getResource("audio/evade.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(21L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+
+        instructionRepository.save(new Instruction(100L, "jab",  true, true, true, 1.0, 400, 1200));
         file = new File(getClass().getClassLoader().getResource("audio/jab.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(100L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(101L, "double jab", true, 1.0, 600, 2000));
+        instructionRepository.save(new Instruction(101L, "double jab", true, true, true, 1.0, 500, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/double-jab.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(101L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(102L, "cross", true, 0.6, 500, 1500));
+        instructionRepository.save(new Instruction(102L, "cross", true, true, true, 0.6, 500, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/cross.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(102L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(103L, "left hook head", true, 0.4, 600, 1500));
+        instructionRepository.save(new Instruction(103L, "left hook head", true, true, true, 0.4, 600, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/left-hook-head.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(103L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(104L, "right hook head", true, 0.4, 600, 1500));
+        instructionRepository.save(new Instruction(104L, "right hook head", true, true, true, 0.4, 600, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/right-hook-head.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(104L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(105L, "left uppercut", true, 0.4, 600, 1500));
+        instructionRepository.save(new Instruction(105L, "left uppercut", true, true, true, 0.4, 600, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/left-uppercut.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(105L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(106L, "right uppercut", true, 0.4, 600, 1500));
+        instructionRepository.save(new Instruction(106L, "right uppercut", true, true, true, 0.4, 600, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/right-uppercut.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(106L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(107L, "left hook body", true, 0.3, 600, 1500));
+        instructionRepository.save(new Instruction(107L, "left hook body", true, true, true, 0.3, 600, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/left-hook-body.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(107L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(108L, "right hook body", true, 0.3, 600, 1500));
+        instructionRepository.save(new Instruction(108L, "right hook body", true, true, true, 0.3, 600, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/right-hook-body.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(108L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(109L, "left low kick", true, 0.3, 600, 1500));
+        instructionRepository.save(new Instruction(109L, "left low kick", true, true, true, 0.3, 800, 1800));
         file = new File(getClass().getClassLoader().getResource("audio/left-low-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(109L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(110L, "right low kick", true, 0.3, 600, 1500));
+        instructionRepository.save(new Instruction(110L, "right low kick", true, true, true, 0.3, 800, 1800));
         file = new File(getClass().getClassLoader().getResource("audio/right-low-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(110L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(111L, "clinch left knee", true, 0.25, 1500, 3000));
+        instructionRepository.save(new Instruction(111L, "clinch left knee", true, false, false, 0.25, 1500, 2500));
         file = new File(getClass().getClassLoader().getResource("audio/clinch-left-knee.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(111L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(112L, "clinch right knee", true, 0.25, 1500, 3000));
+        instructionRepository.save(new Instruction(112L, "clinch right knee", true, false, false, 0.25, 1500, 2500));
         file = new File(getClass().getClassLoader().getResource("audio/clinch-right-knee.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(112L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(113L, "left front kick", true, 0.25, 600, 1500));
+        instructionRepository.save(new Instruction(113L, "left front kick", true, true, true, 0.25, 700, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/left-front-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(113L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(114L, "right front kick", true, 0.25, 600, 1500));
+        instructionRepository.save(new Instruction(114L, "right front kick", true, true, true, 0.25, 700, 1500));
         file = new File(getClass().getClassLoader().getResource("audio/right-front-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(114L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(115L, "left middle kick", true, 0.15, 700, 1500));
+        instructionRepository.save(new Instruction(115L, "left middle kick", true, true, false, 0.15, 900, 1800));
         file = new File(getClass().getClassLoader().getResource("audio/left-middle-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(115L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(116L, "right middle kick", true, 0.15, 700, 1500));
+        instructionRepository.save(new Instruction(116L, "right middle kick", true, true, false, 0.15, 900, 1800));
         file = new File(getClass().getClassLoader().getResource("audio/right-middle-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(116L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(117L, "left high kick", true, 0.10, 800, 1500));
+        instructionRepository.save(new Instruction(117L, "left high kick", true, true, true, 0.10, 900, 2000));
         file = new File(getClass().getClassLoader().getResource("audio/left-high-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(117L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
-        instructionRepository.save(new Instruction(118L, "right high kick", true, 0.10, 800, 1500));
+        instructionRepository.save(new Instruction(118L, "right high kick", true, true, true, 0.10, 900, 2000));
         file = new File(getClass().getClassLoader().getResource("audio/right-high-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(118L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
