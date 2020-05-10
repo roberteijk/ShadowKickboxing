@@ -23,7 +23,7 @@ public class Audio {
     private Integer lengthMillis;
 
     @NotNull
-    @Column(columnDefinition = "blob")
+    @Column(columnDefinition = "mediumblob")
     private byte[] audioFragment;
 
     protected Audio() {}

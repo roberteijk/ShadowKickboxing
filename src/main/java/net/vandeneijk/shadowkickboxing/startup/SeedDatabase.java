@@ -57,6 +57,18 @@ public class SeedDatabase {
         file = new File(getClass().getClassLoader().getResource("audio/evade.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(21L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
+        instructionRepository.save(new Instruction(40L, "10 seconds break", false));
+        file = new File(getClass().getClassLoader().getResource("audio/10-seconds-break.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(40L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+
+        instructionRepository.save(new Instruction(41L, "1 minute break", false));
+        file = new File(getClass().getClassLoader().getResource("audio/1-minute-break.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(41L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+
+        instructionRepository.save(new Instruction(42L, "break bell", false));
+        file = new File(getClass().getClassLoader().getResource("audio/break-bell.mp3").getFile());
+        audioRepository.save(new Audio(instructionRepository.findById(42L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+
         instructionRepository.save(new Instruction(100L, "jab",  true, true, true, 1.0, 400, 1200));
         file = new File(getClass().getClassLoader().getResource("audio/jab.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(100L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));

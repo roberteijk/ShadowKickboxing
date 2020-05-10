@@ -41,23 +41,29 @@ public class FightFactory {
 
         seedInstructionCallWeightDistribution();
         getAudioSilence();
-        createFight(1, 180, 1);
+        createFight(3, 179, 1);
     }
 
     public void createFight(int numberOfRounds, int roundLengthSeconds, long languageId) {
+        Language language = languageRepository.findById(languageId).get();
         List<List<Byte>> rounds = new ArrayList<>();
 
         while (rounds.size() < numberOfRounds) {
-            rounds.add(createRound(roundLengthSeconds, languageId));
+            rounds.add(createRound(roundLengthSeconds, language));
         }
+
+        List<Byte> fight = new ArrayList<>();
+        addCountdownBeforeStartFight(fight, language);
+        addBreaksBetweenRounds(rounds, fight, language);
+        addBreakBellAfterFight(fight, language);
 
 
         // Below in this method is for debugging purposes only.
         System.out.println("Size of a round : " + rounds.get(0).size());
 
-        byte[] testByte = new byte[rounds.get(0).size()];
+        byte[] testByte = new byte[fight.size()];
         int j = 0;
-        for (byte value : rounds.get(0)) testByte[j++] = value;
+        for (byte value : fight) testByte[j++] = value;
 
         try (FileOutputStream fos = new FileOutputStream("test.mp3")) {
             fos.write(testByte);
@@ -66,12 +72,11 @@ public class FightFactory {
         }
     }
 
-    private List<Byte> createRound(int roundLengthSeconds, long languageId) {
+
+    private List<Byte> createRound(int roundLengthSeconds, Language language) {
         List<Byte> round = new ArrayList<>();
         int roundLengthMillisRemaining = roundLengthSeconds * 1000;
         while (true) {
-            Language language = languageRepository.findById(languageId).get();
-
             Move move = createMove(language, roundLengthMillisRemaining);
             if (move == null) break;
 
@@ -156,6 +161,30 @@ public class FightFactory {
         bytesListAudioMove.addAll(move.getBytesListAudioMove());
         move.setBytesListAudioMove(bytesListAudioMove);
         move.setTotalMoveAudioLengthMillis(move.getTotalMoveAudioLengthMillis() + (numberOfSilencesToAdd * audioSilence.getLengthMillis()));
+    }
+
+    private void addCountdownBeforeStartFight(List<Byte> fight, Language language) {
+        Instruction instruction10SecondsBreak = instructionRepository.findById(40L).get();
+        Audio audio10SecondsBreak = audioRepository.findByInstructionAndLanguage(instruction10SecondsBreak, language);
+
+        for (byte value : audio10SecondsBreak.getAudioFragment()) fight.add(value);
+    }
+
+    private void addBreaksBetweenRounds(List<List<Byte>> rounds, List<Byte> fight, Language language) {
+        Instruction instruction1MinuteBreak = instructionRepository.findById(41L).get();
+        Audio audio1MinuteBreak = audioRepository.findByInstructionAndLanguage(instruction1MinuteBreak, language);
+
+        for (int i = 0; i < rounds.size(); i++) {
+            for (byte value : rounds.get(i)) fight.add(value);
+            if (i < rounds.size() - 1) for (byte value : audio1MinuteBreak.getAudioFragment()) fight.add(value);
+        }
+    }
+
+    private void addBreakBellAfterFight(List<Byte> fight, Language language) {
+        Instruction instructionBreakBell = instructionRepository.findById(42L).get();
+        Audio audioBreakBell = audioRepository.findByInstructionAndLanguage(instructionBreakBell, language);
+
+        for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
     }
 
     private void seedInstructionCallWeightDistribution() {
