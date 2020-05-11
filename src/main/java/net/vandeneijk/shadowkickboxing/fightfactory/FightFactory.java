@@ -7,9 +7,11 @@ package net.vandeneijk.shadowkickboxing.fightfactory;
 import net.vandeneijk.shadowkickboxing.models.Audio;
 import net.vandeneijk.shadowkickboxing.models.Instruction;
 import net.vandeneijk.shadowkickboxing.models.Language;
+import net.vandeneijk.shadowkickboxing.models.SpeedOption;
 import net.vandeneijk.shadowkickboxing.repositories.AudioRepository;
 import net.vandeneijk.shadowkickboxing.repositories.InstructionRepository;
 import net.vandeneijk.shadowkickboxing.repositories.LanguageRepository;
+import net.vandeneijk.shadowkickboxing.repositories.SpeedOptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,7 @@ public class FightFactory {
     private final InstructionRepository instructionRepository;
     private final LanguageRepository languageRepository;
     private final AudioRepository audioRepository;
+    private final SpeedOptionRepository speedOptionRepository;
 
     private List<Long> instructionCallWeightDistribution;
     private int silenceLengthMillis;
@@ -34,22 +37,24 @@ public class FightFactory {
 
 
     @Autowired
-    public FightFactory(InstructionRepository instructionRepository, LanguageRepository languageRepository, AudioRepository audioRepository, LanguageRepository languageRepository1, AudioRepository audioRepository1) {
+    public FightFactory(InstructionRepository instructionRepository, LanguageRepository languageRepository, AudioRepository audioRepository, SpeedOptionRepository speedOptionRepository) {
         this.instructionRepository = instructionRepository;
-        this.languageRepository = languageRepository1;
-        this.audioRepository = audioRepository1;
+        this.languageRepository = languageRepository;
+        this.audioRepository = audioRepository;
+        this.speedOptionRepository = speedOptionRepository;
 
         seedInstructionCallWeightDistribution();
         getAudioSilence();
-        createFight(3, 179, 1);
+        createFight(3, 179, 1, 2);
     }
 
-    public void createFight(int numberOfRounds, int roundLengthSeconds, long languageId) {
+    public void createFight(int numberOfRounds, int roundLengthSeconds, long languageId, long speedOptionId) {
         Language language = languageRepository.findById(languageId).get();
+        SpeedOption speedOption = speedOptionRepository.findById(speedOptionId).get();
         List<List<Byte>> rounds = new ArrayList<>();
 
         while (rounds.size() < numberOfRounds) {
-            rounds.add(createRound(roundLengthSeconds, language));
+            rounds.add(createRound(roundLengthSeconds, language, speedOption));
         }
 
         List<Byte> fight = new ArrayList<>();
@@ -73,15 +78,15 @@ public class FightFactory {
     }
 
 
-    private List<Byte> createRound(int roundLengthSeconds, Language language) {
+    private List<Byte> createRound(int roundLengthSeconds, Language language, SpeedOption speedOption) {
         List<Byte> round = new ArrayList<>();
         int roundLengthMillisRemaining = roundLengthSeconds * 1000;
         while (true) {
-            Move move = createMove(language, roundLengthMillisRemaining);
+            Move move = createMove(language, speedOption, roundLengthMillisRemaining);
             if (move == null) break;
 
-            prependWithBlockIfApplicable(move, language, roundLengthMillisRemaining);
-            prependWithInnerRoundBreakIfApplicable(move, roundLengthMillisRemaining);
+            prependWithBlockIfApplicable(move, language, speedOption, roundLengthMillisRemaining);
+            prependWithInnerRoundBreakIfApplicable(move, speedOption, roundLengthMillisRemaining);
 
             round.addAll(move.getBytesListAudioMove());
             roundLengthMillisRemaining -= move.getTotalMoveAudioLengthMillis();
@@ -89,7 +94,7 @@ public class FightFactory {
         return round;
     }
 
-    private Move createMove(Language language, int roundLengthMillisRemaining) {
+    private Move createMove(Language language, SpeedOption speedOption, int roundLengthMillisRemaining) {
         long moveToAdd = instructionCallWeightDistribution.get((int) (Math.random() * instructionCallWeightDistribution.size()));
 
         Instruction instructionMove = instructionRepository.findById(moveToAdd).get();
@@ -97,14 +102,14 @@ public class FightFactory {
         int minExecutionTimeMillis = instructionMove.getMinExecutionTimeMillis();
         int maxExecutionTimeMillis = instructionMove.getMaxExecutionTimeMillis();
 
-        if (audioMove.getLengthMillis() + minExecutionTimeMillis > roundLengthMillisRemaining) return null;
+        if (audioMove.getLengthMillis() + (minExecutionTimeMillis * speedOption.getExecutionMillisMultiplier()) > roundLengthMillisRemaining) return null;
 
         List<Byte> bytesListAudioMove = new ArrayList<>();
         int oldRoundLengthMillisRemaining = roundLengthMillisRemaining;
         for (byte value : audioMove.getAudioFragment()) bytesListAudioMove.add(value);
         roundLengthMillisRemaining -= audioMove.getLengthMillis();
 
-        int executionTimeMillis = (int) ((Math.random() * (maxExecutionTimeMillis - minExecutionTimeMillis)) + minExecutionTimeMillis);
+        int executionTimeMillis = (int) (((Math.random() * (maxExecutionTimeMillis - minExecutionTimeMillis)) + minExecutionTimeMillis) * speedOption.getExecutionMillisMultiplier());
         if (executionTimeMillis > roundLengthMillisRemaining) executionTimeMillis = roundLengthMillisRemaining;
         int numberOfSilencesToAdd = (int) Math.ceil(executionTimeMillis / (double) silenceLengthMillis);
 
@@ -114,7 +119,7 @@ public class FightFactory {
         return new Move(bytesListAudioMove, oldRoundLengthMillisRemaining - roundLengthMillisRemaining, instructionMove);
     }
 
-    private void prependWithBlockIfApplicable(Move move, Language language, int roundLengthMillisRemaining) {
+    private void prependWithBlockIfApplicable(Move move, Language language, SpeedOption speedOption, int roundLengthMillisRemaining) {
         if (!move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade()) return;
         else if (Math.random() < 0.80) return;
 
@@ -126,7 +131,7 @@ public class FightFactory {
         Instruction instructionBlock = instructionRepository.findById(defensiveInstruction).get();
         Audio audioBlock = audioRepository.findByInstructionAndLanguage(instructionBlock, language);
         int minExecutionTimeMillis = instructionBlock.getMinExecutionTimeMillis();
-        int extraSilenceMillisAfterInstruction = 750;
+        int extraSilenceMillisAfterInstruction = (int) (750 * speedOption.getExecutionMillisMultiplier());
 
         if (audioBlock.getLengthMillis() + minExecutionTimeMillis + move.getTotalMoveAudioLengthMillis() + extraSilenceMillisAfterInstruction > roundLengthMillisRemaining) return;
 
@@ -145,11 +150,11 @@ public class FightFactory {
         move.setTotalMoveAudioLengthMillis(move.getTotalMoveAudioLengthMillis() + audioBlock.getLengthMillis() + (numberOfSilencesToAdd * audioSilence.getLengthMillis()) + extraSilenceMillisAfterInstruction);
     }
 
-    private void prependWithInnerRoundBreakIfApplicable(Move move, int roundLengthMillisRemaining) {
+    private void prependWithInnerRoundBreakIfApplicable(Move move, SpeedOption speedOption, int roundLengthMillisRemaining) {
         if (Math.random() < 0.9) return;
 
         int maxInnerRoundBreakMillis = roundLengthMillisRemaining - move.getTotalMoveAudioLengthMillis();
-        if (maxInnerRoundBreakMillis > 2000) maxInnerRoundBreakMillis = (int) ((Math.random() * 1500) + 500);
+        if (maxInnerRoundBreakMillis > 2000 * speedOption.getExecutionMillisMultiplier()) maxInnerRoundBreakMillis = (int) (((Math.random() * 1500) + 500) * speedOption.getExecutionMillisMultiplier());
         else maxInnerRoundBreakMillis = (int) (Math.random() * maxInnerRoundBreakMillis);
 
         List<Byte> bytesListAudioMove = new ArrayList<>();

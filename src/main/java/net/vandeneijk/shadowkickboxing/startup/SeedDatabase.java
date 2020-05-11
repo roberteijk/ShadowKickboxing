@@ -8,9 +8,11 @@ import net.vandeneijk.shadowkickboxing.Helper;
 import net.vandeneijk.shadowkickboxing.models.Audio;
 import net.vandeneijk.shadowkickboxing.models.Instruction;
 import net.vandeneijk.shadowkickboxing.models.Language;
+import net.vandeneijk.shadowkickboxing.models.SpeedOption;
 import net.vandeneijk.shadowkickboxing.repositories.AudioRepository;
 import net.vandeneijk.shadowkickboxing.repositories.InstructionRepository;
 import net.vandeneijk.shadowkickboxing.repositories.LanguageRepository;
+import net.vandeneijk.shadowkickboxing.repositories.SpeedOptionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +27,18 @@ public class SeedDatabase {
     private final LanguageRepository languageRepository;
     private final InstructionRepository instructionRepository;
     private final AudioRepository audioRepository;
+    private final SpeedOptionRepository speedOptionRepository;
 
     @Autowired
-    public SeedDatabase(LanguageRepository languageRepository, InstructionRepository instructionRepository, AudioRepository audioRepository) {
+    public SeedDatabase(LanguageRepository languageRepository, InstructionRepository instructionRepository, AudioRepository audioRepository, SpeedOptionRepository speedOptionRepository) {
         this.languageRepository = languageRepository;
         this.instructionRepository = instructionRepository;
         this.audioRepository = audioRepository;
+        this.speedOptionRepository = speedOptionRepository;
 
         seedLanguage();
         seedInstructionAndAudio();
+        seedSpeedOptions();
     }
 
     private void seedLanguage() {
@@ -145,6 +150,14 @@ public class SeedDatabase {
         file = new File(getClass().getClassLoader().getResource("audio/right-high-kick.mp3").getFile());
         audioRepository.save(new Audio(instructionRepository.findById(118L).get(), languageRepository.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
 
+    }
+
+    private void seedSpeedOptions() {
+        speedOptionRepository.save(new SpeedOption(0L, "extra slow", 2.25));
+        speedOptionRepository.save(new SpeedOption(1L, "slow", 1.50));
+        speedOptionRepository.save(new SpeedOption(2L, "normal", 1.0));
+        speedOptionRepository.save(new SpeedOption(3L, "fast", 0.66));
+        speedOptionRepository.save(new SpeedOption(4L, "extra fast", 0.4356));
     }
 
     private byte[] readFileToByteArray(File file) {
