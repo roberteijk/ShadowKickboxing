@@ -4,16 +4,12 @@
 
 package net.vandeneijk.shadowkickboxing.fightfactory;
 
-import net.vandeneijk.shadowkickboxing.models.Audio;
-import net.vandeneijk.shadowkickboxing.models.Instruction;
-import net.vandeneijk.shadowkickboxing.models.Language;
-import net.vandeneijk.shadowkickboxing.models.SpeedOption;
-import net.vandeneijk.shadowkickboxing.repositories.AudioRepository;
-import net.vandeneijk.shadowkickboxing.repositories.InstructionRepository;
-import net.vandeneijk.shadowkickboxing.repositories.LanguageRepository;
-import net.vandeneijk.shadowkickboxing.repositories.SpeedOptionRepository;
+import net.vandeneijk.shadowkickboxing.models.*;
+import net.vandeneijk.shadowkickboxing.repositories.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
@@ -22,14 +18,16 @@ import java.util.List;
 
 
 @Component
-@DependsOn("seedDatabase")
+//@DependsOn({"seedDatabase", "taskExecutor"})
 public class FightFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(FightFactory.class);
 
     private final InstructionRepository instructionRepository;
     private final LanguageRepository languageRepository;
     private final AudioRepository audioRepository;
-    private final SpeedOptionRepository speedOptionRepository;
+    private final SpeedRepository speedRepository;
+    private final FightRepository fightRepository;
 
     private List<Long> instructionCallWeightDistribution;
     private int silenceLengthMillis;
@@ -37,24 +35,25 @@ public class FightFactory {
 
 
     @Autowired
-    public FightFactory(InstructionRepository instructionRepository, LanguageRepository languageRepository, AudioRepository audioRepository, SpeedOptionRepository speedOptionRepository) {
+    public FightFactory(InstructionRepository instructionRepository, LanguageRepository languageRepository, AudioRepository audioRepository, SpeedRepository speedRepository, FightRepository fightRepository) {
         this.instructionRepository = instructionRepository;
         this.languageRepository = languageRepository;
         this.audioRepository = audioRepository;
-        this.speedOptionRepository = speedOptionRepository;
+        this.speedRepository = speedRepository;
+        this.fightRepository = fightRepository;
 
         seedInstructionCallWeightDistribution();
         getAudioSilence();
-        createFight(3, 179, 1, 2);
     }
 
-    public void createFight(int numberOfRounds, int roundLengthSeconds, long languageId, long speedOptionId) {
+    @Async
+    public void createFight(int numberOfRounds, long languageId, Speed speed) {
+        int roundLengthSeconds = 179;
         Language language = languageRepository.findById(languageId).get();
-        SpeedOption speedOption = speedOptionRepository.findById(speedOptionId).get();
         List<List<Byte>> rounds = new ArrayList<>();
 
         while (rounds.size() < numberOfRounds) {
-            rounds.add(createRound(roundLengthSeconds, language, speedOption));
+            rounds.add(createRound(roundLengthSeconds, language, speed));
         }
 
         List<Byte> fight = new ArrayList<>();
@@ -62,31 +61,19 @@ public class FightFactory {
         addBreaksBetweenRounds(rounds, fight, language);
         addBreakBellAfterFight(fight, language);
 
-
-        // Below in this method is for debugging purposes only.
-        System.out.println("Size of a round : " + rounds.get(0).size());
-
-        byte[] testByte = new byte[fight.size()];
-        int j = 0;
-        for (byte value : fight) testByte[j++] = value;
-
-        try (FileOutputStream fos = new FileOutputStream("test.mp3")) {
-            fos.write(testByte);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        writeFightToDatabase(fight, language, speed);
     }
 
 
-    private List<Byte> createRound(int roundLengthSeconds, Language language, SpeedOption speedOption) {
+    private List<Byte> createRound(int roundLengthSeconds, Language language, Speed speed) {
         List<Byte> round = new ArrayList<>();
         int roundLengthMillisRemaining = roundLengthSeconds * 1000;
         while (true) {
-            Move move = createMove(language, speedOption, roundLengthMillisRemaining);
+            Move move = createMove(language, speed, roundLengthMillisRemaining);
             if (move == null) break;
 
-            prependWithBlockIfApplicable(move, language, speedOption, roundLengthMillisRemaining);
-            prependWithInnerRoundBreakIfApplicable(move, speedOption, roundLengthMillisRemaining);
+            prependWithBlockIfApplicable(move, language, speed, roundLengthMillisRemaining);
+            prependWithInnerRoundBreakIfApplicable(move, speed, roundLengthMillisRemaining);
 
             round.addAll(move.getBytesListAudioMove());
             roundLengthMillisRemaining -= move.getTotalMoveAudioLengthMillis();
@@ -94,7 +81,7 @@ public class FightFactory {
         return round;
     }
 
-    private Move createMove(Language language, SpeedOption speedOption, int roundLengthMillisRemaining) {
+    private Move createMove(Language language, Speed speed, int roundLengthMillisRemaining) {
         long moveToAdd = instructionCallWeightDistribution.get((int) (Math.random() * instructionCallWeightDistribution.size()));
 
         Instruction instructionMove = instructionRepository.findById(moveToAdd).get();
@@ -102,14 +89,14 @@ public class FightFactory {
         int minExecutionTimeMillis = instructionMove.getMinExecutionTimeMillis();
         int maxExecutionTimeMillis = instructionMove.getMaxExecutionTimeMillis();
 
-        if (audioMove.getLengthMillis() + (minExecutionTimeMillis * speedOption.getExecutionMillisMultiplier()) > roundLengthMillisRemaining) return null;
+        if (audioMove.getLengthMillis() + (minExecutionTimeMillis * speed.getExecutionMillisMultiplier()) > roundLengthMillisRemaining) return null;
 
         List<Byte> bytesListAudioMove = new ArrayList<>();
         int oldRoundLengthMillisRemaining = roundLengthMillisRemaining;
         for (byte value : audioMove.getAudioFragment()) bytesListAudioMove.add(value);
         roundLengthMillisRemaining -= audioMove.getLengthMillis();
 
-        int executionTimeMillis = (int) (((Math.random() * (maxExecutionTimeMillis - minExecutionTimeMillis)) + minExecutionTimeMillis) * speedOption.getExecutionMillisMultiplier());
+        int executionTimeMillis = (int) (((Math.random() * (maxExecutionTimeMillis - minExecutionTimeMillis)) + minExecutionTimeMillis) * speed.getExecutionMillisMultiplier());
         if (executionTimeMillis > roundLengthMillisRemaining) executionTimeMillis = roundLengthMillisRemaining;
         int numberOfSilencesToAdd = (int) Math.ceil(executionTimeMillis / (double) silenceLengthMillis);
 
@@ -119,7 +106,7 @@ public class FightFactory {
         return new Move(bytesListAudioMove, oldRoundLengthMillisRemaining - roundLengthMillisRemaining, instructionMove);
     }
 
-    private void prependWithBlockIfApplicable(Move move, Language language, SpeedOption speedOption, int roundLengthMillisRemaining) {
+    private void prependWithBlockIfApplicable(Move move, Language language, Speed speed, int roundLengthMillisRemaining) {
         if (!move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade()) return;
         else if (Math.random() < 0.80) return;
 
@@ -131,7 +118,7 @@ public class FightFactory {
         Instruction instructionBlock = instructionRepository.findById(defensiveInstruction).get();
         Audio audioBlock = audioRepository.findByInstructionAndLanguage(instructionBlock, language);
         int minExecutionTimeMillis = instructionBlock.getMinExecutionTimeMillis();
-        int extraSilenceMillisAfterInstruction = (int) (750 * speedOption.getExecutionMillisMultiplier());
+        int extraSilenceMillisAfterInstruction = (int) (750 * speed.getExecutionMillisMultiplier());
 
         if (audioBlock.getLengthMillis() + minExecutionTimeMillis + move.getTotalMoveAudioLengthMillis() + extraSilenceMillisAfterInstruction > roundLengthMillisRemaining) return;
 
@@ -150,11 +137,11 @@ public class FightFactory {
         move.setTotalMoveAudioLengthMillis(move.getTotalMoveAudioLengthMillis() + audioBlock.getLengthMillis() + (numberOfSilencesToAdd * audioSilence.getLengthMillis()) + extraSilenceMillisAfterInstruction);
     }
 
-    private void prependWithInnerRoundBreakIfApplicable(Move move, SpeedOption speedOption, int roundLengthMillisRemaining) {
+    private void prependWithInnerRoundBreakIfApplicable(Move move, Speed speed, int roundLengthMillisRemaining) {
         if (Math.random() < 0.9) return;
 
         int maxInnerRoundBreakMillis = roundLengthMillisRemaining - move.getTotalMoveAudioLengthMillis();
-        if (maxInnerRoundBreakMillis > 2000 * speedOption.getExecutionMillisMultiplier()) maxInnerRoundBreakMillis = (int) (((Math.random() * 1500) + 500) * speedOption.getExecutionMillisMultiplier());
+        if (maxInnerRoundBreakMillis > 2000 * speed.getExecutionMillisMultiplier()) maxInnerRoundBreakMillis = (int) (((Math.random() * 1500) + 500) * speed.getExecutionMillisMultiplier());
         else maxInnerRoundBreakMillis = (int) (Math.random() * maxInnerRoundBreakMillis);
 
         List<Byte> bytesListAudioMove = new ArrayList<>();
@@ -190,6 +177,23 @@ public class FightFactory {
         Audio audioBreakBell = audioRepository.findByInstructionAndLanguage(instructionBreakBell, language);
 
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
+    }
+
+    private void writeFightToDatabase(List<Byte> fight, Language language, Speed speed) {
+        byte[] fightByteArray = new byte[fight.size()];
+        for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
+
+        fightRepository.save(new Fight(3, language, speed, fightByteArray));
+
+        logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Size: " + fight.size());
+    }
+
+    private void writeFightToFileSystem(byte[] fightByteArray, String name) {
+        try (FileOutputStream fos = new FileOutputStream(name + ".mp3")) {
+            fos.write(fightByteArray);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void seedInstructionCallWeightDistribution() {

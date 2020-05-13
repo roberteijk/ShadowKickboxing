@@ -5,14 +5,12 @@
 package net.vandeneijk.shadowkickboxing.startup;
 
 import net.vandeneijk.shadowkickboxing.Helper;
+import net.vandeneijk.shadowkickboxing.fightfactory.FightFactory;
 import net.vandeneijk.shadowkickboxing.models.Audio;
 import net.vandeneijk.shadowkickboxing.models.Instruction;
 import net.vandeneijk.shadowkickboxing.models.Language;
-import net.vandeneijk.shadowkickboxing.models.SpeedOption;
-import net.vandeneijk.shadowkickboxing.repositories.AudioRepository;
-import net.vandeneijk.shadowkickboxing.repositories.InstructionRepository;
-import net.vandeneijk.shadowkickboxing.repositories.LanguageRepository;
-import net.vandeneijk.shadowkickboxing.repositories.SpeedOptionRepository;
+import net.vandeneijk.shadowkickboxing.models.Speed;
+import net.vandeneijk.shadowkickboxing.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,32 +21,38 @@ import java.io.*;
 @Component
 public class SeedDatabase {
 
-    private static final Logger log = LoggerFactory.getLogger(SeedDatabase.class);
+    private static final Logger logger = LoggerFactory.getLogger(SeedDatabase.class);
+
     private final LanguageRepository languageRepository;
     private final InstructionRepository instructionRepository;
     private final AudioRepository audioRepository;
-    private final SpeedOptionRepository speedOptionRepository;
+    private final SpeedRepository speedRepository;
+    private final FightRepository fightRepository;
+    private final FightFactory fightFactory;
 
     @Autowired
-    public SeedDatabase(LanguageRepository languageRepository, InstructionRepository instructionRepository, AudioRepository audioRepository, SpeedOptionRepository speedOptionRepository) {
+    public SeedDatabase(LanguageRepository languageRepository, InstructionRepository instructionRepository, AudioRepository audioRepository, SpeedRepository speedRepository, FightRepository fightRepository, FightFactory fightFactory) {
         this.languageRepository = languageRepository;
         this.instructionRepository = instructionRepository;
         this.audioRepository = audioRepository;
-        this.speedOptionRepository = speedOptionRepository;
+        this.speedRepository = speedRepository;
+        this.fightRepository = fightRepository;
+        this.fightFactory = fightFactory;
 
         seedLanguage();
         seedInstructionAndAudio();
         seedSpeedOptions();
+        seedFight();
     }
 
     private void seedLanguage() {
-        log.info("Seeding database with Language.");
+        logger.info("Seeding database with Language.");
         languageRepository.save(new Language(0L, "Generic"));
         languageRepository.save(new Language(1L, "English"));
     }
 
     private void seedInstructionAndAudio() {
-        log.info("Seeding database with Instruction and Audio.");
+        logger.info("Seeding database with Instruction and Audio.");
 
         instructionRepository.save(new Instruction(0L, "silence", false));
         File file = new File(getClass().getClassLoader().getResource("audio/silence.mp3").getFile());
@@ -153,11 +157,21 @@ public class SeedDatabase {
     }
 
     private void seedSpeedOptions() {
-        speedOptionRepository.save(new SpeedOption(0L, "extra slow", 2.25));
-        speedOptionRepository.save(new SpeedOption(1L, "slow", 1.50));
-        speedOptionRepository.save(new SpeedOption(2L, "normal", 1.0));
-        speedOptionRepository.save(new SpeedOption(3L, "fast", 0.66));
-        speedOptionRepository.save(new SpeedOption(4L, "extra fast", 0.4356));
+        speedRepository.save(new Speed(0L, "extra slow", 2.25));
+        speedRepository.save(new Speed(1L, "slow", 1.50));
+        speedRepository.save(new Speed(2L, "normal", 1.0));
+        speedRepository.save(new Speed(3L, "fast", 0.66));
+        speedRepository.save(new Speed(4L, "extra fast", 0.4356));
+    }
+
+    private void seedFight() {
+        for (Speed speed : speedRepository.findAll()) {
+            int numberOfFightsByCriteria = fightRepository.findBySpeed(speed).size();
+            for (int i = numberOfFightsByCriteria; i < 10; i++) {
+                fightFactory.createFight(3, 1, speed);
+            }
+        }
+
     }
 
     private byte[] readFileToByteArray(File file) {
@@ -169,7 +183,7 @@ public class SeedDatabase {
             }
             return baos.toByteArray();
         } catch (IOException ioEx) {
-            log.error("Error reading audio file to byte[] for seeding database. Exception: " + ioEx);
+            logger.error("Error reading audio file to byte[] for seeding database. Exception: " + ioEx);
         }
         return new byte[0];
     }

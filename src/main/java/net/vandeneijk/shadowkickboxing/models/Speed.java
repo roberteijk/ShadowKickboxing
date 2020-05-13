@@ -6,13 +6,15 @@ package net.vandeneijk.shadowkickboxing.models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 @Entity
-public class SpeedOption {
+public class Speed {
 
     @Id
-    private Long speedOptionId;
+    private Long speedId;
 
     @NotNull
     private String description;
@@ -20,16 +22,19 @@ public class SpeedOption {
     @NotNull
     private Double executionMillisMultiplier;
 
-    protected SpeedOption() {}
+    @OneToMany(mappedBy = "speed")
+    private Collection<Fight> speedCollection;
 
-    public SpeedOption(Long speedOptionId, @NotNull String description, @NotNull Double executionMillisMultiplier) {
-        this.speedOptionId = speedOptionId;
+    protected Speed() {}
+
+    public Speed(Long speedId, @NotNull String description, @NotNull Double executionMillisMultiplier) {
+        this.speedId = speedId;
         this.description = description;
         this.executionMillisMultiplier = executionMillisMultiplier;
     }
 
-    public Long getSpeedOptionId() {
-        return speedOptionId;
+    public Long getSpeedId() {
+        return speedId;
     }
 
     public String getDescription() {

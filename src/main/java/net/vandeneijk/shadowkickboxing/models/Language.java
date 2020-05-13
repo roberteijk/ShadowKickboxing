@@ -23,6 +23,9 @@ public class Language {
     @OneToMany(mappedBy = "language")
     private Collection<Audio> audioCollection;
 
+    @OneToMany(mappedBy = "language")
+    private Collection<Fight> fightCollection;
+
     protected Language() {}
 
     public Language(Long languageId, String description) {

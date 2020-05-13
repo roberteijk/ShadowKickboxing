@@ -4,8 +4,8 @@
 
 package net.vandeneijk.shadowkickboxing.repositories;
 
-import net.vandeneijk.shadowkickboxing.models.SpeedOption;
+import net.vandeneijk.shadowkickboxing.models.Speed;
 import org.springframework.data.repository.CrudRepository;
 
-public interface SpeedOptionRepository extends CrudRepository<SpeedOption, Long> {
+public interface SpeedRepository extends CrudRepository<Speed, Long> {
 }
