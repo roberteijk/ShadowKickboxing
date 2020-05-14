@@ -167,13 +167,14 @@ public class SeedDatabase {
     }
 
     private void seedFight() {
+        long startMillis = System.currentTimeMillis();
         for (Speed speed : speedRepository.findAll()) {
-            int numberOfFightsByCriteria = fightRepository.findBySpeed(speed).size();
-            for (int i = numberOfFightsByCriteria; i < 10; i++) {
+            long numberOfFightsByCriteria = fightRepository.countBySpeed(speed);
+            for (long i = numberOfFightsByCriteria; i < 10; i++) {
                 fightFactory.createFight(3, 1, speed);
             }
         }
-
+        logger.info("Time spend in seedFight (millis): " + (System.currentTimeMillis() - startMillis));
     }
 
     private byte[] readFileToByteArray(File file) {

@@ -13,4 +13,6 @@ import java.util.List;
 public interface FightRepository extends CrudRepository<Fight, Long> {
 
     List<Fight> findBySpeed(Speed speed);
+
+    long countBySpeed(Speed speed);
 }
