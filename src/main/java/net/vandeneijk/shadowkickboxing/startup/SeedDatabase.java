@@ -41,7 +41,7 @@ public class SeedDatabase {
 
         seedLanguage();
         seedInstructionAndAudio();
-        seedSpeedOptions();
+        seedSpeed();
         seedFight();
     }
 
@@ -156,7 +156,9 @@ public class SeedDatabase {
 
     }
 
-    private void seedSpeedOptions() {
+    private void seedSpeed() {
+        logger.info("Seeding database with Speed.");
+
         speedRepository.save(new Speed(0L, "extra slow", 2.25));
         speedRepository.save(new Speed(1L, "slow", 1.50));
         speedRepository.save(new Speed(2L, "normal", 1.0));

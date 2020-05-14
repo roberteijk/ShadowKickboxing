@@ -5,10 +5,14 @@
 package net.vandeneijk.shadowkickboxing.fightfactory;
 
 import net.vandeneijk.shadowkickboxing.models.*;
-import net.vandeneijk.shadowkickboxing.repositories.*;
+import net.vandeneijk.shadowkickboxing.repositories.AudioRepository;
+import net.vandeneijk.shadowkickboxing.repositories.FightRepository;
+import net.vandeneijk.shadowkickboxing.repositories.InstructionRepository;
+import net.vandeneijk.shadowkickboxing.repositories.LanguageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +23,7 @@ import java.util.List;
 
 @Component
 //@DependsOn({"seedDatabase", "taskExecutor"})
+@DependsOn({"taskExecutor"})
 public class FightFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(FightFactory.class);
@@ -26,28 +31,26 @@ public class FightFactory {
     private final InstructionRepository instructionRepository;
     private final LanguageRepository languageRepository;
     private final AudioRepository audioRepository;
-    private final SpeedRepository speedRepository;
     private final FightRepository fightRepository;
 
     private List<Long> instructionCallWeightDistribution;
-    private int silenceLengthMillis;
     private Audio audioSilence;
+    private int silenceLengthMillis;
 
 
     @Autowired
-    public FightFactory(InstructionRepository instructionRepository, LanguageRepository languageRepository, AudioRepository audioRepository, SpeedRepository speedRepository, FightRepository fightRepository) {
+    public FightFactory(InstructionRepository instructionRepository, LanguageRepository languageRepository, AudioRepository audioRepository, FightRepository fightRepository) {
         this.instructionRepository = instructionRepository;
         this.languageRepository = languageRepository;
         this.audioRepository = audioRepository;
-        this.speedRepository = speedRepository;
         this.fightRepository = fightRepository;
-
-        seedInstructionCallWeightDistribution();
-        getAudioSilence();
     }
 
     @Async
     public void createFight(int numberOfRounds, long languageId, Speed speed) {
+        seedInstructionCallWeightDistribution();
+        getAudioSilence();
+
         int roundLengthSeconds = 179;
         Language language = languageRepository.findById(languageId).get();
         List<List<Byte>> rounds = new ArrayList<>();
@@ -196,22 +199,23 @@ public class FightFactory {
         }
     }
 
-    private void seedInstructionCallWeightDistribution() {
+    private synchronized void seedInstructionCallWeightDistribution() {
+        if (instructionCallWeightDistribution != null) return;
         instructionCallWeightDistribution = new ArrayList<>();
         for (Instruction instruction : instructionRepository.findAll()) {
-            if (instruction.getInstructionId() < 100L) continue;
+            if (!instruction.isMove()) continue;
             for (int i = 0; i < instruction.getCallFrequencyWeight() * 100; i++) {
                 instructionCallWeightDistribution.add(instruction.getInstructionId());
             }
         }
     }
 
-    private void getAudioSilence() {
+    private synchronized void getAudioSilence() {
+        if (audioSilence != null) return;
         Instruction instruction = instructionRepository.findById(0L).get();
         Language language = languageRepository.findById(0L).get();
         audioSilence = audioRepository.findByInstructionAndLanguage(instruction, language);
         silenceLengthMillis = audioSilence.getLengthMillis();
     }
-
 }
 
