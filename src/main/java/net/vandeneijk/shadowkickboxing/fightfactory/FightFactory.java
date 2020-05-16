@@ -47,7 +47,7 @@ public class FightFactory {
     }
 
     @Async
-    public void createFight(int numberOfRounds, long languageId, Speed speed) {
+    public void createFight(long languageId, Speed speed, Length length) {
         seedInstructionCallWeightDistribution();
         getAudioSilence();
 
@@ -55,7 +55,7 @@ public class FightFactory {
         Language language = languageRepository.findById(languageId).get();
         List<List<Byte>> rounds = new ArrayList<>();
 
-        while (rounds.size() < numberOfRounds) {
+        while (rounds.size() < length.getNumberRounds()) {
             rounds.add(createRound(roundLengthSeconds, language, speed));
         }
 
@@ -64,7 +64,7 @@ public class FightFactory {
         addBreaksBetweenRounds(rounds, fight, language);
         addBreakBellAfterFight(fight, language);
 
-        writeFightToDatabase(fight, language, speed);
+        writeFightToDatabase(fight, language, speed, length);
     }
 
 
@@ -182,13 +182,13 @@ public class FightFactory {
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
     }
 
-    private void writeFightToDatabase(List<Byte> fight, Language language, Speed speed) {
+    private void writeFightToDatabase(List<Byte> fight, Language language, Speed speed, Length length) {
         byte[] fightByteArray = new byte[fight.size()];
         for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
 
-        fightRepository.save(new Fight(3, language, speed, fightByteArray));
+        fightRepository.save(new Fight(language, speed, length, fightByteArray));
 
-        logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Size: " + fight.size());
+        logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   Size: " + fight.size());
     }
 
     private void writeFightToFileSystem(byte[] fightByteArray, String name) {

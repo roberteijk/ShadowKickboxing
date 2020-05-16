@@ -8,4 +8,5 @@ import net.vandeneijk.shadowkickboxing.models.Speed;
 import org.springframework.data.repository.CrudRepository;
 
 public interface SpeedRepository extends CrudRepository<Speed, Long> {
+
 }

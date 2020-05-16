@@ -6,10 +6,7 @@ package net.vandeneijk.shadowkickboxing.startup;
 
 import net.vandeneijk.shadowkickboxing.Helper;
 import net.vandeneijk.shadowkickboxing.fightfactory.FightFactory;
-import net.vandeneijk.shadowkickboxing.models.Audio;
-import net.vandeneijk.shadowkickboxing.models.Instruction;
-import net.vandeneijk.shadowkickboxing.models.Language;
-import net.vandeneijk.shadowkickboxing.models.Speed;
+import net.vandeneijk.shadowkickboxing.models.*;
 import net.vandeneijk.shadowkickboxing.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,21 +24,24 @@ public class SeedDatabase {
     private final InstructionRepository instructionRepository;
     private final AudioRepository audioRepository;
     private final SpeedRepository speedRepository;
+    private final LengthRepository lengthRepository;
     private final FightRepository fightRepository;
     private final FightFactory fightFactory;
 
     @Autowired
-    public SeedDatabase(LanguageRepository languageRepository, InstructionRepository instructionRepository, AudioRepository audioRepository, SpeedRepository speedRepository, FightRepository fightRepository, FightFactory fightFactory) {
+    public SeedDatabase(LanguageRepository languageRepository, InstructionRepository instructionRepository, AudioRepository audioRepository, SpeedRepository speedRepository, LengthRepository lengthRepository, FightRepository fightRepository, FightFactory fightFactory) {
         this.languageRepository = languageRepository;
         this.instructionRepository = instructionRepository;
         this.audioRepository = audioRepository;
         this.speedRepository = speedRepository;
+        this.lengthRepository = lengthRepository;
         this.fightRepository = fightRepository;
         this.fightFactory = fightFactory;
 
         seedLanguage();
         seedInstructionAndAudio();
         seedSpeed();
+        seedLength();
         seedFight();
     }
 
@@ -166,15 +166,23 @@ public class SeedDatabase {
         speedRepository.save(new Speed(4L, "extra fast", 0.4356));
     }
 
+    private void seedLength() {
+        logger.info("Seeding database with Length.");
+
+        lengthRepository.save(new Length(0L, "1 round: practice without countdown", 1));
+        lengthRepository.save(new Length(1L, "3 rounds: full fight with countdowns and rest", 3));
+        lengthRepository.save(new Length(2L, "5 rounds: championship fight with countdowns and rest", 5));
+    }
+
     private void seedFight() {
-        long startMillis = System.currentTimeMillis();
         for (Speed speed : speedRepository.findAll()) {
-            long numberOfFightsByCriteria = fightRepository.countBySpeed(speed);
-            for (long i = numberOfFightsByCriteria; i < 10; i++) {
-                fightFactory.createFight(3, 1, speed);
+            for (Length length : lengthRepository.findAll()) {
+                long numberOfFightsByCriteria = fightRepository.countBySpeed(speed);
+                for (long i = numberOfFightsByCriteria; i < 2; i++) {
+                    fightFactory.createFight(1, speed, length);
+                }
             }
         }
-        logger.info("Time spend in seedFight (millis): " + (System.currentTimeMillis() - startMillis));
     }
 
     private byte[] readFileToByteArray(File file) {

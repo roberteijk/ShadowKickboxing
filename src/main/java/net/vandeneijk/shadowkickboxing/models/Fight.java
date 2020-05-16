@@ -15,9 +15,6 @@ public class Fight {
     private Long fightId;
 
     @NotNull
-    private Integer numberOfRounds;
-
-    @NotNull
     @ManyToOne
     private Language language;
 
@@ -26,24 +23,24 @@ public class Fight {
     private Speed speed;
 
     @NotNull
-    @Column(columnDefinition = "mediumblob")
+    @ManyToOne
+    private Length length;
+
+    @NotNull
+    @Column(columnDefinition = "longblob")
     private byte[] audioFragment;
 
     protected Fight() {}
 
-    public Fight(@NotNull Integer numberOfRounds, @NotNull Language language, @NotNull Speed speed, @NotNull byte[] audioFragment) {
-        this.numberOfRounds = numberOfRounds;
+    public Fight(@NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull byte[] audioFragment) {
         this.language = language;
         this.speed = speed;
+        this.length = length;
         this.audioFragment = audioFragment;
     }
 
     public Long getFightId() {
         return fightId;
-    }
-
-    public Integer getNumberOfRounds() {
-        return numberOfRounds;
     }
 
     public Language getLanguage() {
@@ -52,6 +49,10 @@ public class Fight {
 
     public Speed getSpeed() {
         return speed;
+    }
+
+    public Length getLength() {
+        return length;
     }
 
     public byte[] getAudioFragment() {
