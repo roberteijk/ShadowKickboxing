@@ -11,5 +11,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface AudioRepository extends CrudRepository<Audio, Long> {
 
-    public Audio findByInstructionAndLanguage(Instruction instruction, Language language);
+    Audio findByInstructionAndLanguage(Instruction instruction, Language language);
 }

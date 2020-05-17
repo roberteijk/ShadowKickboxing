@@ -4,67 +4,64 @@
 
 package net.vandeneijk.shadowkickboxing.controllers;
 
-import net.vandeneijk.shadowkickboxing.models.Speed;
-import net.vandeneijk.shadowkickboxing.repositories.FightRepository;
-import net.vandeneijk.shadowkickboxing.repositories.SpeedRepository;
+import net.vandeneijk.shadowkickboxing.models.ConnectionLog;
+import net.vandeneijk.shadowkickboxing.services.ConnectionLogService;
+import net.vandeneijk.shadowkickboxing.services.FightService;
+import net.vandeneijk.shadowkickboxing.services.LengthService;
+import net.vandeneijk.shadowkickboxing.services.SpeedService;
 import net.vandeneijk.shadowkickboxing.startup.SeedDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.time.ZonedDateTime;
 
 @Controller
 public class HomeController {
 
     private static final Logger logger = LoggerFactory.getLogger(SeedDatabase.class);
 
-    FightRepository fightRepository;
-    SpeedRepository speedRepository;
+    private final FightService fightService;
+    private final SpeedService speedService;
+    private final LengthService lengthService;
+    private final ConnectionLogService connectionLogService;
 
-    public HomeController(FightRepository fightRepository, SpeedRepository speedRepository) {
-        this.fightRepository = fightRepository;
-        this.speedRepository = speedRepository;
+    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, ConnectionLogService connectionLogService) {
+        this.fightService = fightService;
+        this.speedService = speedService;
+        this.lengthService = lengthService;
+        this.connectionLogService = connectionLogService;
     }
 
     @GetMapping({"", "/", "/index", "/index.html"})
-    public String getHomePage(Model model) {
-        logger.info("Home page requested.");
-        List<Speed> speedList = new ArrayList<>();
-        speedRepository.findAll().forEach(speedList::add);
-        model.addAttribute("speedList", speedList);
-        return "index";
+    public String getHomePage(HttpServletRequest request, Model model) {
+        String requestedItem = "index";
+
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+
+        model.addAttribute("speedList", speedService.getSpeedList());
+        model.addAttribute("lengthList", lengthService.getLengthList());
+
+        return requestedItem;
     }
 
-//    @GetMapping("/download")
-//    public String getDownload() {
-//
-//    }
+    @PostMapping("download/shadowkickboxing.mp3")
+    public void download(@RequestParam("speed") long speedId, @RequestParam("length") long lengthId, HttpServletResponse response, HttpServletRequest request) {
+        connectionLogService.save(new ConnectionLog(".mp3", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
 
-    @GetMapping(value = "/files/{file_name}")
-    public void getFile(@PathVariable("file_name") String fileName, HttpServletResponse response, HttpServletRequest request, Model model) {
-            logger.info("IP client: " + request.getRemoteAddr());
-        try {
-            // get your file as InputStream
-            InputStream is = new BufferedInputStream(new ByteArrayInputStream(fightRepository.findById(1L).get().getAudioFragment()));
-            // copy it to response's OutputStream
-            org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+        try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(fightService.getFight(speedId, lengthId).getAudioFragment())); OutputStream os = response.getOutputStream()) {
+            org.apache.commons.io.IOUtils.copy(is, os);
             response.flushBuffer();
-        } catch (IOException ex) {
-            logger.info("Error writing file to output stream. Filename was '{}'", fileName, ex);
+        } catch (IOException ioEx) {
+            logger.error("Error presenting a downloadable file to client. Exception: " + ioEx);
             throw new RuntimeException("IOError writing file to output stream");
         }
-
     }
-
 }

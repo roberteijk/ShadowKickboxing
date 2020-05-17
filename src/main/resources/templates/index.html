@@ -31,12 +31,18 @@
                 <div class="subContentBox1">
                     <h3>Step 2</h3>
                     <h4>Settings and generate</h4>
-                    <form action="download" method="post"
-                        <label>Speed
-                            <select id="speed" name="speed">
-                                <option th:each="speed : ${speedList}" th:value="${speed.speedId}" th:text="${speed.description}" th:selected="${speed.getDescription() == 'normal'}"></option>
-                            </select>
-                        </label>
+                    <form action="download/shadowkickboxing.mp3" method="post">
+                        <label class="settingsLabel">Speed</label>
+                        <select id="speed" class="settingsDropdownMenu" name="speed">
+                            <option th:each="speed : ${speedList}" th:value="${speed.speedId}" th:text="${speed.description}" th:selected="${speed.getExecutionMillisMultiplier() == 1.0}"></option>
+                        </select>
+                        <br>
+                        <label class="settingsLabel">Length</label>
+                        <select id="length" class="settingsDropdownMenu" name="length">
+                            <option th:each="length : ${lengthList}" th:value="${length.lengthId}" th:text="${length.description}" th:selected="${length.getNumberRounds() == 3}"></option>
+                        </select>
+                        <input type="submit" class="btn">
+                        <br>
                     </form>
                 </div>
 

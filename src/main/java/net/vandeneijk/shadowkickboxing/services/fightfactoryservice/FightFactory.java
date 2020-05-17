@@ -2,13 +2,13 @@
  * Created by Robert van den Eijk on 6-5-2020.
  */
 
-package net.vandeneijk.shadowkickboxing.fightfactory;
+package net.vandeneijk.shadowkickboxing.services.fightfactoryservice;
 
 import net.vandeneijk.shadowkickboxing.models.*;
-import net.vandeneijk.shadowkickboxing.repositories.AudioRepository;
-import net.vandeneijk.shadowkickboxing.repositories.FightRepository;
-import net.vandeneijk.shadowkickboxing.repositories.InstructionRepository;
-import net.vandeneijk.shadowkickboxing.repositories.LanguageRepository;
+import net.vandeneijk.shadowkickboxing.services.AudioService;
+import net.vandeneijk.shadowkickboxing.services.FightService;
+import net.vandeneijk.shadowkickboxing.services.InstructionService;
+import net.vandeneijk.shadowkickboxing.services.LanguageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +22,15 @@ import java.util.List;
 
 
 @Component
-//@DependsOn({"seedDatabase", "taskExecutor"})
 @DependsOn({"taskExecutor"})
 public class FightFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(FightFactory.class);
 
-    private final InstructionRepository instructionRepository;
-    private final LanguageRepository languageRepository;
-    private final AudioRepository audioRepository;
-    private final FightRepository fightRepository;
+    private final InstructionService instructionService;
+    private final LanguageService languageService;
+    private final AudioService audioService;
+    private final FightService fightService;
 
     private List<Long> instructionCallWeightDistribution;
     private Audio audioSilence;
@@ -39,11 +38,11 @@ public class FightFactory {
 
 
     @Autowired
-    public FightFactory(InstructionRepository instructionRepository, LanguageRepository languageRepository, AudioRepository audioRepository, FightRepository fightRepository) {
-        this.instructionRepository = instructionRepository;
-        this.languageRepository = languageRepository;
-        this.audioRepository = audioRepository;
-        this.fightRepository = fightRepository;
+    public FightFactory(InstructionService instructionService, LanguageService languageService, AudioService audioService, FightService fightService) {
+        this.instructionService = instructionService;
+        this.languageService = languageService;
+        this.audioService = audioService;
+        this.fightService = fightService;
     }
 
     @Async
@@ -52,7 +51,7 @@ public class FightFactory {
         getAudioSilence();
 
         int roundLengthSeconds = 179;
-        Language language = languageRepository.findById(languageId).get();
+        Language language = languageService.findById(languageId).get();
         List<List<Byte>> rounds = new ArrayList<>();
 
         while (rounds.size() < length.getNumberRounds()) {
@@ -87,8 +86,8 @@ public class FightFactory {
     private Move createMove(Language language, Speed speed, int roundLengthMillisRemaining) {
         long moveToAdd = instructionCallWeightDistribution.get((int) (Math.random() * instructionCallWeightDistribution.size()));
 
-        Instruction instructionMove = instructionRepository.findById(moveToAdd).get();
-        Audio audioMove = audioRepository.findByInstructionAndLanguage(instructionMove, language);
+        Instruction instructionMove = instructionService.findById(moveToAdd).get();
+        Audio audioMove = audioService.findByInstructionAndLanguage(instructionMove, language);
         int minExecutionTimeMillis = instructionMove.getMinExecutionTimeMillis();
         int maxExecutionTimeMillis = instructionMove.getMaxExecutionTimeMillis();
 
@@ -118,8 +117,8 @@ public class FightFactory {
         else if (!move.getOriginalInstruction().isCanBlock() && move.getOriginalInstruction().isCanEvade()) defensiveInstruction = 21;
         else defensiveInstruction = ((int)(Math.random() * 2)) + 20;
 
-        Instruction instructionBlock = instructionRepository.findById(defensiveInstruction).get();
-        Audio audioBlock = audioRepository.findByInstructionAndLanguage(instructionBlock, language);
+        Instruction instructionBlock = instructionService.findById(defensiveInstruction).get();
+        Audio audioBlock = audioService.findByInstructionAndLanguage(instructionBlock, language);
         int minExecutionTimeMillis = instructionBlock.getMinExecutionTimeMillis();
         int extraSilenceMillisAfterInstruction = (int) (750 * speed.getExecutionMillisMultiplier());
 
@@ -159,15 +158,15 @@ public class FightFactory {
     }
 
     private void addCountdownBeforeStartFight(List<Byte> fight, Language language) {
-        Instruction instruction10SecondsBreak = instructionRepository.findById(40L).get();
-        Audio audio10SecondsBreak = audioRepository.findByInstructionAndLanguage(instruction10SecondsBreak, language);
+        Instruction instruction10SecondsBreak = instructionService.findById(40L).get();
+        Audio audio10SecondsBreak = audioService.findByInstructionAndLanguage(instruction10SecondsBreak, language);
 
         for (byte value : audio10SecondsBreak.getAudioFragment()) fight.add(value);
     }
 
     private void addBreaksBetweenRounds(List<List<Byte>> rounds, List<Byte> fight, Language language) {
-        Instruction instruction1MinuteBreak = instructionRepository.findById(41L).get();
-        Audio audio1MinuteBreak = audioRepository.findByInstructionAndLanguage(instruction1MinuteBreak, language);
+        Instruction instruction1MinuteBreak = instructionService.findById(41L).get();
+        Audio audio1MinuteBreak = audioService.findByInstructionAndLanguage(instruction1MinuteBreak, language);
 
         for (int i = 0; i < rounds.size(); i++) {
             for (byte value : rounds.get(i)) fight.add(value);
@@ -176,8 +175,8 @@ public class FightFactory {
     }
 
     private void addBreakBellAfterFight(List<Byte> fight, Language language) {
-        Instruction instructionBreakBell = instructionRepository.findById(42L).get();
-        Audio audioBreakBell = audioRepository.findByInstructionAndLanguage(instructionBreakBell, language);
+        Instruction instructionBreakBell = instructionService.findById(42L).get();
+        Audio audioBreakBell = audioService.findByInstructionAndLanguage(instructionBreakBell, language);
 
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
     }
@@ -186,7 +185,7 @@ public class FightFactory {
         byte[] fightByteArray = new byte[fight.size()];
         for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
 
-        fightRepository.save(new Fight(language, speed, length, fightByteArray));
+        fightService.save(new Fight(language, speed, length, fightByteArray));
 
         logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   Size: " + fight.size());
     }
@@ -202,7 +201,7 @@ public class FightFactory {
     private synchronized void seedInstructionCallWeightDistribution() {
         if (instructionCallWeightDistribution != null) return;
         instructionCallWeightDistribution = new ArrayList<>();
-        for (Instruction instruction : instructionRepository.findAll()) {
+        for (Instruction instruction : instructionService.findAll()) {
             if (!instruction.isMove()) continue;
             for (int i = 0; i < instruction.getCallFrequencyWeight() * 100; i++) {
                 instructionCallWeightDistribution.add(instruction.getInstructionId());
@@ -212,9 +211,9 @@ public class FightFactory {
 
     private synchronized void getAudioSilence() {
         if (audioSilence != null) return;
-        Instruction instruction = instructionRepository.findById(0L).get();
-        Language language = languageRepository.findById(0L).get();
-        audioSilence = audioRepository.findByInstructionAndLanguage(instruction, language);
+        Instruction instruction = instructionService.findById(0L).get();
+        Language language = languageService.findById(0L).get();
+        audioSilence = audioService.findByInstructionAndLanguage(instruction, language);
         silenceLengthMillis = audioSilence.getLengthMillis();
     }
 }

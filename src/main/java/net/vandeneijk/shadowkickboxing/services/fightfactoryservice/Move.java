@@ -2,7 +2,7 @@
  * Created by Robert van den Eijk on 9-5-2020.
  */
 
-package net.vandeneijk.shadowkickboxing.fightfactory;
+package net.vandeneijk.shadowkickboxing.services.fightfactoryservice;
 
 import net.vandeneijk.shadowkickboxing.models.Instruction;
 
