@@ -46,12 +46,12 @@ public class FightFactory {
     }
 
     @Async
-    public void createFight(long languageId, Speed speed, Length length) {
+    public void createFight(String languageDescription, Speed speed, Length length) {
         seedInstructionCallWeightDistribution();
         getAudioSilence();
 
         int roundLengthSeconds = 179;
-        Language language = languageService.findById(languageId).get();
+        Language language = languageService.findByDescription(languageDescription).get();
         List<List<Byte>> rounds = new ArrayList<>();
 
         while (rounds.size() < length.getNumberRounds()) {

@@ -23,6 +23,12 @@ public class InstructionService {
         instructionRepository.save(instruction);
     }
 
+    public Boolean saveIfDescriptionUnique(Instruction instruction) {
+        if (instructionRepository.findByDescription(instruction.getDescription()).isPresent()) return false;
+        instructionRepository.save(instruction);
+        return true;
+    }
+
     public Optional<Instruction> findById(Long id) {
         return instructionRepository.findById(id);
     }

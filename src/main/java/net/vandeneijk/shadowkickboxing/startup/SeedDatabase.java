@@ -69,8 +69,8 @@ public class SeedDatabase {
 
     private void seedLanguage() {
         logger.info("Seeding database with Language.");
-        languageService.save(new Language(0L, "generic"));
-        languageService.save(new Language(1L, "English"));
+        languageService.saveIfDescriptionUnique(new Language("generic"));
+        languageService.saveIfDescriptionUnique(new Language("English"));
     }
 
     private void seedInstructionAndAudio() {
@@ -106,8 +106,7 @@ public class SeedDatabase {
     }
 
     private void saveInstructionWithAudio(Instruction instruction, PreAudioMeta... preAudioMetaArray) {
-        if (instructionService.findByDescription(instruction.getDescription()).isPresent()) return;
-        else instructionService.save(instruction);
+        if (!instructionService.saveIfDescriptionUnique(instruction)) return;
 
         for (PreAudioMeta preAudioMeta : preAudioMetaArray) {
             File file;
@@ -139,7 +138,7 @@ public class SeedDatabase {
             for (Length length : lengthService.findAll()) {
                 long numberOfFightsByCriteria = fightService.countBySpeedAndLength(speed, length);
                 for (long i = numberOfFightsByCriteria; i < 2; i++) {
-                    fightFactory.createFight(1, speed, length);
+                    fightFactory.createFight("English", speed, length);
                 }
             }
         }

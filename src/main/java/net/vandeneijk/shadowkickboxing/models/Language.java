@@ -5,10 +5,7 @@
 package net.vandeneijk.shadowkickboxing.models;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -16,6 +13,7 @@ import java.util.Collection;
 public class Language {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long languageId;
 
     @NotNull
@@ -30,8 +28,7 @@ public class Language {
 
     protected Language() {}
 
-    public Language(Long languageId, String description) {
-        this.languageId = languageId;
+    public Language(String description) {
         this.description = description;
     }
 
@@ -41,13 +38,5 @@ public class Language {
 
     public String getDescription() {
         return description;
-    }
-
-    public Collection<Audio> getAudioCollection() {
-        return audioCollection;
-    }
-
-    public void setAudioCollection(Collection<Audio> audioCollection) {
-        this.audioCollection = audioCollection;
     }
 }
