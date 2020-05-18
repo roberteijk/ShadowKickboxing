@@ -27,6 +27,10 @@ public class InstructionService {
         return instructionRepository.findById(id);
     }
 
+    public Optional<Instruction> findByDescription(String description) {
+        return instructionRepository.findByDescription(description);
+    }
+
     public Iterable<Instruction> findAll() {
         return instructionRepository.findAll();
     }

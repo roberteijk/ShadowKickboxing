@@ -112,12 +112,12 @@ public class FightFactory {
         if (!move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade()) return;
         else if (Math.random() < 0.80) return;
 
-        long defensiveInstruction;
-        if (move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade()) defensiveInstruction = 20;
-        else if (!move.getOriginalInstruction().isCanBlock() && move.getOriginalInstruction().isCanEvade()) defensiveInstruction = 21;
-        else defensiveInstruction = ((int)(Math.random() * 2)) + 20;
+        String defensiveInstruction = null;
+        if (move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade()) defensiveInstruction = "block";
+        else if (!move.getOriginalInstruction().isCanBlock() && move.getOriginalInstruction().isCanEvade()) defensiveInstruction = "evade";
+        else defensiveInstruction = Math.random() < 0.5 ? "block" : "evade";
 
-        Instruction instructionBlock = instructionService.findById(defensiveInstruction).get();
+        Instruction instructionBlock = instructionService.findByDescription(defensiveInstruction).get();
         Audio audioBlock = audioService.findByInstructionAndLanguage(instructionBlock, language);
         int minExecutionTimeMillis = instructionBlock.getMinExecutionTimeMillis();
         int extraSilenceMillisAfterInstruction = (int) (750 * speed.getExecutionMillisMultiplier());
@@ -158,14 +158,14 @@ public class FightFactory {
     }
 
     private void addCountdownBeforeStartFight(List<Byte> fight, Language language) {
-        Instruction instruction10SecondsBreak = instructionService.findById(40L).get();
+        Instruction instruction10SecondsBreak = instructionService.findByDescription("10 seconds break").get();
         Audio audio10SecondsBreak = audioService.findByInstructionAndLanguage(instruction10SecondsBreak, language);
 
         for (byte value : audio10SecondsBreak.getAudioFragment()) fight.add(value);
     }
 
     private void addBreaksBetweenRounds(List<List<Byte>> rounds, List<Byte> fight, Language language) {
-        Instruction instruction1MinuteBreak = instructionService.findById(41L).get();
+        Instruction instruction1MinuteBreak = instructionService.findByDescription("1 minute break").get();
         Audio audio1MinuteBreak = audioService.findByInstructionAndLanguage(instruction1MinuteBreak, language);
 
         for (int i = 0; i < rounds.size(); i++) {
@@ -175,7 +175,7 @@ public class FightFactory {
     }
 
     private void addBreakBellAfterFight(List<Byte> fight, Language language) {
-        Instruction instructionBreakBell = instructionService.findById(42L).get();
+        Instruction instructionBreakBell = instructionService.findByDescription("break bell").get();
         Audio audioBreakBell = audioService.findByInstructionAndLanguage(instructionBreakBell, language);
 
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
@@ -211,8 +211,8 @@ public class FightFactory {
 
     private synchronized void getAudioSilence() {
         if (audioSilence != null) return;
-        Instruction instruction = instructionService.findById(0L).get();
-        Language language = languageService.findById(0L).get();
+        Instruction instruction = instructionService.findByDescription("silence").get();
+        Language language = languageService.findByDescription("generic").get();
         audioSilence = audioService.findByInstructionAndLanguage(instruction, language);
         silenceLengthMillis = audioSilence.getLengthMillis();
     }

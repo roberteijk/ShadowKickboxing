@@ -5,6 +5,7 @@
 package net.vandeneijk.shadowkickboxing.models;
 
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -18,6 +19,7 @@ public class Language {
     private Long languageId;
 
     @NotNull
+    @Column(unique = true)
     private String description;
 
     @OneToMany(mappedBy = "language")

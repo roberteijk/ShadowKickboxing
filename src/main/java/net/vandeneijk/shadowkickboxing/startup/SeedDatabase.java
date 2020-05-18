@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.util.Objects;
 
 @Component
 public class SeedDatabase {
@@ -45,115 +46,71 @@ public class SeedDatabase {
         seedFight();
     }
 
+    private static class PreAudioMeta {
+        private final String fileLocation;
+        private final String languageDescription;
+
+        private PreAudioMeta(String fileLocation, String languageDescription) {
+            this.fileLocation = fileLocation;
+            this.languageDescription = languageDescription;
+        }
+
+        private String getFileLocation() {
+            return fileLocation;
+        }
+
+        private String getLanguageDescription() {
+            return languageDescription;
+        }
+    }
+
     private void seedLanguage() {
         logger.info("Seeding database with Language.");
-        languageService.save(new Language(0L, "Generic"));
+        languageService.save(new Language(0L, "generic"));
         languageService.save(new Language(1L, "English"));
     }
 
     private void seedInstructionAndAudio() {
         logger.info("Seeding database with Instruction and Audio.");
 
-        instructionService.save(new Instruction(0L, "silence", false));
-        File file = new File(getClass().getClassLoader().getResource("audio/silence.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(0L).get(), languageService.findById(0L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+        saveInstructionWithAudio(new Instruction("silence", false), new PreAudioMeta("audio/silence.mp3", "generic"));
+        saveInstructionWithAudio(new Instruction("block", false), new PreAudioMeta("audio/block.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("evade", false), new PreAudioMeta("audio/evade.mp3", "English"));
 
-        instructionService.save(new Instruction(20L, "block", false));
-        file = new File(getClass().getClassLoader().getResource("audio/block.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(20L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+        saveInstructionWithAudio(new Instruction("10 seconds break", false), new PreAudioMeta("audio/10-seconds-break.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("1 minute break", false), new PreAudioMeta("audio/1-minute-break.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("break bell", false), new PreAudioMeta("audio/break-bell.mp3", "English"));
 
-        instructionService.save(new Instruction(21L, "evade", false));
-        file = new File(getClass().getClassLoader().getResource("audio/evade.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(21L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+        saveInstructionWithAudio(new Instruction("jab", true, true, true, 1.0, 400, 1200), new PreAudioMeta("audio/jab.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("double jab", true, true, true, 1.0, 500, 1500), new PreAudioMeta("audio/double-jab.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("cross", true, true, true, 0.6, 500, 1500), new PreAudioMeta("audio/cross.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left hook head", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/left-hook-head.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right hook head", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/right-hook-head.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left uppercut", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/left-uppercut.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right uppercut", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/right-uppercut.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left hook body", true, true, true, 0.3, 600, 1500), new PreAudioMeta("audio/left-hook-body.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right hook body", true, true, true, 0.3, 600, 1500), new PreAudioMeta("audio/right-hook-body.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left low kick", true, true, true, 0.3, 800, 1800), new PreAudioMeta("audio/left-low-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right low kick", true, true, true, 0.3, 800, 1800), new PreAudioMeta("audio/right-low-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("clinch left knee", true, false, false, 0.25, 1500, 2500), new PreAudioMeta("audio/clinch-left-knee.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("clinch right knee", true, false, false, 0.25, 1500, 2500), new PreAudioMeta("audio/clinch-right-knee.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left front kick", true, true, true, 0.25, 700, 1500), new PreAudioMeta("audio/left-front-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right front kick", true, true, true, 0.25, 700, 1500), new PreAudioMeta("audio/right-front-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left middle kick", true, true, false, 0.15, 900, 1800), new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right middle kick", true, true, false, 0.15, 900, 1800), new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left high kick", true, true, true, 0.1, 900, 2000), new PreAudioMeta("audio/left-high-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right high kick", true, true, true, 0.1, 900, 2000), new PreAudioMeta("audio/right-high-kick.mp3", "English"));
+    }
 
-        instructionService.save(new Instruction(40L, "10 seconds break", false));
-        file = new File(getClass().getClassLoader().getResource("audio/10-seconds-break.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(40L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
+    private void saveInstructionWithAudio(Instruction instruction, PreAudioMeta... preAudioMetaArray) {
+        if (instructionService.findByDescription(instruction.getDescription()).isPresent()) return;
+        else instructionService.save(instruction);
 
-        instructionService.save(new Instruction(41L, "1 minute break", false));
-        file = new File(getClass().getClassLoader().getResource("audio/1-minute-break.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(41L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(42L, "break bell", false));
-        file = new File(getClass().getClassLoader().getResource("audio/break-bell.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(42L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(100L, "jab",  true, true, true, 1.0, 400, 1200));
-        file = new File(getClass().getClassLoader().getResource("audio/jab.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(100L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(101L, "double jab", true, true, true, 1.0, 500, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/double-jab.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(101L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(102L, "cross", true, true, true, 0.6, 500, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/cross.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(102L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(103L, "left hook head", true, true, true, 0.4, 600, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/left-hook-head.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(103L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(104L, "right hook head", true, true, true, 0.4, 600, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/right-hook-head.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(104L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(105L, "left uppercut", true, true, true, 0.4, 600, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/left-uppercut.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(105L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(106L, "right uppercut", true, true, true, 0.4, 600, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/right-uppercut.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(106L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(107L, "left hook body", true, true, true, 0.3, 600, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/left-hook-body.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(107L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(108L, "right hook body", true, true, true, 0.3, 600, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/right-hook-body.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(108L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(109L, "left low kick", true, true, true, 0.3, 800, 1800));
-        file = new File(getClass().getClassLoader().getResource("audio/left-low-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(109L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(110L, "right low kick", true, true, true, 0.3, 800, 1800));
-        file = new File(getClass().getClassLoader().getResource("audio/right-low-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(110L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(111L, "clinch left knee", true, false, false, 0.25, 1500, 2500));
-        file = new File(getClass().getClassLoader().getResource("audio/clinch-left-knee.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(111L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(112L, "clinch right knee", true, false, false, 0.25, 1500, 2500));
-        file = new File(getClass().getClassLoader().getResource("audio/clinch-right-knee.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(112L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(113L, "left front kick", true, true, true, 0.25, 700, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/left-front-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(113L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(114L, "right front kick", true, true, true, 0.25, 700, 1500));
-        file = new File(getClass().getClassLoader().getResource("audio/right-front-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(114L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(115L, "left middle kick", true, true, false, 0.15, 900, 1800));
-        file = new File(getClass().getClassLoader().getResource("audio/left-middle-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(115L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(116L, "right middle kick", true, true, false, 0.15, 900, 1800));
-        file = new File(getClass().getClassLoader().getResource("audio/right-middle-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(116L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(117L, "left high kick", true, true, true, 0.10, 900, 2000));
-        file = new File(getClass().getClassLoader().getResource("audio/left-high-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(117L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
-        instructionService.save(new Instruction(118L, "right high kick", true, true, true, 0.10, 900, 2000));
-        file = new File(getClass().getClassLoader().getResource("audio/right-high-kick.mp3").getFile());
-        audioService.save(new Audio(instructionService.findById(118L).get(), languageService.findById(1L).get(), Helper.getAudioFileLengthMillis(file), readFileToByteArray(file)));
-
+        for (PreAudioMeta preAudioMeta : preAudioMetaArray) {
+            File file;
+            if ((file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(preAudioMeta.getFileLocation())).getFile())).length() > 0)
+                languageService.findByDescription(preAudioMeta.getLanguageDescription()).ifPresent(x -> audioService.save(new Audio(instruction, x, Helper.getAudioFileLengthMillis(file), readFileToByteArray(file))));
+        }
     }
 
     private void seedSpeed() {

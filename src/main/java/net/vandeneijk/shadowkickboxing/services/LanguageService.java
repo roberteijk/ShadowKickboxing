@@ -26,4 +26,8 @@ public class LanguageService {
     public Optional<Language> findById(Long id) {
         return languageRepository.findById(id);
     }
+
+    public Optional<Language> findByDescription(String language) {
+        return languageRepository.findByDescription(language);
+    }
 }
