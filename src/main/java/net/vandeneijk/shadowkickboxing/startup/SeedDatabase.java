@@ -4,7 +4,6 @@
 
 package net.vandeneijk.shadowkickboxing.startup;
 
-import net.vandeneijk.shadowkickboxing.Helper;
 import net.vandeneijk.shadowkickboxing.models.*;
 import net.vandeneijk.shadowkickboxing.services.*;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
@@ -13,7 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -109,7 +112,7 @@ public class SeedDatabase {
         for (PreAudioMeta preAudioMeta : preAudioMetaArray) {
             File file;
             if ((file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(preAudioMeta.getFileLocation())).getFile())).length() > 0)
-                languageService.findByDescription(preAudioMeta.getLanguageDescription()).ifPresent(x -> audioService.save(new Audio(instruction, x, Helper.getAudioFileLengthMillis(file), readFileToByteArray(file))));
+                languageService.findByDescription(preAudioMeta.getLanguageDescription()).ifPresent(x -> audioService.save(new Audio(instruction, x, getAudioFileLengthMillis(file), readFileToByteArray(file))));
         }
     }
 
@@ -140,6 +143,17 @@ public class SeedDatabase {
                 }
             }
         }
+    }
+
+    private static int getAudioFileLengthMillis(File file) {
+        try {
+            AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(file);
+            Map<String, Object> properties = baseFileFormat.properties();
+            return ((Long) properties.get("duration")).intValue() / 1000;
+        } catch (UnsupportedAudioFileException | IOException miscEx) {
+            logger.error("Error determining the length of an audio file for seeding database. Exception: " + miscEx);
+        }
+        return 0;
     }
 
     private byte[] readFileToByteArray(File file) {
