@@ -10,6 +10,7 @@ import net.vandeneijk.shadowkickboxing.services.FightService;
 import net.vandeneijk.shadowkickboxing.services.LengthService;
 import net.vandeneijk.shadowkickboxing.services.SpeedService;
 import net.vandeneijk.shadowkickboxing.startup.SeedDatabase;
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -59,6 +60,8 @@ public class HomeController {
         try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(fightService.getFight(speedId, lengthId).getAudioFragment())); OutputStream os = response.getOutputStream()) {
             org.apache.commons.io.IOUtils.copy(is, os);
             response.flushBuffer();
+        } catch (ClientAbortException caEx) {
+            // Ignore.
         } catch (IOException ioEx) {
             logger.error("Error presenting a downloadable file to client. Exception: " + ioEx);
             throw new RuntimeException("IOError writing file to output stream");

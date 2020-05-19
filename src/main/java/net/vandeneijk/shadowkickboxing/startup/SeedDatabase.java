@@ -82,27 +82,27 @@ public class SeedDatabase {
 
         saveInstructionWithAudio(new Instruction("10 seconds break", false), new PreAudioMeta("audio/10-seconds-break.mp3", "English"));
         saveInstructionWithAudio(new Instruction("1 minute break", false), new PreAudioMeta("audio/1-minute-break.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("break bell", false), new PreAudioMeta("audio/break-bell.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("break bell end of fight", false), new PreAudioMeta("audio/break-bell-end-fight.mp3", "English"));
 
-        saveInstructionWithAudio(new Instruction("jab", true, true, true, 1.0, 400, 1200), new PreAudioMeta("audio/jab.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("double jab", true, true, true, 1.0, 500, 1500), new PreAudioMeta("audio/double-jab.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("cross", true, true, true, 0.6, 500, 1500), new PreAudioMeta("audio/cross.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left hook head", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/left-hook-head.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right hook head", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/right-hook-head.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left uppercut", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/left-uppercut.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right uppercut", true, true, true, 0.4, 600, 1500), new PreAudioMeta("audio/right-uppercut.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left hook body", true, true, true, 0.3, 600, 1500), new PreAudioMeta("audio/left-hook-body.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right hook body", true, true, true, 0.3, 600, 1500), new PreAudioMeta("audio/right-hook-body.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left low kick", true, true, true, 0.3, 800, 1800), new PreAudioMeta("audio/left-low-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right low kick", true, true, true, 0.3, 800, 1800), new PreAudioMeta("audio/right-low-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("clinch left knee", true, false, false, 0.25, 1500, 2500), new PreAudioMeta("audio/clinch-left-knee.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("clinch right knee", true, false, false, 0.25, 1500, 2500), new PreAudioMeta("audio/clinch-right-knee.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left front kick", true, true, true, 0.25, 700, 1500), new PreAudioMeta("audio/left-front-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right front kick", true, true, true, 0.25, 700, 1500), new PreAudioMeta("audio/right-front-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left middle kick", true, true, false, 0.15, 900, 1800), new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("jab", true, true, true, 1.0, 500, 1000), new PreAudioMeta("audio/jab.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("double jab", true, true, true, 1.0, 600, 1100), new PreAudioMeta("audio/double-jab.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("cross", true, true, true, 0.9, 500, 1000), new PreAudioMeta("audio/cross.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left hook head", true, true, true, 0.5, 600, 1100), new PreAudioMeta("audio/left-hook-head.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right hook head", true, true, true, 0.5, 600, 1100), new PreAudioMeta("audio/right-hook-head.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left uppercut", true, true, true, 0.4, 600, 1100), new PreAudioMeta("audio/left-uppercut.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right uppercut", true, true, true, 0.4, 600, 1100), new PreAudioMeta("audio/right-uppercut.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left hook body", true, true, true, 0.4, 600, 1200), new PreAudioMeta("audio/left-hook-body.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right hook body", true, true, true, 0.25, 600, 1200), new PreAudioMeta("audio/right-hook-body.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left low kick", true, true, true, 0.3, 900, 1500), new PreAudioMeta("audio/left-low-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right low kick", true, true, true, 0.3, 900, 1500), new PreAudioMeta("audio/right-low-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("clinch left knee", true, false, false, 0.25, 1500, 2400), new PreAudioMeta("audio/clinch-left-knee.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("clinch right knee", true, false, false, 0.25, 1500, 2400), new PreAudioMeta("audio/clinch-right-knee.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left front kick", true, true, true, 0.4, 900, 1400), new PreAudioMeta("audio/left-front-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right front kick", true, true, true, 0.25, 900, 1400), new PreAudioMeta("audio/right-front-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left middle kick", true, true, false, 0.15, 1100, 1800), new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
         saveInstructionWithAudio(new Instruction("right middle kick", true, true, false, 0.15, 900, 1800), new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left high kick", true, true, true, 0.1, 900, 2000), new PreAudioMeta("audio/left-high-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right high kick", true, true, true, 0.1, 900, 2000), new PreAudioMeta("audio/right-high-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("left high kick", true, true, true, 0.1, 1100, 1800), new PreAudioMeta("audio/left-high-kick.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("right high kick", true, true, true, 0.1, 900, 1800), new PreAudioMeta("audio/right-high-kick.mp3", "English"));
     }
 
     private void saveInstructionWithAudio(Instruction instruction, PreAudioMeta... preAudioMetaArray) {

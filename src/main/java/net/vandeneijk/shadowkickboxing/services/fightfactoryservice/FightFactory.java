@@ -120,7 +120,7 @@ public class FightFactory {
         Instruction instructionBlock = instructionService.findByDescription(defensiveInstruction).get();
         Audio audioBlock = audioService.findByInstructionAndLanguage(instructionBlock, language);
         int minExecutionTimeMillis = instructionBlock.getMinExecutionTimeMillis();
-        int extraSilenceMillisAfterInstruction = (int) (750 * speed.getExecutionMillisMultiplier());
+        int extraSilenceMillisAfterInstruction = (int) (400 * speed.getExecutionMillisMultiplier());
 
         if (audioBlock.getLengthMillis() + minExecutionTimeMillis + move.getTotalMoveAudioLengthMillis() + extraSilenceMillisAfterInstruction > roundLengthMillisRemaining) return;
 
@@ -175,7 +175,7 @@ public class FightFactory {
     }
 
     private void addBreakBellAfterFight(List<Byte> fight, Language language) {
-        Instruction instructionBreakBell = instructionService.findByDescription("break bell").get();
+        Instruction instructionBreakBell = instructionService.findByDescription("break bell end of fight").get();
         Audio audioBreakBell = audioService.findByInstructionAndLanguage(instructionBreakBell, language);
 
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
