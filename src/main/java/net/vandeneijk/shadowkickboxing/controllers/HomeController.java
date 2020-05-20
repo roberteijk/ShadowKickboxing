@@ -5,10 +5,13 @@
 package net.vandeneijk.shadowkickboxing.controllers;
 
 import net.vandeneijk.shadowkickboxing.models.ConnectionLog;
+import net.vandeneijk.shadowkickboxing.models.Length;
+import net.vandeneijk.shadowkickboxing.models.Speed;
 import net.vandeneijk.shadowkickboxing.services.ConnectionLogService;
 import net.vandeneijk.shadowkickboxing.services.FightService;
 import net.vandeneijk.shadowkickboxing.services.LengthService;
 import net.vandeneijk.shadowkickboxing.services.SpeedService;
+import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
 import net.vandeneijk.shadowkickboxing.startup.SeedDatabase;
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
@@ -32,12 +35,14 @@ public class HomeController {
     private final FightService fightService;
     private final SpeedService speedService;
     private final LengthService lengthService;
+    private final FightFactory fightFactory;
     private final ConnectionLogService connectionLogService;
 
-    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, ConnectionLogService connectionLogService) {
+    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, FightFactory fightFactory, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
         this.speedService = speedService;
         this.lengthService = lengthService;
+        this.fightFactory = fightFactory;
         this.connectionLogService = connectionLogService;
     }
 
@@ -57,7 +62,11 @@ public class HomeController {
     public void download(@RequestParam("speed") long speedId, @RequestParam("length") long lengthId, HttpServletResponse response, HttpServletRequest request) {
         connectionLogService.save(new ConnectionLog(".mp3", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
 
-        try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(fightService.getFight(speedId, lengthId).getAudioFragment())); OutputStream os = response.getOutputStream()) {
+        Speed speed = speedService.findById(speedId).get();
+        Length length = lengthService.findById(lengthId).get();
+        fightFactory.createFight("English", speed, length);
+
+        try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(fightService.retrieveFight(speed, length).getAudioFragment())); OutputStream os = response.getOutputStream()) {
             org.apache.commons.io.IOUtils.copy(is, os);
             response.flushBuffer();
         } catch (ClientAbortException caEx) {

@@ -40,13 +40,19 @@ public class FightService {
         return fightRepository.countBySpeedAndLength(speed, length);
     }
 
-    public Fight getFight(long speedId, long lengthId) {
-        Speed speed = speedRepository.findById(speedId).get();
-        Length length = lengthRepository.findById(lengthId).get();
+    public Fight retrieveFight(Speed speed, Length length) {
+        List<Fight> fightList;
 
-        List<Fight> fightList = fightRepository.findBySpeedAndLength(speed, length);
+        while ((fightList = fightRepository.findBySpeedAndLength(speed, length)).size() == 0) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException iEx) {
+                iEx.printStackTrace();
+            }
+        }
 
-        if(fightList.size() > 0) return fightList.get(0); // TODO Convert to Optional after testing.
-        else return null;
+        Fight fightToReturn = fightList.get(0);
+        fightRepository.delete(fightToReturn);
+        return fightToReturn;
     }
 }
