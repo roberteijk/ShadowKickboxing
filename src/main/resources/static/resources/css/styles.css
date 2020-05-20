@@ -8,7 +8,6 @@ label {
     color: #555555;
 }
 
-
 .banner {
     background-color: #142850;
     height: 200px;
@@ -37,6 +36,29 @@ label {
     font-size: 4em;
     margin: -20px 0 1px;
     text-shadow: 0 0 10px #00b3ff;
+}
+
+.subSubtitle {
+    font-size: 0.75em;
+    color: white;
+    font-family: robotoregular, sans-serif;
+    text-shadow: 0 0 5px #00b3ff;
+    position: relative;
+    top: -26px;
+    left: 52px;
+    display: inline;
+}
+
+.contact {
+    text-align: center;
+    position: relative;
+    top: -10px;
+    /*left: -210px;*/
+    font-family: robotoregular, sans-serif;
+    font-size: 0.75em;
+    color: #142850;
+    background-color: #dae1e7;
+    height: 20px;
 }
 
 .form-area {
