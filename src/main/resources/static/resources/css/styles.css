@@ -8,6 +8,22 @@ label {
     color: #555555;
 }
 
+a:link {
+    color: #142850;
+}
+
+a:visited {
+    color: #142850;
+}
+
+a:hover {
+    color: #00a8cc;
+}
+
+a:active {
+    color: #00a8cc;
+}
+
 .banner {
     background-color: #142850;
     height: 200px;
@@ -53,10 +69,8 @@ label {
     text-align: center;
     position: relative;
     top: -10px;
-    /*left: -210px;*/
     font-family: robotoregular, sans-serif;
     font-size: 0.75em;
-    color: #142850;
     background-color: #dae1e7;
     height: 20px;
 }

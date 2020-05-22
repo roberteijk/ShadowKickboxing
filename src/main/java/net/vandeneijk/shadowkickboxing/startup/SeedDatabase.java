@@ -7,6 +7,7 @@ package net.vandeneijk.shadowkickboxing.startup;
 import net.vandeneijk.shadowkickboxing.models.*;
 import net.vandeneijk.shadowkickboxing.services.*;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 public class SeedDatabase {
@@ -109,9 +109,13 @@ public class SeedDatabase {
         if (!instructionService.saveIfDescriptionUnique(instruction)) return;
 
         for (PreAudioMeta preAudioMeta : preAudioMetaArray) {
-            File file;
-            if ((file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(preAudioMeta.getFileLocation())).getFile())).length() > 0)
-                languageService.findByDescription(preAudioMeta.getLanguageDescription()).ifPresent(x -> audioService.save(new Audio(instruction, x, getAudioFileLengthMillis(file), readFileToByteArray(file))));
+
+            try (BufferedInputStream in = new BufferedInputStream(getClass().getResourceAsStream("/" + preAudioMeta.fileLocation))) {
+                File file = getFileFromStream(in);
+                if (file != null) languageService.findByDescription(preAudioMeta.getLanguageDescription()).ifPresent(x -> audioService.save(new Audio(instruction, x, getAudioFileLengthMillis(file), readFileToByteArray(file))));
+            } catch (IOException ioEx) {
+                logger.warn("Could not read of find file: " + preAudioMeta.getFileLocation());
+            }
         }
     }
 
@@ -144,7 +148,21 @@ public class SeedDatabase {
         }
     }
 
-    private static int getAudioFileLengthMillis(File file) {
+    private File getFileFromStream(InputStream in) {
+        try {
+            File tempFile = File.createTempFile("stream2fil", ".tmp");
+            tempFile.deleteOnExit();
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                IOUtils.copy(in, out);
+            }
+            return tempFile;
+        } catch (IOException ioEx) {
+            logger.warn("Could not create a file from a stream. Exception: " + ioEx);
+        }
+        return null;
+    }
+
+    private int getAudioFileLengthMillis(File file) {
         try {
             AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(file);
             Map<String, Object> properties = baseFileFormat.properties();
