@@ -2,7 +2,7 @@
 @import "fonts/lobster/stylesheet.css";
 @import "fonts/roboto/stylesheet.css";
 
-label {
+label, p {
     font-family: robotoregular, sans-serif;
     font-size: 1.25em;
     color: #555555;
@@ -75,7 +75,7 @@ a:active {
     height: 20px;
 }
 
-.form-area {
+.content {
     margin-top: 50px;
     text-align: center;
 }

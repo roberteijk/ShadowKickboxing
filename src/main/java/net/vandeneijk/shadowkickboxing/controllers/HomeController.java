@@ -66,14 +66,27 @@ public class HomeController {
 
     @PostMapping("/download")
     public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, HttpServletRequest request) {
-        connectionLogService.save(new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+        ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
 
         Speed speed = speedService.findById(speedId).get();
         Length length = lengthService.findById(lengthId).get();
         fightFactory.createFight("English", speed, length);
         String fightName = fightService.retrieveFreshFight(speed, length).getName();
         modelAndView.setViewName("redirect:download/" + fightName + ".mp3");
+
+        connectionLog.setAvailable(true);
+        connectionLogService.save(connectionLog);
+
         return modelAndView;
+    }
+
+    @GetMapping("/download")
+    public String downloadWrongParam(HttpServletRequest request) {
+        ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
+        connectionLog.setAvailable(false);
+        connectionLogService.save(connectionLog);
+
+        return "error";
     }
 
     @GetMapping("/download/{file_name}")
@@ -110,6 +123,17 @@ public class HomeController {
         connectionLog.setAvailable(availability);
         connectionLogService.save(connectionLog);
     }
+
+    @GetMapping("error")
+    public String getErrorPage(HttpServletRequest request) {
+        String requestedItem = "error";
+
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+
+        return requestedItem;
+    }
+
+
 
     private Fight getFight(String fileName) {
         String fightRandomId;
