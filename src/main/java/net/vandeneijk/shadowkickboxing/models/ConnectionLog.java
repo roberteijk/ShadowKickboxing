@@ -24,6 +24,8 @@ public class ConnectionLog {
     @NotNull
     private String requestedItemAs;
 
+    private Boolean available;
+
     @NotNull
     private ZonedDateTime zdtRequest;
 
@@ -35,6 +37,7 @@ public class ConnectionLog {
     public ConnectionLog(@NotNull String requestedItem, @NotNull String requestedItemAs, @NotNull ZonedDateTime zdtRequest, @NotNull String requestIpAddress) {
         this.requestedItem = requestedItem;
         this.requestedItemAs = requestedItemAs;
+        this.available = null;
         this.zdtRequest = zdtRequest;
         this.requestIpAddress = requestIpAddress;
     }
@@ -49,6 +52,14 @@ public class ConnectionLog {
 
     public String getRequestedItemAs() {
         return requestedItemAs;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
     }
 
     public ZonedDateTime getZdtRequest() {

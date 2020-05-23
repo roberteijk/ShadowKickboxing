@@ -12,6 +12,7 @@ import net.vandeneijk.shadowkickboxing.repositories.LengthRepository;
 import net.vandeneijk.shadowkickboxing.repositories.SpeedRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,14 +37,26 @@ public class FightService {
         return fightRepository.findById(id);
     }
 
+    public Optional<Fight> findByRandomId(String randomId) {
+        return fightRepository.findByRandomId(randomId);
+    }
+
+    public Fight getByRandomId(String randomId) {
+        return fightRepository.getByRandomId(randomId);
+    }
+
     public long countBySpeedAndLength(Speed speed, Length length) {
         return fightRepository.countBySpeedAndLength(speed, length);
     }
 
-    public Fight retrieveFight(Speed speed, Length length) {
+    public boolean existsByRandomId(String randomId) {
+        return fightRepository.existsByRandomId(randomId);
+    }
+
+    public Fight retrieveFreshFight(Speed speed, Length length) {
         List<Fight> fightList;
 
-        while ((fightList = fightRepository.findBySpeedAndLength(speed, length)).size() == 0) {
+        while ((fightList = fightRepository.findBySpeedAndLengthAndZdtFirstDownload(speed, length, null)).size() == 0) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException iEx) {
@@ -51,8 +64,11 @@ public class FightService {
             }
         }
 
-        Fight fightToReturn = fightList.get(0);
-        fightRepository.delete(fightToReturn);
-        return fightToReturn;
+        return fightList.get(0);
+    }
+
+    public long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt) {
+        return fightRepository.deleteByZdtFirstDownloadBefore(zdt);
+
     }
 }

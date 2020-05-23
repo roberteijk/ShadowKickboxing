@@ -23,6 +23,7 @@ public class ShadowKickboxingApplication {
     @Bean
     public Executor taskExecutor() {
         int cores = (Runtime.getRuntime().availableProcessors() > 2) ? Runtime.getRuntime().availableProcessors() - 2 : Runtime.getRuntime().availableProcessors();
+//        int cores = 1; // Temp measure to relieve memory usage on a Raspberry Pi 4 2GB until the 4GB version arrives.
         logger.info("Number of cores available for async processing: " + cores + ".");
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

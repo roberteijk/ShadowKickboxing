@@ -11,7 +11,6 @@ import net.vandeneijk.shadowkickboxing.services.InstructionService;
 import net.vandeneijk.shadowkickboxing.services.LanguageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,6 @@ public class FightFactory {
     private int silenceLengthMillis;
 
 
-    @Autowired
     public FightFactory(InstructionService instructionService, LanguageService languageService, AudioService audioService, FightService fightService) {
         this.instructionService = instructionService;
         this.languageService = languageService;
@@ -62,6 +60,7 @@ public class FightFactory {
         addCountdownBeforeStartFight(fight, language);
         addBreaksBetweenRounds(rounds, fight, language);
         addBreakBellAfterFight(fight, language);
+
 
         writeFightToDatabase(fight, language, speed, length);
     }
@@ -181,11 +180,11 @@ public class FightFactory {
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
     }
 
-    private void writeFightToDatabase(List<Byte> fight, Language language, Speed speed, Length length) {
+    private synchronized void writeFightToDatabase(List<Byte> fight, Language language, Speed speed, Length length) {
         byte[] fightByteArray = new byte[fight.size()];
         for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
 
-        fightService.save(new Fight(language, speed, length, fightByteArray));
+        fightService.save(new Fight(getRandomId(), language, speed, length, fightByteArray));
 
         logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   Size: " + fight.size());
     }
@@ -215,6 +214,18 @@ public class FightFactory {
         Language language = languageService.findByDescription("generic").get();
         audioSilence = audioService.findByInstructionAndLanguage(instruction, language);
         silenceLengthMillis = audioSilence.getLengthMillis();
+    }
+
+    private String getRandomId() {
+        char[] allowedChars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+        StringBuilder randomId = new StringBuilder();
+
+        for (int i = 0; i < 8; i++) {
+            randomId.append(allowedChars[((int) (Math.random() * allowedChars.length))]);
+        }
+
+        if (fightService.existsByRandomId(randomId.toString())) return getRandomId();
+        return randomId.toString();
     }
 }
 

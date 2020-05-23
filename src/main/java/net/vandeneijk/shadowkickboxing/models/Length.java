@@ -20,6 +20,9 @@ public class Length {
     private String description;
 
     @NotNull
+    private String descriptionIn2Chars;
+
+    @NotNull
     private Integer numberRounds;
 
     @OneToMany(mappedBy = "length")
@@ -27,9 +30,10 @@ public class Length {
 
     protected Length() {}
 
-    public Length(Long lengthId, @NotNull String description, @NotNull Integer numberRounds) {
+    public Length(Long lengthId, @NotNull String description, @NotNull String descriptionIn2Chars, @NotNull Integer numberRounds) {
         this.lengthId = lengthId;
         this.description = description;
+        this.descriptionIn2Chars = descriptionIn2Chars;
         this.numberRounds = numberRounds;
     }
 
@@ -39,6 +43,10 @@ public class Length {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getDescriptionIn2Chars() {
+        return descriptionIn2Chars;
     }
 
     public Integer getNumberRounds() {

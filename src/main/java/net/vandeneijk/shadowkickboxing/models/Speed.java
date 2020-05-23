@@ -20,6 +20,9 @@ public class Speed {
     private String description;
 
     @NotNull
+    private String descriptionIn2Chars;
+
+    @NotNull
     private Double executionMillisMultiplier;
 
     @OneToMany(mappedBy = "speed")
@@ -27,9 +30,10 @@ public class Speed {
 
     protected Speed() {}
 
-    public Speed(Long speedId, @NotNull String description, @NotNull Double executionMillisMultiplier) {
+    public Speed(Long speedId, @NotNull String description, @NotNull String descriptionIn2Chars, @NotNull Double executionMillisMultiplier) {
         this.speedId = speedId;
         this.description = description;
+        this.descriptionIn2Chars = descriptionIn2Chars;
         this.executionMillisMultiplier = executionMillisMultiplier;
     }
 
@@ -39,6 +43,10 @@ public class Speed {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getDescriptionIn2Chars() {
+        return descriptionIn2Chars;
     }
 
     public Double getExecutionMillisMultiplier() {

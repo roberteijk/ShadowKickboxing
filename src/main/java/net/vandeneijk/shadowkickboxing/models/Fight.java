@@ -6,6 +6,7 @@ package net.vandeneijk.shadowkickboxing.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.ZonedDateTime;
 
 @Entity
 public class Fight {
@@ -13,6 +14,12 @@ public class Fight {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long fightId;
+
+    @Column(unique = true)
+    @NotNull
+    private String randomId;
+
+    private ZonedDateTime zdtFirstDownload;
 
     @NotNull
     @ManyToOne
@@ -32,7 +39,8 @@ public class Fight {
 
     protected Fight() {}
 
-    public Fight(@NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull byte[] audioFragment) {
+    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull byte[] audioFragment) {
+        this.randomId = randomId;
         this.language = language;
         this.speed = speed;
         this.length = length;
@@ -41,6 +49,18 @@ public class Fight {
 
     public Long getFightId() {
         return fightId;
+    }
+
+    public String getRandomId() {
+        return randomId;
+    }
+
+    public ZonedDateTime getZdtFirstDownload() {
+        return zdtFirstDownload;
+    }
+
+    public void setZdtFirstDownload(ZonedDateTime zdtFirstDownload) {
+        this.zdtFirstDownload = zdtFirstDownload;
     }
 
     public Language getLanguage() {
@@ -57,5 +77,9 @@ public class Fight {
 
     public byte[] getAudioFragment() {
         return audioFragment;
+    }
+
+    public String getName() {
+        return "skb_" + randomId + speed.getDescriptionIn2Chars() + length.getDescriptionIn2Chars();
     }
 }

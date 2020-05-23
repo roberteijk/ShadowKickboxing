@@ -122,19 +122,19 @@ public class SeedDatabase {
     private void seedSpeed() {
         logger.info("Seeding database with Speed.");
 
-        speedService.save(new Speed(0L, "Extra Slow", 2.25));
-        speedService.save(new Speed(1L, "Slow", 1.50));
-        speedService.save(new Speed(2L, "Normal", 1.0));
-        speedService.save(new Speed(3L, "Fast", 0.66));
-        speedService.save(new Speed(4L, "Extra Fast", 0.4356));
+        speedService.save(new Speed(0L, "Extra Slow", "48", 2.25));
+        speedService.save(new Speed(1L, "Slow", "49", 1.50));
+        speedService.save(new Speed(2L, "Normal", "50", 1.0));
+        speedService.save(new Speed(3L, "Fast", "51", 0.66));
+        speedService.save(new Speed(4L, "Extra Fast", "52", 0.4356));
     }
 
     private void seedLength() {
         logger.info("Seeding database with Length.");
 
-        lengthService.save(new Length(0L, "Practice (1 round)", 1));
-        lengthService.save(new Length(1L, "Full Fight (3 rounds)", 3));
-        lengthService.save(new Length(2L, "Championship Fight (5 rounds)", 5));
+        lengthService.save(new Length(0L, "Practice (1 round)", "01", 1));
+        lengthService.save(new Length(1L, "Full Fight (3 rounds)", "03", 3));
+        lengthService.save(new Length(2L, "Championship Fight (5 rounds)", "05", 5));
     }
 
     private void seedFight() {
