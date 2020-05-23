@@ -19,18 +19,9 @@ public class LanguageService {
         this.languageRepository = languageRepository;
     }
 
-    public void save(Language language) {
+    public void saveIfDescriptionUnique(Language language) {
+        if (languageRepository.findByDescription(language.getDescription()).isPresent()) return;
         languageRepository.save(language);
-    }
-
-    public Boolean saveIfDescriptionUnique(Language language) {
-        if (languageRepository.findByDescription(language.getDescription()).isPresent()) return false;
-        languageRepository.save(language);
-        return true;
-    }
-
-    public Optional<Language> findById(Long id) {
-        return languageRepository.findById(id);
     }
 
     public Optional<Language> findByDescription(String language) {

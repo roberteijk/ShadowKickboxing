@@ -13,8 +13,6 @@ import net.vandeneijk.shadowkickboxing.repositories.SpeedRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FightService {
@@ -33,16 +31,8 @@ public class FightService {
         fightRepository.save(fight);
     }
 
-    public Optional<Fight> findById(Long id) {
-        return fightRepository.findById(id);
-    }
-
-    public Optional<Fight> findByRandomId(String randomId) {
+    public Fight findByRandomId(String randomId) {
         return fightRepository.findByRandomId(randomId);
-    }
-
-    public Fight getByRandomId(String randomId) {
-        return fightRepository.getByRandomId(randomId);
     }
 
     public long countBySpeedAndLength(Speed speed, Length length) {
@@ -54,9 +44,9 @@ public class FightService {
     }
 
     public Fight retrieveFreshFight(Speed speed, Length length) {
-        List<Fight> fightList;
+        Fight fight;
 
-        while ((fightList = fightRepository.findBySpeedAndLengthAndZdtFirstDownload(speed, length, null)).size() == 0) {
+        while ((fight = fightRepository.findFirstBySpeedAndLengthAndZdtFirstDownload(speed, length, null)) == null) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException iEx) {
@@ -64,7 +54,7 @@ public class FightService {
             }
         }
 
-        return fightList.get(0);
+        return fight;
     }
 
     public long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt) {

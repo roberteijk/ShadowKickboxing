@@ -11,16 +11,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 
 public interface FightRepository extends CrudRepository<Fight, Long> {
 
-    Optional<Fight> findByRandomId(String randomId);
+    Fight findByRandomId(String randomId);
 
-    Fight getByRandomId(String randomId);
-
-    List<Fight> findBySpeedAndLengthAndZdtFirstDownload(Speed speed, Length length, ZonedDateTime zdtFirstDownload);
+    Fight findFirstBySpeedAndLengthAndZdtFirstDownload(Speed speed, Length length, ZonedDateTime zdtFirstDownload);
 
     long countBySpeedAndLength(Speed speed, Length length);
 

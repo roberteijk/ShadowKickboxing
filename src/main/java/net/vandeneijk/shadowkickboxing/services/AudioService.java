@@ -10,8 +10,6 @@ import net.vandeneijk.shadowkickboxing.models.Language;
 import net.vandeneijk.shadowkickboxing.repositories.AudioRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class AudioService {
 
@@ -23,10 +21,6 @@ public class AudioService {
 
     public void save(Audio audio) {
         audioRepository.save(audio);
-    }
-
-    public Optional<Audio> findById(Long id) {
-        return audioRepository.findById(id);
     }
 
     public Audio findByInstructionAndLanguage(Instruction instruction, Language language) {

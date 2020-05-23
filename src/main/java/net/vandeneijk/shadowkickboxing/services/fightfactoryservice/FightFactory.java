@@ -15,7 +15,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +59,6 @@ public class FightFactory {
         addCountdownBeforeStartFight(fight, language);
         addBreaksBetweenRounds(rounds, fight, language);
         addBreakBellAfterFight(fight, language);
-
 
         writeFightToDatabase(fight, language, speed, length);
     }
@@ -187,14 +185,6 @@ public class FightFactory {
         fightService.save(new Fight(getRandomId(), language, speed, length, fightByteArray));
 
         logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   Size: " + fight.size());
-    }
-
-    private void writeFightToFileSystem(byte[] fightByteArray, String name) {
-        try (FileOutputStream fos = new FileOutputStream(name + ".mp3")) {
-            fos.write(fightByteArray);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     private synchronized void seedInstructionCallWeightDistribution() {

@@ -126,7 +126,7 @@ public class HomeController {
             return null;
         }
 
-        Fight fight = fightService.getByRandomId(fightRandomId);
+        Fight fight = fightService.findByRandomId(fightRandomId);
         if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)) return fight;
 
         return null;

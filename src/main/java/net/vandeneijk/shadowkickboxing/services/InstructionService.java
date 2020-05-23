@@ -19,10 +19,6 @@ public class InstructionService {
         this.instructionRepository = instructionRepository;
     }
 
-    public void save(Instruction instruction) {
-        instructionRepository.save(instruction);
-    }
-
     public Boolean saveIfDescriptionUnique(Instruction instruction) {
         if (instructionRepository.findByDescription(instruction.getDescription()).isPresent()) return false;
         instructionRepository.save(instruction);

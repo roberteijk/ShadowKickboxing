@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConnectionLogService {
 
-    private ConnectionLogRepository connectionLogRepository;
+    private final ConnectionLogRepository connectionLogRepository;
 
     public ConnectionLogService(ConnectionLogRepository connectionLogRepository) {
         this.connectionLogRepository = connectionLogRepository;
