@@ -96,10 +96,11 @@ public class HomeController {
 
         fightCleaner.clean();
 
-        Fight fight = getFight(fileName);
+        Fight fight = fightService.getFight(fileName);
         if (fight != null) {
             byte[] audioFragment = fight.getAudioFragment();
             response.setContentType("audio/mpeg");
+            response.setContentLength(audioFragment.length);
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 
             try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(audioFragment)); OutputStream os = response.getOutputStream()) {
@@ -131,28 +132,5 @@ public class HomeController {
         connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
 
         return requestedItem;
-    }
-
-
-
-    private Fight getFight(String fileName) {
-        String fightRandomId;
-        String fightSpeedCode;
-        String fightLengthCode;
-
-        try {
-            if (!fileName.substring(0, 4).equals("skb_")) return null;
-            else if (!fileName.substring(16, 20).equals(".mp3")) return null;
-            fightRandomId = fileName.substring(4, 12);
-            fightSpeedCode = fileName.substring(12, 14);
-            fightLengthCode = fileName.substring(14, 16);
-        } catch (IndexOutOfBoundsException ioobEx) {
-            return null;
-        }
-
-        Fight fight = fightService.findByRandomId(fightRandomId);
-        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)) return fight;
-
-        return null;
     }
 }

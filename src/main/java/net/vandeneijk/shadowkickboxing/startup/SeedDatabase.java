@@ -141,7 +141,7 @@ public class SeedDatabase {
         for (Speed speed : speedService.findAll()) {
             for (Length length : lengthService.findAll()) {
                 long numberOfFightsByCriteria = fightService.countBySpeedAndLength(speed, length);
-                for (long i = numberOfFightsByCriteria; i < 2; i++) {
+                for (long i = numberOfFightsByCriteria; i < 10; i++) {
                     fightFactory.createFight("English", speed, length);
                 }
             }

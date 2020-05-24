@@ -61,4 +61,26 @@ public class FightService {
         return fightRepository.deleteByZdtFirstDownloadBefore(zdt);
 
     }
+
+    public Fight getFight(String fileName) {
+        String fightRandomId;
+        String fightSpeedCode;
+        String fightLengthCode;
+
+        try {
+            if (!fileName.startsWith("skb_")) return null;
+            else if (!fileName.substring(16).equals(".mp3")) return null;
+            else if (fileName.length() != 20) return null;
+            fightRandomId = fileName.substring(4, 12);
+            fightSpeedCode = fileName.substring(12, 14);
+            fightLengthCode = fileName.substring(14, 16);
+        } catch (IndexOutOfBoundsException ioobEx) {
+            return null;
+        }
+
+        Fight fight = findByRandomId(fightRandomId);
+        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)) return fight;
+
+        return null;
+    }
 }
