@@ -125,7 +125,16 @@ public class HomeController {
         connectionLogService.save(connectionLog);
     }
 
-    @GetMapping("error")
+    @GetMapping("/info")
+    public String getInfoPage(HttpServletRequest request) {
+        String requestedItem = "info";
+
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+
+        return requestedItem;
+    }
+
+    @GetMapping("/error")
     public String getErrorPage(HttpServletRequest request) {
         String requestedItem = "error";
 
