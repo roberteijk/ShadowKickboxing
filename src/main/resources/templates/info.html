@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=0.6">
@@ -11,19 +11,7 @@
         <link rel="icon" href="resources/images/favicon.ico">
     </head>
     <body>
-        <header>
-            <div class="banner container-fluid">
-                <h2 class="subtitleLine1 subtitle">Robert's</h2>
-                <h1 class="title">Shadow Kickboxing</h1>
-                <h2 class="subtitleLine2 subtitle">Generator</h2>
-                <p class="subSubtitle">beta</p>
-            </div>
-            <div class="contact container-fluid">
-                <a href="/">home</a>
-                <a class="contact-link" href="">contact</a>
-                <a href="/info">info</a>
-            </div>
-        </header>
+        <header lang="en" th:replace="fragments/header :: header"> </header>
 
         <main>
             <div class="container-sm info">
@@ -58,4 +46,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
+    <script src="resources/script/scripts.js" charset="UTF-8"></script>
 </html>
