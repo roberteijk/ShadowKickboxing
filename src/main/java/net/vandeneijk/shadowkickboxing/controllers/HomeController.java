@@ -14,6 +14,7 @@ import net.vandeneijk.shadowkickboxing.services.LengthService;
 import net.vandeneijk.shadowkickboxing.services.SpeedService;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightCleaner;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
+import net.vandeneijk.shadowkickboxing.services.tafficregulatorservice.TrafficRegulator;
 import net.vandeneijk.shadowkickboxing.startup.SeedDatabase;
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
@@ -41,14 +42,19 @@ public class HomeController {
     private final LengthService lengthService;
     private final FightFactory fightFactory;
     private final FightCleaner fightCleaner;
+    private final TrafficRegulator trafficRegulator;
     private final ConnectionLogService connectionLogService;
 
-    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, FightFactory fightFactory, FightCleaner fightCleaner, ConnectionLogService connectionLogService) {
+    private final int[] downloadLimits = {2, 3, 5, 10};
+    private final int[] directDownloadLimits = {3, 4, 6, 11};
+
+    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
         this.speedService = speedService;
         this.lengthService = lengthService;
         this.fightFactory = fightFactory;
         this.fightCleaner = fightCleaner;
+        this.trafficRegulator = trafficRegulator;
         this.connectionLogService = connectionLogService;
     }
 
@@ -68,14 +74,18 @@ public class HomeController {
     public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, HttpServletRequest request) {
         ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
 
-        Speed speed = speedService.findById(speedId).get();
-        Length length = lengthService.findById(lengthId).get();
-        fightFactory.createFight("English", speed, length);
-        String fightName = fightService.retrieveFreshFight(speed, length).getName();
-        modelAndView.setViewName("redirect:download/" + fightName + ".mp3");
+        if (!trafficRegulator.isTrafficAllowed("download", request.getRemoteAddr(), ZonedDateTime.now(), downloadLimits)) {
+            modelAndView.setViewName("redirect:/exceeded");
+        } else {
+            Speed speed = speedService.findById(speedId).get();
+            Length length = lengthService.findById(lengthId).get();
+            fightFactory.createFight("English", speed, length);
+            String fightName = fightService.retrieveFreshFight(speed, length).getName();
+            modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
 
-        connectionLog.setAvailable(true);
-        connectionLogService.save(connectionLog);
+            connectionLog.setAvailable(true);
+            connectionLogService.save(connectionLog);
+        }
 
         return modelAndView;
     }
@@ -96,8 +106,8 @@ public class HomeController {
 
         fightCleaner.clean();
 
-        Fight fight = fightService.getFight(fileName);
-        if (fight != null) {
+        Fight fight;
+        if (trafficRegulator.isTrafficAllowed("direct download", request.getRemoteAddr(), ZonedDateTime.now(), directDownloadLimits) && (fight = fightService.getFight(fileName)) != null) {
             byte[] audioFragment = fight.getAudioFragment();
             response.setContentType("audio/mpeg");
             response.setContentLength(audioFragment.length);
@@ -137,6 +147,15 @@ public class HomeController {
     @GetMapping("/error")
     public String getErrorPage(HttpServletRequest request) {
         String requestedItem = "error";
+
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+
+        return requestedItem;
+    }
+
+    @GetMapping("/exceeded")
+    public String getExceededPage(HttpServletRequest request) {
+        String requestedItem = "exceeded";
 
         connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
 
