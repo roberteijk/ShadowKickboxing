@@ -45,7 +45,7 @@ public class HomeController {
     private final TrafficRegulator trafficRegulator;
     private final ConnectionLogService connectionLogService;
 
-    private final int[] directDownloadLimits = {3, 5, 9, 17, 33, 65};
+    private final int[] downloadLimits = {3, 5, 9, 17, 33, 65};
 
     public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
@@ -99,9 +99,9 @@ public class HomeController {
         boolean availability = false;
 
         Fight fight;
-        if (!trafficRegulator.isTrafficAllowed("directDownload", request.getRemoteAddr(), ZonedDateTime.now(), directDownloadLimits)) {
+        if (!trafficRegulator.isTrafficAllowed("download", request.getRemoteAddr(), ZonedDateTime.now(), downloadLimits)) {
             try {
-                response.sendRedirect("/exceeded");
+                response.sendRedirect("/exceededdownload");
             }  catch (IOException ioEx) {
                 logger.error("Error redirecting to exceeded page. Exception: " + ioEx);
             }
@@ -148,9 +148,9 @@ public class HomeController {
         return requestedItem;
     }
 
-    @GetMapping("/exceeded")
+    @GetMapping("/exceededdownload")
     public String getExceededPage(HttpServletRequest request) {
-        String requestedItem = "exceeded";
+        String requestedItem = "exceededdownload";
 
         connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
 
