@@ -29,7 +29,7 @@ public class ShadowKickboxingApplication {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(cores);
         executor.setMaxPoolSize(cores);
-        executor.setThreadPriority(Thread.MIN_PRIORITY);
+        executor.setThreadPriority(2);
         executor.setQueueCapacity(500);
         executor.setThreadNamePrefix("skb-thread-");
         executor.initialize();

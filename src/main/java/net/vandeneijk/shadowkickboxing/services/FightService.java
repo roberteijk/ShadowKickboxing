@@ -79,7 +79,14 @@ public class FightService {
         }
 
         Fight fight = findByRandomId(fightRandomId);
-        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)) return fight;
+        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)) {
+            if (fight.getZdtFirstDownload() == null) {
+                fight.setZdtFirstDownload(ZonedDateTime.now());
+                save(fight);
+            }
+
+            return fight;
+        }
 
         return null;
     }

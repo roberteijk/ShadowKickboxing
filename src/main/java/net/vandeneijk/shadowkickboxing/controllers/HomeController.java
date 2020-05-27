@@ -45,8 +45,7 @@ public class HomeController {
     private final TrafficRegulator trafficRegulator;
     private final ConnectionLogService connectionLogService;
 
-    private final int[] downloadLimits = {2, 3, 5, 10};
-    private final int[] directDownloadLimits = {3, 4, 6, 11};
+    private final int[] directDownloadLimits = {3, 5, 9, 17, 33, 65};
 
     public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
@@ -74,18 +73,13 @@ public class HomeController {
     public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, HttpServletRequest request) {
         ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
 
-        if (!trafficRegulator.isTrafficAllowed("download", request.getRemoteAddr(), ZonedDateTime.now(), downloadLimits)) {
-            modelAndView.setViewName("redirect:/exceeded");
-        } else {
-            Speed speed = speedService.findById(speedId).get();
-            Length length = lengthService.findById(lengthId).get();
-            fightFactory.createFight("English", speed, length);
-            String fightName = fightService.retrieveFreshFight(speed, length).getName();
-            modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
+        Speed speed = speedService.findById(speedId).get();
+        Length length = lengthService.findById(lengthId).get();
+        String fightName = fightService.retrieveFreshFight(speed, length).getName();
+        modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
 
-            connectionLog.setAvailable(true);
-            connectionLogService.save(connectionLog);
-        }
+        connectionLog.setAvailable(true);
+        connectionLogService.save(connectionLog);
 
         return modelAndView;
     }
@@ -104,10 +98,14 @@ public class HomeController {
         ConnectionLog connectionLog = new ConnectionLog(".mp3", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
         boolean availability = false;
 
-        fightCleaner.clean();
-
         Fight fight;
-        if (trafficRegulator.isTrafficAllowed("direct download", request.getRemoteAddr(), ZonedDateTime.now(), directDownloadLimits) && (fight = fightService.getFight(fileName)) != null) {
+        if (!trafficRegulator.isTrafficAllowed("directDownload", request.getRemoteAddr(), ZonedDateTime.now(), directDownloadLimits)) {
+            try {
+                response.sendRedirect("/exceeded");
+            }  catch (IOException ioEx) {
+                logger.error("Error redirecting to exceeded page. Exception: " + ioEx);
+            }
+        } else if ((fight = fightService.getFight(fileName)) != null) {
             byte[] audioFragment = fight.getAudioFragment();
             response.setContentType("audio/mpeg");
             response.setContentLength(audioFragment.length);
@@ -117,12 +115,9 @@ public class HomeController {
                 org.apache.commons.io.IOUtils.copy(is, os);
                 response.flushBuffer();
 
-                if (fight.getZdtFirstDownload() == null) {
-                    fight.setZdtFirstDownload(ZonedDateTime.now());
-                    fightService.save(fight);
-                }
-
                 availability = true;
+                fightCleaner.clean();
+                fightFactory.createFight("English", fight.getSpeed(), fight.getLength());
             } catch (ClientAbortException caEx) {
                 // Ignore.
             } catch (IOException ioEx) {
