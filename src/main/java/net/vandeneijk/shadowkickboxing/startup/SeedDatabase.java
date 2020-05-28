@@ -29,16 +29,18 @@ public class SeedDatabase {
     private final AudioService audioService;
     private final SpeedService speedService;
     private final LengthService lengthService;
+    private final DefensiveModeService defensiveModeService;
     private final FightService fightService;
     private final FightFactory fightFactory;
 
     @Autowired
-    public SeedDatabase(LanguageService languageService, InstructionService instructionService, AudioService audioService, SpeedService speedService, LengthService lengthService, FightService fightService, FightFactory fightFactory) {
+    public SeedDatabase(LanguageService languageService, InstructionService instructionService, AudioService audioService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, FightService fightService, FightFactory fightFactory) {
         this.languageService = languageService;
         this.instructionService = instructionService;
         this.audioService = audioService;
         this.speedService = speedService;
         this.lengthService = lengthService;
+        this.defensiveModeService = defensiveModeService;
         this.fightService = fightService;
         this.fightFactory = fightFactory;
 
@@ -46,6 +48,7 @@ public class SeedDatabase {
         seedInstructionAndAudio();
         seedSpeed();
         seedLength();
+        seedDefensiveMode();
         seedFight();
     }
 
@@ -137,12 +140,23 @@ public class SeedDatabase {
         lengthService.save(new Length(2L, "Championship Fight (5 rounds)", "05", 5));
     }
 
+    private void seedDefensiveMode() {
+        logger.info("Seeding database with DefensiveMode.");
+
+        defensiveModeService.save(new DefensiveMode(0L,"Block and evade", "be", true, true));
+        defensiveModeService.save(new DefensiveMode(1L,"Block only", "bo", true, false));
+        defensiveModeService.save(new DefensiveMode(2L,"Evade only", "eo", false, true));
+        defensiveModeService.save(new DefensiveMode(3L,"None", "no", false, false));
+    }
+
     private void seedFight() {
         for (Speed speed : speedService.findAll()) {
             for (Length length : lengthService.findAll()) {
-                long numberOfFightsByCriteria = fightService.countBySpeedAndLength(speed, length);
-                for (long i = numberOfFightsByCriteria; i < 10; i++) {
-                    fightFactory.createFight("English", speed, length);
+                for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
+                    long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveMove(speed, length, defensiveMode);
+                    for (long i = numberOfFightsByCriteria; i < 2; i++) {
+                        fightFactory.createFight("English", speed, length, defensiveMode);
+                    }
                 }
             }
         }

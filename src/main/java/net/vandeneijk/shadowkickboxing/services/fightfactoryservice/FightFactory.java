@@ -43,7 +43,7 @@ public class FightFactory {
     }
 
     @Async
-    public void createFight(String languageDescription, Speed speed, Length length) {
+    public void createFight(String languageDescription, Speed speed, Length length, DefensiveMode defensiveMode) {
         seedInstructionCallWeightDistribution();
         getAudioSilence();
 
@@ -52,7 +52,7 @@ public class FightFactory {
         List<List<Byte>> rounds = new ArrayList<>();
 
         while (rounds.size() < length.getNumberRounds()) {
-            rounds.add(createRound(roundLengthSeconds, language, speed));
+            rounds.add(createRound(roundLengthSeconds, language, speed, defensiveMode));
         }
 
         List<Byte> fight = new ArrayList<>();
@@ -60,18 +60,18 @@ public class FightFactory {
         addBreaksBetweenRounds(rounds, fight, language);
         addBreakBellAfterFight(fight, language);
 
-        writeFightToDatabase(fight, language, speed, length);
+        writeFightToDatabase(fight, language, speed, length, defensiveMode);
     }
 
 
-    private List<Byte> createRound(int roundLengthSeconds, Language language, Speed speed) {
+    private List<Byte> createRound(int roundLengthSeconds, Language language, Speed speed, DefensiveMode defensiveMode) {
         List<Byte> round = new ArrayList<>();
         int roundLengthMillisRemaining = roundLengthSeconds * 1000;
         while (true) {
             Move move = createMove(language, speed, roundLengthMillisRemaining);
             if (move == null) break;
 
-            prependWithBlockIfApplicable(move, language, speed, roundLengthMillisRemaining);
+            prependWithBlockIfApplicable(move, language, speed, defensiveMode, roundLengthMillisRemaining);
             prependWithInnerRoundBreakIfApplicable(move, speed, roundLengthMillisRemaining);
 
             round.addAll(move.getBytesListAudioMove());
@@ -105,14 +105,18 @@ public class FightFactory {
         return new Move(bytesListAudioMove, oldRoundLengthMillisRemaining - roundLengthMillisRemaining, instructionMove);
     }
 
-    private void prependWithBlockIfApplicable(Move move, Language language, Speed speed, int roundLengthMillisRemaining) {
-        if (!move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade()) return;
+    private void prependWithBlockIfApplicable(Move move, Language language, Speed speed, DefensiveMode defensiveMode, int roundLengthMillisRemaining) {
+        if ((!defensiveMode.isAllowBlock() && !defensiveMode.isAllowEvade()) || (!move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade())) return;
         else if (Math.random() < 0.80) return;
 
         String defensiveInstruction = null;
-        if (move.getOriginalInstruction().isCanBlock() && !move.getOriginalInstruction().isCanEvade()) defensiveInstruction = "block";
-        else if (!move.getOriginalInstruction().isCanBlock() && move.getOriginalInstruction().isCanEvade()) defensiveInstruction = "evade";
-        else defensiveInstruction = Math.random() < 0.5 ? "block" : "evade";
+        List<String> defensiveInstructionOptionsAvailable = new ArrayList<>();
+        if (move.getOriginalInstruction().isCanBlock() && defensiveMode.isAllowBlock()) defensiveInstructionOptionsAvailable.add("block");
+        if (move.getOriginalInstruction().isCanEvade() && defensiveMode.isAllowEvade()) defensiveInstructionOptionsAvailable.add("evade");
+        if (defensiveInstructionOptionsAvailable.size() > 0) defensiveInstruction = defensiveInstructionOptionsAvailable.get((int) (Math.random() * defensiveInstructionOptionsAvailable.size()));
+        else return;
+        // TODO Check if it goes wrong with eo icw something else.
+        // System.out.println("allow block: " + defensiveMode.isAllowBlock() + "   allow evade: " + defensiveMode.isAllowEvade() + "   can block: " + move.getOriginalInstruction().isCanBlock() + "   can evade: " + move.getOriginalInstruction().isCanEvade() + "   list: " + defensiveInstructionOptionsAvailable);
 
         Instruction instructionBlock = instructionService.findByDescription(defensiveInstruction).get();
         Audio audioBlock = audioService.findByInstructionAndLanguage(instructionBlock, language);
@@ -178,13 +182,13 @@ public class FightFactory {
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
     }
 
-    private synchronized void writeFightToDatabase(List<Byte> fight, Language language, Speed speed, Length length) {
+    private synchronized void writeFightToDatabase(List<Byte> fight, Language language, Speed speed, Length length, DefensiveMode defensiveMode) {
         byte[] fightByteArray = new byte[fight.size()];
         for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
 
-        fightService.save(new Fight(getRandomId(), language, speed, length, fightByteArray));
+        fightService.save(new Fight(getRandomId(), language, speed, length, defensiveMode, fightByteArray));
 
-        logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   Size: " + fight.size());
+        logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   DefensiveMode: " + defensiveMode.getDescription() + "   Size: " + fight.size());
     }
 
     private synchronized void seedInstructionCallWeightDistribution() {

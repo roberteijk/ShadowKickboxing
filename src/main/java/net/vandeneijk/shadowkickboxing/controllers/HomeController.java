@@ -4,14 +4,8 @@
 
 package net.vandeneijk.shadowkickboxing.controllers;
 
-import net.vandeneijk.shadowkickboxing.models.ConnectionLog;
-import net.vandeneijk.shadowkickboxing.models.Fight;
-import net.vandeneijk.shadowkickboxing.models.Length;
-import net.vandeneijk.shadowkickboxing.models.Speed;
-import net.vandeneijk.shadowkickboxing.services.ConnectionLogService;
-import net.vandeneijk.shadowkickboxing.services.FightService;
-import net.vandeneijk.shadowkickboxing.services.LengthService;
-import net.vandeneijk.shadowkickboxing.services.SpeedService;
+import net.vandeneijk.shadowkickboxing.models.*;
+import net.vandeneijk.shadowkickboxing.services.*;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightCleaner;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
 import net.vandeneijk.shadowkickboxing.services.tafficregulatorservice.TrafficRegulator;
@@ -40,6 +34,7 @@ public class HomeController {
     private final FightService fightService;
     private final SpeedService speedService;
     private final LengthService lengthService;
+    private final DefensiveModeService defensiveModeService;
     private final FightFactory fightFactory;
     private final FightCleaner fightCleaner;
     private final TrafficRegulator trafficRegulator;
@@ -47,10 +42,11 @@ public class HomeController {
 
     private final int[] downloadLimits = {3, 5, 9, 17, 33, 65};
 
-    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
+    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
         this.speedService = speedService;
         this.lengthService = lengthService;
+        this.defensiveModeService = defensiveModeService;
         this.fightFactory = fightFactory;
         this.fightCleaner = fightCleaner;
         this.trafficRegulator = trafficRegulator;
@@ -65,17 +61,19 @@ public class HomeController {
 
         model.addAttribute("speedList", speedService.getSpeedList());
         model.addAttribute("lengthList", lengthService.getLengthList());
+        model.addAttribute("defensiveModeList", defensiveModeService.getDefensiveModeList());
 
         return requestedItem;
     }
 
     @PostMapping("/download")
-    public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, HttpServletRequest request) {
+    public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, @RequestParam(value = "defensiveMode", defaultValue = "0") long defensiveModeId , HttpServletRequest request) {
         ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
 
         Speed speed = speedService.findById(speedId).get();
         Length length = lengthService.findById(lengthId).get();
-        String fightName = fightService.retrieveFreshFight(speed, length).getName();
+        DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
+        String fightName = fightService.retrieveFreshFight(speed, length, defensiveMode).getName();
         modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
 
         connectionLog.setAvailable(true);
@@ -117,7 +115,7 @@ public class HomeController {
 
                 availability = true;
                 fightCleaner.clean();
-                fightFactory.createFight("English", fight.getSpeed(), fight.getLength());
+                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode());
             } catch (ClientAbortException caEx) {
                 // Ignore.
             } catch (IOException ioEx) {

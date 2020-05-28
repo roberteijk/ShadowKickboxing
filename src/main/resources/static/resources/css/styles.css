@@ -3,7 +3,6 @@
 @import "fonts/roboto/stylesheet.css";
 
 
-
 body {
     min-width: 515px;
 }
@@ -96,10 +95,21 @@ a:active {
 }
 
 
+.btn-toggle-custom {
+    font-family: robotoregular, sans-serif;
+    font-size: 0.75em;
+    margin-top: 45px;
+}
 
-.main-content {
+.main-content-simple {
     margin-top: 50px;
     text-align: center;
+}
+
+.main-content-expert {
+    margin-top: 50px;
+    text-align: center;
+    display: none;
 }
 
 .custom-dropdown {
@@ -107,10 +117,13 @@ a:active {
     transform: translateX(-50%);
 }
 
-.btn {
-    margin-top: 25px;
+.btn-download-custom {
+    font-family: robotoregular, sans-serif;
+    font-size: 1.25em;
+    margin-top: 30px;
 }
 
 .info {
     text-align: justify;
 }
+

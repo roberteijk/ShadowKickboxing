@@ -4,6 +4,7 @@
 
 package net.vandeneijk.shadowkickboxing.services;
 
+import net.vandeneijk.shadowkickboxing.models.DefensiveMode;
 import net.vandeneijk.shadowkickboxing.models.Fight;
 import net.vandeneijk.shadowkickboxing.models.Length;
 import net.vandeneijk.shadowkickboxing.models.Speed;
@@ -35,18 +36,18 @@ public class FightService {
         return fightRepository.findByRandomId(randomId);
     }
 
-    public long countBySpeedAndLength(Speed speed, Length length) {
-        return fightRepository.countBySpeedAndLength(speed, length);
+    public long countBySpeedAndLengthAndDefensiveMove(Speed speed, Length length, DefensiveMode defensiveMode) {
+        return fightRepository.countBySpeedAndLengthAndDefensiveMode(speed, length, defensiveMode);
     }
 
     public boolean existsByRandomId(String randomId) {
         return fightRepository.existsByRandomId(randomId);
     }
 
-    public Fight retrieveFreshFight(Speed speed, Length length) {
+    public Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode) {
         Fight fight;
 
-        while ((fight = fightRepository.findFirstBySpeedAndLengthAndZdtFirstDownload(speed, length, null)) == null) {
+        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndZdtFirstDownload(speed, length, defensiveMode, null)) == null) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException iEx) {
@@ -66,20 +67,22 @@ public class FightService {
         String fightRandomId;
         String fightSpeedCode;
         String fightLengthCode;
+        String fightDefensiveModeCode;
 
         try {
             if (!fileName.startsWith("skb_")) return null;
-            else if (!fileName.substring(16).equals(".mp3")) return null;
-            else if (fileName.length() != 20) return null;
+            else if (!fileName.substring(18).equals(".mp3")) return null;
+            else if (fileName.length() != 22) return null;
             fightRandomId = fileName.substring(4, 12);
             fightSpeedCode = fileName.substring(12, 14);
             fightLengthCode = fileName.substring(14, 16);
+            fightDefensiveModeCode = fileName.substring(16, 18);
         } catch (IndexOutOfBoundsException ioobEx) {
             return null;
         }
 
         Fight fight = findByRandomId(fightRandomId);
-        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)) {
+        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)  && fight.getDefensiveMode().getDescriptionIn2Chars().equals(fightDefensiveModeCode)) {
             if (fight.getZdtFirstDownload() == null) {
                 fight.setZdtFirstDownload(ZonedDateTime.now());
                 save(fight);

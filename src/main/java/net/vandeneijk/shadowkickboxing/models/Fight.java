@@ -34,16 +34,21 @@ public class Fight {
     private Length length;
 
     @NotNull
+    @ManyToOne
+    private DefensiveMode defensiveMode;
+
+    @NotNull
     @Column(columnDefinition = "longblob")
     private byte[] audioFragment;
 
     protected Fight() {}
 
-    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull byte[] audioFragment) {
+    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull byte[] audioFragment) {
         this.randomId = randomId;
         this.language = language;
         this.speed = speed;
         this.length = length;
+        this.defensiveMode = defensiveMode;
         this.audioFragment = audioFragment;
     }
 
@@ -75,11 +80,15 @@ public class Fight {
         return length;
     }
 
+    public DefensiveMode getDefensiveMode() {
+        return defensiveMode;
+    }
+
     public byte[] getAudioFragment() {
         return audioFragment;
     }
 
     public String getName() {
-        return "skb_" + randomId + speed.getDescriptionIn2Chars() + length.getDescriptionIn2Chars();
+        return "skb_" + randomId + speed.getDescriptionIn2Chars() + length.getDescriptionIn2Chars() + defensiveMode.getDescriptionIn2Chars();
     }
 }
