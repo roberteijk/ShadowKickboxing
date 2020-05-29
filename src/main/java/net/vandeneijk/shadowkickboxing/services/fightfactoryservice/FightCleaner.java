@@ -27,8 +27,13 @@ public class FightCleaner {
 
     @Async
     public void clean() {
-        ZonedDateTime zdtToDeleteBefore = ZonedDateTime.now().minusDays(2);
+        ZonedDateTime zdtToDeleteBefore = ZonedDateTime.now().minusMinutes(2);
         long amountRemoved = fightService.deleteByZdtFirstDownloadBefore(zdtToDeleteBefore);
         if (amountRemoved > 0) logger.info("Outdated fights removed from database. Amount: " + amountRemoved);
+    }
+
+    @Async
+    public void removeOverdueReservation() {
+        // TODO
     }
 }

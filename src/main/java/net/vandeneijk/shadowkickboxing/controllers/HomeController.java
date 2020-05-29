@@ -104,7 +104,8 @@ public class HomeController {
                 logger.error("Error redirecting to exceeded page. Exception: " + ioEx);
             }
         } else if ((fight = fightService.getFight(fileName)) != null) {
-            byte[] audioFragment = fight.getAudioFragment();
+//            byte[] audioFragment = fight.getAudioFragment();
+            byte[] audioFragment = fight.getFightAudioData().getAudioFragment();
             response.setContentType("audio/mpeg");
             response.setContentLength(audioFragment.length);
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);

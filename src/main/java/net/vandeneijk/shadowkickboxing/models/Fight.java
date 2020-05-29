@@ -19,6 +19,8 @@ public class Fight {
     @NotNull
     private String randomId;
 
+    private ZonedDateTime zdtReservation;
+
     private ZonedDateTime zdtFirstDownload;
 
     @NotNull
@@ -38,18 +40,18 @@ public class Fight {
     private DefensiveMode defensiveMode;
 
     @NotNull
-    @Column(columnDefinition = "longblob")
-    private byte[] audioFragment;
+    @OneToOne(cascade = CascadeType.ALL)
+    private FightAudioData fightAudioData;
 
     protected Fight() {}
 
-    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull byte[] audioFragment) {
+    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull FightAudioData fightAudioData) {
         this.randomId = randomId;
         this.language = language;
         this.speed = speed;
         this.length = length;
         this.defensiveMode = defensiveMode;
-        this.audioFragment = audioFragment;
+        this.fightAudioData = fightAudioData;
     }
 
     public Long getFightId() {
@@ -58,6 +60,14 @@ public class Fight {
 
     public String getRandomId() {
         return randomId;
+    }
+
+    public ZonedDateTime getZdtReservation() {
+        return zdtReservation;
+    }
+
+    public void setZdtReservation(ZonedDateTime zdtReservation) {
+        this.zdtReservation = zdtReservation;
     }
 
     public ZonedDateTime getZdtFirstDownload() {
@@ -84,8 +94,8 @@ public class Fight {
         return defensiveMode;
     }
 
-    public byte[] getAudioFragment() {
-        return audioFragment;
+    public FightAudioData getFightAudioData() {
+        return fightAudioData;
     }
 
     public String getName() {

@@ -18,11 +18,13 @@ import java.time.ZonedDateTime;
 @Service
 public class FightService {
 
+    private final CachedFightService cachedFightService;
     private final FightRepository fightRepository;
     private final SpeedRepository speedRepository;
     private final LengthRepository lengthRepository;
 
-    public FightService(FightRepository fightRepository, SpeedRepository speedRepository, LengthRepository lengthRepository) {
+    public FightService(CachedFightService cachedFightService, FightRepository fightRepository, SpeedRepository speedRepository, LengthRepository lengthRepository) {
+        this.cachedFightService = cachedFightService;
         this.fightRepository = fightRepository;
         this.speedRepository = speedRepository;
         this.lengthRepository = lengthRepository;
@@ -44,10 +46,10 @@ public class FightService {
         return fightRepository.existsByRandomId(randomId);
     }
 
-    public Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode) {
+    public synchronized Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode) {
         Fight fight;
 
-        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndZdtFirstDownload(speed, length, defensiveMode, null)) == null) {
+        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndZdtReservationAndZdtFirstDownload(speed, length, defensiveMode, null,null)) == null) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException iEx) {
@@ -55,6 +57,8 @@ public class FightService {
             }
         }
 
+        fight.setZdtReservation(ZonedDateTime.now());
+        fightRepository.save(fight);
         return fight;
     }
 
@@ -93,4 +97,5 @@ public class FightService {
 
         return null;
     }
+
 }

@@ -186,7 +186,7 @@ public class FightFactory {
         byte[] fightByteArray = new byte[fight.size()];
         for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
 
-        fightService.save(new Fight(getRandomId(), language, speed, length, defensiveMode, fightByteArray));
+        fightService.save(new Fight(getRandomId(), language, speed, length, defensiveMode, new FightAudioData(fightByteArray)));
 
         logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   DefensiveMode: " + defensiveMode.getDescription() + "   Size: " + fight.size());
     }

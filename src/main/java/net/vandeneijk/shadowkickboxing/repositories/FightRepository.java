@@ -17,7 +17,7 @@ public interface FightRepository extends CrudRepository<Fight, Long> {
 
     Fight findByRandomId(String randomId);
 
-    Fight findFirstBySpeedAndLengthAndDefensiveModeAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, ZonedDateTime zdtFirstDownload);
+    Fight findFirstBySpeedAndLengthAndDefensiveModeAndZdtReservationAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, ZonedDateTime zdtReservation, ZonedDateTime zdtFirstDownload);
 
     long countBySpeedAndLengthAndDefensiveMode(Speed speed, Length length, DefensiveMode defensiveMode);
 
