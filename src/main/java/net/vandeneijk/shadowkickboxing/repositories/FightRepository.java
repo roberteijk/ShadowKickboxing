@@ -9,9 +9,9 @@ import net.vandeneijk.shadowkickboxing.models.Fight;
 import net.vandeneijk.shadowkickboxing.models.Length;
 import net.vandeneijk.shadowkickboxing.models.Speed;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 public interface FightRepository extends CrudRepository<Fight, Long> {
 
@@ -23,6 +23,8 @@ public interface FightRepository extends CrudRepository<Fight, Long> {
 
     boolean existsByRandomId(String randomId);
 
-    @Transactional
-    long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt);
+//    @Transactional
+//    long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt);
+
+    List<Fight> findByZdtFirstDownloadBefore(ZonedDateTime zdt);
 }

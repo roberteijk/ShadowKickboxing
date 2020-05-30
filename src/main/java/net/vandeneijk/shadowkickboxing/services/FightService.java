@@ -14,6 +14,7 @@ import net.vandeneijk.shadowkickboxing.repositories.SpeedRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 public class FightService {
@@ -62,8 +63,13 @@ public class FightService {
         return fight;
     }
 
-    public long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt) {
-        return fightRepository.deleteByZdtFirstDownloadBefore(zdt);
+//    public long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt) {
+//        return fightRepository.deleteByZdtFirstDownloadBefore(zdt);
+//
+//    }
+
+    public List<Fight> findByZdtFirstDownloadBefore(ZonedDateTime zdt) {
+        return fightRepository.findByZdtFirstDownloadBefore(zdt);
 
     }
 
@@ -96,6 +102,10 @@ public class FightService {
         }
 
         return null;
+    }
+
+    public void deleteById(Long id) {
+        fightRepository.deleteById(id);
     }
 
 }

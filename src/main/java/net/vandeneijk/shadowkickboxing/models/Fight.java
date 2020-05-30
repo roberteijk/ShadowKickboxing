@@ -40,18 +40,17 @@ public class Fight {
     private DefensiveMode defensiveMode;
 
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL)
-    private FightAudioData fightAudioData;
+    private Long fightAudioDataId;
 
     protected Fight() {}
 
-    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull FightAudioData fightAudioData) {
+    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull Long fightAudioDataId) {
         this.randomId = randomId;
         this.language = language;
         this.speed = speed;
         this.length = length;
         this.defensiveMode = defensiveMode;
-        this.fightAudioData = fightAudioData;
+        this.fightAudioDataId = fightAudioDataId;
     }
 
     public Long getFightId() {
@@ -94,8 +93,8 @@ public class Fight {
         return defensiveMode;
     }
 
-    public FightAudioData getFightAudioData() {
-        return fightAudioData;
+    public Long getFightAudioDataId() {
+        return fightAudioDataId;
     }
 
     public String getName() {

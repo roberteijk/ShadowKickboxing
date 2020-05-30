@@ -14,9 +14,6 @@ public class FightAudioData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long fightAudioDataId;
 
-    @OneToOne(mappedBy = "fightAudioData")
-    private Fight fight;
-
     @NotNull
     @Column(columnDefinition = "longblob")
     private byte[] audioFragment;
@@ -25,6 +22,10 @@ public class FightAudioData {
 
     public FightAudioData(@NotNull byte[] audioFragment) {
         this.audioFragment = audioFragment;
+    }
+
+    public Long getFightAudioDataId() {
+        return fightAudioDataId;
     }
 
     public byte[] getAudioFragment() {
