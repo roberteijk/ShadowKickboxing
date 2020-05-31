@@ -5,7 +5,10 @@
 package net.vandeneijk.shadowkickboxing.services.fightfactoryservice;
 
 import net.vandeneijk.shadowkickboxing.models.*;
-import net.vandeneijk.shadowkickboxing.services.*;
+import net.vandeneijk.shadowkickboxing.services.AudioService;
+import net.vandeneijk.shadowkickboxing.services.FightService;
+import net.vandeneijk.shadowkickboxing.services.InstructionService;
+import net.vandeneijk.shadowkickboxing.services.LanguageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.DependsOn;
@@ -26,19 +29,17 @@ public class FightFactory {
     private final LanguageService languageService;
     private final AudioService audioService;
     private final FightService fightService;
-    private final FightAudioDataService fightAudioDataService;
 
     private List<Long> instructionCallWeightDistribution;
     private Audio audioSilence;
     private int silenceLengthMillis;
 
 
-    public FightFactory(InstructionService instructionService, LanguageService languageService, AudioService audioService, FightService fightService, FightAudioDataService fightAudioDataService) {
+    public FightFactory(InstructionService instructionService, LanguageService languageService, AudioService audioService, FightService fightService) {
         this.instructionService = instructionService;
         this.languageService = languageService;
         this.audioService = audioService;
         this.fightService = fightService;
-        this.fightAudioDataService = fightAudioDataService;
     }
 
     @Async
@@ -186,8 +187,7 @@ public class FightFactory {
         for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
 
         FightAudioData fightAudioData = new FightAudioData(fightByteArray);
-        fightAudioDataService.save(fightAudioData);
-        fightService.save(new Fight(getRandomId(), language, speed, length, defensiveMode, fightAudioData.getFightAudioDataId()));
+        fightService.save(new Fight(getRandomId(), language, speed, length, defensiveMode), fightAudioData);
 
         logger.info("Fight created and stored in database. Speed: " + speed.getDescription() + "   Rounds: " + length.getNumberRounds() + "   DefensiveMode: " + defensiveMode.getDescription() + "   Size: " + fight.size());
     }

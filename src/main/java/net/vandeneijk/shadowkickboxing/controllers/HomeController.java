@@ -32,7 +32,6 @@ public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(SeedDatabase.class);
 
     private final FightService fightService;
-    private final FightAudioDataService fightAudioDataService;
     private final SpeedService speedService;
     private final LengthService lengthService;
     private final DefensiveModeService defensiveModeService;
@@ -43,9 +42,8 @@ public class HomeController {
 
     private final int[] downloadLimits = {3, 5, 9, 17, 33, 65};
 
-    public HomeController(FightService fightService, FightAudioDataService fightAudioDataService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
+    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
-        this.fightAudioDataService = fightAudioDataService;
         this.speedService = speedService;
         this.lengthService = lengthService;
         this.defensiveModeService = defensiveModeService;
@@ -75,11 +73,8 @@ public class HomeController {
         Speed speed = speedService.findById(speedId).get();
         Length length = lengthService.findById(lengthId).get();
         DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
-        long registeredMillis = System.currentTimeMillis();
         String fightName = fightService.retrieveFreshFight(speed, length, defensiveMode).getName();
         modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
-        System.out.println("Time it took: " + (System.currentTimeMillis() - registeredMillis));
-
 
         connectionLog.setAvailable(true);
         connectionLogService.save(connectionLog);
@@ -109,12 +104,13 @@ public class HomeController {
                 logger.error("Error redirecting to exceeded page. Exception: " + ioEx);
             }
         } else if ((fight = fightService.getFight(fileName)) != null) {
-            byte[] audioFragment = fightAudioDataService.findById(fight.getFightAudioDataId()).get().getAudioFragment();
+
+            byte[] audioFragment = fightService.getFightAudioData(fight);
             response.setContentType("audio/mpeg");
             response.setContentLength(audioFragment.length);
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 
-            try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(audioFragment)); OutputStream os = response.getOutputStream()) {
+            try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(audioFragment)); OutputStream os = new BufferedOutputStream(response.getOutputStream())) {
                 org.apache.commons.io.IOUtils.copy(is, os);
                 response.flushBuffer();
 

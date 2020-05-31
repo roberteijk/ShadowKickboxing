@@ -4,13 +4,9 @@
 
 package net.vandeneijk.shadowkickboxing.services;
 
-import net.vandeneijk.shadowkickboxing.models.DefensiveMode;
-import net.vandeneijk.shadowkickboxing.models.Fight;
-import net.vandeneijk.shadowkickboxing.models.Length;
-import net.vandeneijk.shadowkickboxing.models.Speed;
+import net.vandeneijk.shadowkickboxing.models.*;
+import net.vandeneijk.shadowkickboxing.repositories.FightAudioDataRepository;
 import net.vandeneijk.shadowkickboxing.repositories.FightRepository;
-import net.vandeneijk.shadowkickboxing.repositories.LengthRepository;
-import net.vandeneijk.shadowkickboxing.repositories.SpeedRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -19,20 +15,12 @@ import java.util.List;
 @Service
 public class FightService {
 
-    private final CachedFightService cachedFightService;
     private final FightRepository fightRepository;
-    private final SpeedRepository speedRepository;
-    private final LengthRepository lengthRepository;
+    private final FightAudioDataRepository fightAudioDataRepository;
 
-    public FightService(CachedFightService cachedFightService, FightRepository fightRepository, SpeedRepository speedRepository, LengthRepository lengthRepository) {
-        this.cachedFightService = cachedFightService;
+    public FightService(FightRepository fightRepository, FightAudioDataRepository fightAudioDataRepository) {
         this.fightRepository = fightRepository;
-        this.speedRepository = speedRepository;
-        this.lengthRepository = lengthRepository;
-    }
-
-    public void save(Fight fight) {
-        fightRepository.save(fight);
+        this.fightAudioDataRepository = fightAudioDataRepository;
     }
 
     public Fight findByRandomId(String randomId) {
@@ -47,10 +35,14 @@ public class FightService {
         return fightRepository.existsByRandomId(randomId);
     }
 
+    public byte[] getFightAudioData(Fight fight) {
+        return fightAudioDataRepository.findById(fight.getFightAudioDataId()).get().getAudioFragment();
+    }
+
     public synchronized Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode) {
         Fight fight;
 
-        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndZdtReservationAndZdtFirstDownload(speed, length, defensiveMode, null,null)) == null) {
+        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndZdtFirstDownload(speed, length, defensiveMode, null)) == null || ZonedDateTime.now().isBefore(fight.getZdtReservedUntil())) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException iEx) {
@@ -58,22 +50,13 @@ public class FightService {
             }
         }
 
-        fight.setZdtReservation(ZonedDateTime.now());
+        fight.setZdtReservedUntil(ZonedDateTime.now().plusSeconds(10));
         fightRepository.save(fight);
+
         return fight;
     }
 
-//    public long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt) {
-//        return fightRepository.deleteByZdtFirstDownloadBefore(zdt);
-//
-//    }
-
-    public List<Fight> findByZdtFirstDownloadBefore(ZonedDateTime zdt) {
-        return fightRepository.findByZdtFirstDownloadBefore(zdt);
-
-    }
-
-    public Fight getFight(String fileName) {
+    public synchronized Fight getFight(String fileName) {
         String fightRandomId;
         String fightSpeedCode;
         String fightLengthCode;
@@ -104,8 +87,24 @@ public class FightService {
         return null;
     }
 
-    public void deleteById(Long id) {
-        fightRepository.deleteById(id);
+    public synchronized long deleteAllFightsBeforeZdtFirstDownload(ZonedDateTime zdtToDeleteBefore) {
+        List<Fight> fightListToRemove = fightRepository.findByZdtFirstDownloadBefore(zdtToDeleteBefore);
+
+        for (Fight fightToRemove : fightListToRemove) {
+            fightRepository.deleteById(fightToRemove.getFightId());
+            fightAudioDataRepository.deleteById(fightToRemove.getFightAudioDataId());
+        }
+
+        return fightListToRemove.size();
     }
 
+    public void save(Fight fight) {
+        fightRepository.save(fight);
+    }
+
+    public synchronized void save(Fight fight, FightAudioData fightAudioData) {
+        fightAudioDataRepository.save(fightAudioData);
+        fight.setFightAudioDataId(fightAudioData.getFightAudioDataId());
+        fightRepository.save(fight);
+    }
 }

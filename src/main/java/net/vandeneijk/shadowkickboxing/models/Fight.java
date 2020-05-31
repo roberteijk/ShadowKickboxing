@@ -19,7 +19,8 @@ public class Fight {
     @NotNull
     private String randomId;
 
-    private ZonedDateTime zdtReservation;
+    @NotNull
+    private ZonedDateTime zdtReservedUntil;
 
     private ZonedDateTime zdtFirstDownload;
 
@@ -39,18 +40,17 @@ public class Fight {
     @ManyToOne
     private DefensiveMode defensiveMode;
 
-    @NotNull
     private Long fightAudioDataId;
 
     protected Fight() {}
 
-    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull Long fightAudioDataId) {
+    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode) {
         this.randomId = randomId;
         this.language = language;
         this.speed = speed;
         this.length = length;
         this.defensiveMode = defensiveMode;
-        this.fightAudioDataId = fightAudioDataId;
+        zdtReservedUntil = ZonedDateTime.now();
     }
 
     public Long getFightId() {
@@ -61,12 +61,12 @@ public class Fight {
         return randomId;
     }
 
-    public ZonedDateTime getZdtReservation() {
-        return zdtReservation;
+    public ZonedDateTime getZdtReservedUntil() {
+        return zdtReservedUntil;
     }
 
-    public void setZdtReservation(ZonedDateTime zdtReservation) {
-        this.zdtReservation = zdtReservation;
+    public void setZdtReservedUntil(ZonedDateTime zdtReservedUntil) {
+        this.zdtReservedUntil = zdtReservedUntil;
     }
 
     public ZonedDateTime getZdtFirstDownload() {
@@ -95,6 +95,10 @@ public class Fight {
 
     public Long getFightAudioDataId() {
         return fightAudioDataId;
+    }
+
+    public void setFightAudioDataId(Long fightAudioDataId) {
+        this.fightAudioDataId = fightAudioDataId;
     }
 
     public String getName() {
