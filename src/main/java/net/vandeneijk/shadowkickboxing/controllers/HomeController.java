@@ -67,7 +67,7 @@ public class HomeController {
     }
 
     @PostMapping("/download")
-    public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, @RequestParam(value = "defensiveMode", defaultValue = "0") long defensiveModeId , HttpServletRequest request) {
+    public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, @RequestParam(value = "defensiveMode", defaultValue = "3") long defensiveModeId , HttpServletRequest request) {
         ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
 
         Speed speed = speedService.findById(speedId).get();

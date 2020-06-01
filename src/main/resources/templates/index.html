@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=0.6">
+        <meta name="description" content="Generate your unique custom training files for shadow kickboxing in mp3 format. Train at your own level to create better reflexes and muscle memory.">
         <title>Robert's Shadow Kickboxing</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
         <link rel="stylesheet" href="resources/css/styles.css">
@@ -67,7 +68,7 @@
                         <select class="form-control" id="defensiveMode" name="defensiveMode">
                             <option th:each="defensiveMode : ${defensiveModeList}" th:value="${defensiveMode.defensiveModeId}"
                                     th:text="${defensiveMode.description}"
-                                    th:selected="${defensiveMode.getDefensiveModeId() == 0}"></option>
+                                    th:selected="${defensiveMode.getDefensiveModeId() == 3}"></option>
                         </select>
                     </div>
                     <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Download">
