@@ -35,6 +35,7 @@ public class HomeController {
     private final SpeedService speedService;
     private final LengthService lengthService;
     private final DefensiveModeService defensiveModeService;
+    private final BodyHalfService bodyHalfService;
     private final FightFactory fightFactory;
     private final FightCleaner fightCleaner;
     private final TrafficRegulator trafficRegulator;
@@ -42,11 +43,12 @@ public class HomeController {
 
     private final int[] downloadLimits = {3, 5, 9, 17, 33, 65};
 
-    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
+    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, BodyHalfService bodyHalfService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
         this.speedService = speedService;
         this.lengthService = lengthService;
         this.defensiveModeService = defensiveModeService;
+        this.bodyHalfService = bodyHalfService;
         this.fightFactory = fightFactory;
         this.fightCleaner = fightCleaner;
         this.trafficRegulator = trafficRegulator;
@@ -62,18 +64,20 @@ public class HomeController {
         model.addAttribute("speedList", speedService.getSpeedList());
         model.addAttribute("lengthList", lengthService.getLengthList());
         model.addAttribute("defensiveModeList", defensiveModeService.getDefensiveModeList());
+        model.addAttribute("bodyHalfList", bodyHalfService.getBodyHalfList());
 
         return requestedItem;
     }
 
     @PostMapping("/download")
-    public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, @RequestParam(value = "defensiveMode", defaultValue = "3") long defensiveModeId , HttpServletRequest request) {
+    public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, @RequestParam(value = "defensiveMode", defaultValue = "3") long defensiveModeId , @RequestParam(value = "bodyHalf", defaultValue = "0") long bodyHalfId , HttpServletRequest request) {
         ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
 
         Speed speed = speedService.findById(speedId).get();
         Length length = lengthService.findById(lengthId).get();
         DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
-        String fightName = fightService.retrieveFreshFight(speed, length, defensiveMode).getName();
+        BodyHalf bodyHalf = bodyHalfService.findById(bodyHalfId).get();
+        String fightName = fightService.retrieveFreshFight(speed, length, defensiveMode, bodyHalf).getName();
         modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
 
         connectionLog.setAvailable(true);
@@ -116,7 +120,7 @@ public class HomeController {
 
                 availability = true;
                 fightCleaner.clean();
-                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode());
+                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getBodyHalf());
             } catch (ClientAbortException caEx) {
                 // Ignore.
             } catch (IOException ioEx) {

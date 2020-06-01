@@ -27,8 +27,8 @@ public class FightService {
         return fightRepository.findByRandomId(randomId);
     }
 
-    public long countBySpeedAndLengthAndDefensiveMove(Speed speed, Length length, DefensiveMode defensiveMode) {
-        return fightRepository.countBySpeedAndLengthAndDefensiveMode(speed, length, defensiveMode);
+    public long countBySpeedAndLengthAndDefensiveModeAndBodyHalf(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf) {
+        return fightRepository.countBySpeedAndLengthAndDefensiveModeAndBodyHalf(speed, length, defensiveMode, bodyHalf);
     }
 
     public boolean existsByRandomId(String randomId) {
@@ -39,10 +39,10 @@ public class FightService {
         return fightAudioDataRepository.findById(fight.getFightAudioDataId()).get().getAudioFragment();
     }
 
-    public synchronized Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode) {
+    public synchronized Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf) {
         Fight fight;
 
-        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndZdtFirstDownload(speed, length, defensiveMode, null)) == null || ZonedDateTime.now().isBefore(fight.getZdtReservedUntil())) {
+        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(speed, length, defensiveMode, bodyHalf, null)) == null || ZonedDateTime.now().isBefore(fight.getZdtReservedUntil())) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException iEx) {
@@ -61,21 +61,23 @@ public class FightService {
         String fightSpeedCode;
         String fightLengthCode;
         String fightDefensiveModeCode;
+        String fightBodyHalfCode;
 
         try {
             if (!fileName.startsWith("skb_")) return null;
-            else if (!fileName.substring(18).equals(".mp3")) return null;
-            else if (fileName.length() != 22) return null;
+            else if (!fileName.substring(20).equals(".mp3")) return null;
+            else if (fileName.length() != 24) return null;
             fightRandomId = fileName.substring(4, 12);
             fightSpeedCode = fileName.substring(12, 14);
             fightLengthCode = fileName.substring(14, 16);
             fightDefensiveModeCode = fileName.substring(16, 18);
+            fightBodyHalfCode = fileName.substring(18, 20);
         } catch (IndexOutOfBoundsException ioobEx) {
             return null;
         }
 
         Fight fight = findByRandomId(fightRandomId);
-        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)  && fight.getDefensiveMode().getDescriptionIn2Chars().equals(fightDefensiveModeCode)) {
+        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)  && fight.getDefensiveMode().getDescriptionIn2Chars().equals(fightDefensiveModeCode) && fight.getBodyHalf().getDescriptionIn2Chars().equals(fightBodyHalfCode)) {
             if (fight.getZdtFirstDownload() == null) {
                 fight.setZdtFirstDownload(ZonedDateTime.now());
                 save(fight);

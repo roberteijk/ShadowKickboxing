@@ -23,6 +23,12 @@ public class Instruction {
     private Boolean move;
 
     @NotNull
+    private Boolean useUpperBody;
+
+    @NotNull
+    private Boolean useLowerBody;
+
+    @NotNull
     private Boolean canBlock;
 
     @NotNull
@@ -43,15 +49,17 @@ public class Instruction {
     protected Instruction() {}
 
     public Instruction(@NotNull String description, @NotNull Boolean move) {
-        this(description, move, false, false, 1.0, 0, 0);
+        this(description, move, false, false, false, false, 1.0, 0, 0);
     }
 
-    public Instruction(@NotNull String description, @NotNull Boolean move, @NotNull Boolean canBlock, @NotNull Boolean canEvade, @NotNull Double callFrequencyWeight, @NotNull Integer minExecutionTimeMillis, @NotNull Integer maxExecutionTimeMillis) {
+    public Instruction(@NotNull String description, @NotNull Boolean move, @NotNull Boolean useUpperBody, @NotNull Boolean useLowerBody, @NotNull Boolean canBlock, @NotNull Boolean canEvade, @NotNull Double callFrequencyWeight, @NotNull Integer minExecutionTimeMillis, @NotNull Integer maxExecutionTimeMillis) {
         if (callFrequencyWeight < 0.01 || callFrequencyWeight > 1.0) throw new IllegalArgumentException("callFrequencyWeight should have a value between 0.01 and 1.0.");
         if (minExecutionTimeMillis < 0 || minExecutionTimeMillis > 10000) throw new IllegalArgumentException("minExecutionTimeMillis should have a value between 0 and 10000.");
         if (maxExecutionTimeMillis < 0 || maxExecutionTimeMillis > 10000) throw new IllegalArgumentException("maxExecutionTimeMillis should have a value between 0 and 10000.");
         this.description = description;
         this.move = move;
+        this.useUpperBody = useUpperBody;
+        this.useLowerBody = useLowerBody;
         this.canBlock = canBlock;
         this.canEvade = canEvade;
         this.callFrequencyWeight = callFrequencyWeight;
@@ -69,6 +77,14 @@ public class Instruction {
 
     public Boolean isMove() {
         return move;
+    }
+
+    public Boolean isUseUpperBody() {
+        return useUpperBody;
+    }
+
+    public Boolean isUseLowerBody() {
+        return useLowerBody;
     }
 
     public Boolean isCanBlock() {

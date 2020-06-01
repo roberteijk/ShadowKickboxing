@@ -71,6 +71,14 @@
                                     th:selected="${defensiveMode.getDefensiveModeId() == 3}"></option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="length">body half to train</label>
+                        <select class="form-control" id="bodyHalf" name="bodyHalf">
+                            <option th:each="bodyHalf : ${bodyHalfList}" th:value="${bodyHalf.bodyHalfId}"
+                                    th:text="${bodyHalf.description}"
+                                    th:selected="${bodyHalf.getBodyHalfId() == 0}"></option>
+                        </select>
+                    </div>
                     <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Download">
                 </form>
             </div>

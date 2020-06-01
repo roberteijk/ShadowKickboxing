@@ -4,10 +4,7 @@
 
 package net.vandeneijk.shadowkickboxing.repositories;
 
-import net.vandeneijk.shadowkickboxing.models.DefensiveMode;
-import net.vandeneijk.shadowkickboxing.models.Fight;
-import net.vandeneijk.shadowkickboxing.models.Length;
-import net.vandeneijk.shadowkickboxing.models.Speed;
+import net.vandeneijk.shadowkickboxing.models.*;
 import org.springframework.data.repository.CrudRepository;
 
 import java.time.ZonedDateTime;
@@ -17,9 +14,9 @@ public interface FightRepository extends CrudRepository<Fight, Long> {
 
     Fight findByRandomId(String randomId);
 
-    Fight findFirstBySpeedAndLengthAndDefensiveModeAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, ZonedDateTime zdtFirstDownload);
+    Fight findFirstBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf, ZonedDateTime zdtFirstDownload);
 
-    long countBySpeedAndLengthAndDefensiveMode(Speed speed, Length length, DefensiveMode defensiveMode);
+    long countBySpeedAndLengthAndDefensiveModeAndBodyHalf(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf);
 
     boolean existsByRandomId(String randomId);
 
