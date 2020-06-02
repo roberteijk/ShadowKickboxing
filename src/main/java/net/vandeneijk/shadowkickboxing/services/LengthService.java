@@ -8,7 +8,6 @@ import net.vandeneijk.shadowkickboxing.models.Length;
 import net.vandeneijk.shadowkickboxing.repositories.LengthRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +33,6 @@ public class LengthService {
     }
 
     public List<Length> getLengthList() {
-        List<Length> lengthList = new ArrayList<>();
-        lengthRepository.findAll().forEach(lengthList::add);
-        return lengthList;
+        return lengthRepository.findAll();
     }
 }

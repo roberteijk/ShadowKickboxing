@@ -8,7 +8,6 @@ import net.vandeneijk.shadowkickboxing.models.BodyHalf;
 import net.vandeneijk.shadowkickboxing.repositories.BodyHalfRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,10 +31,11 @@ public class BodyHalfService {
     public Optional<BodyHalf> findById(Long id) {
         return bodyHalfRepository.findById(id);
     }
+//    public BodyHalf findById(Long id) {
+//        return bodyHalfRepository.findById(id);
+//    }
 
     public List<BodyHalf> getBodyHalfList() {
-        List<BodyHalf> defensiveModeList = new ArrayList<>();
-        bodyHalfRepository.findAll().forEach(defensiveModeList::add);
-        return defensiveModeList;
+        return bodyHalfRepository.findAll();
     }
 }

@@ -22,14 +22,14 @@ public class ShadowKickboxingApplication {
 
     @Bean
     public Executor taskExecutor() {
-        int cores = (Runtime.getRuntime().availableProcessors() > 1) ? Runtime.getRuntime().availableProcessors() - 1 : Runtime.getRuntime().availableProcessors();
+        int cores = 3;
         logger.info("Number of cores available for async processing: " + cores + ".");
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(cores);
         executor.setMaxPoolSize(cores);
         executor.setThreadPriority(2);
-        executor.setQueueCapacity(500);
+        executor.setQueueCapacity(1500);
         executor.setThreadNamePrefix("skb-thread-");
         executor.initialize();
         return executor;

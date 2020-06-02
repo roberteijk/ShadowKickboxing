@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.time.ZonedDateTime;
+import java.util.NoSuchElementException;
 
 @Controller
 public class HomeController {
@@ -58,29 +59,50 @@ public class HomeController {
     @GetMapping({"", "/", "/index", "/index.html"})
     public String getHomePage(HttpServletRequest request, Model model) {
         String requestedItem = "index";
+        String requestMappingType = "get";
 
-        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+        logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
 
         model.addAttribute("speedList", speedService.getSpeedList());
         model.addAttribute("lengthList", lengthService.getLengthList());
-        model.addAttribute("defensiveModeList", defensiveModeService.getDefensiveModeList());
         model.addAttribute("bodyHalfList", bodyHalfService.getBodyHalfList());
+        model.addAttribute("defensiveModeList", defensiveModeService.getDefensiveModeList());
 
         return requestedItem;
     }
 
     @PostMapping("/download")
-    public ModelAndView download(ModelAndView modelAndView, @RequestParam("speed") long speedId, @RequestParam("length") long lengthId, @RequestParam(value = "defensiveMode", defaultValue = "3") long defensiveModeId , @RequestParam(value = "bodyHalf", defaultValue = "0") long bodyHalfId , HttpServletRequest request) {
-        ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
+    public ModelAndView download(ModelAndView modelAndView,
+                                 @RequestParam("speed") long speedId,
+                                 @RequestParam("length") long lengthId,
+                                 @RequestParam(value = "bodyHalf", defaultValue = "0") long bodyHalfId,
+                                 @RequestParam(value = "defensiveMode", defaultValue = "3")
+                                             long defensiveModeId, HttpServletRequest request) {
+        String requestedItem = "download";
+        String requestMappingType = "post";
 
-        Speed speed = speedService.findById(speedId).get();
-        Length length = lengthService.findById(lengthId).get();
-        DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
-        BodyHalf bodyHalf = bodyHalfService.findById(bodyHalfId).get();
-        String fightName = fightService.retrieveFreshFight(speed, length, defensiveMode, bodyHalf).getName();
-        modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
+        ConnectionLog connectionLog = new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr());
 
-        connectionLog.setAvailable(true);
+        try {
+            Speed speed = speedService.findById(speedId).get();
+            Length length = lengthService.findById(lengthId).get();
+            BodyHalf bodyHalf = bodyHalfService.findById(bodyHalfId).get();
+            DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
+
+            String fightName = fightService.retrieveFreshFight(speed, length, defensiveMode, bodyHalf).getName();
+
+            modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
+
+            logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+        } catch (NoSuchElementException nseEx) {
+            modelAndView.setViewName("redirect:/error");
+
+            logger.info("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr() + " Reason: Incorrect @RequestParam values.");
+            connectionLog.setAvailable(false);
+            connectionLog.setInfo("Incorrect @RequestParam values.");
+        }
+
         connectionLogService.save(connectionLog);
 
         return modelAndView;
@@ -88,8 +110,11 @@ public class HomeController {
 
     @GetMapping("/download")
     public String downloadWrongParam(HttpServletRequest request) {
-        ConnectionLog connectionLog = new ConnectionLog("download", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
-        connectionLog.setAvailable(false);
+        String requestedItem = "download";
+        String requestMappingType = "get";
+
+        logger.warn("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+        ConnectionLog connectionLog = new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, false, "", ZonedDateTime.now(), request.getRemoteAddr());
         connectionLogService.save(connectionLog);
 
         return "error";
@@ -97,17 +122,25 @@ public class HomeController {
 
     @GetMapping("/download/{file_name}")
     public void downloadFileName(@PathVariable("file_name") String fileName, HttpServletResponse response, HttpServletRequest request) {
-        ConnectionLog connectionLog = new ConnectionLog(".mp3", request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr());
-        boolean availability = false;
+        String requestedItem = "download/" + fileName;
+        String requestMappingType = "get";
+
+        ConnectionLog connectionLog = new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr());
 
         Fight fight;
         if (!trafficRegulator.isTrafficAllowed("download", request.getRemoteAddr(), ZonedDateTime.now(), downloadLimits)) {
             try {
+                logger.info("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr() + " Reason: TrafficRegulator.");
+                connectionLog.setAvailable(false);
+                connectionLog.setInfo("TrafficRegulator");
                 response.sendRedirect("/exceededdownload");
             }  catch (IOException ioEx) {
                 logger.error("Error redirecting to exceeded page. Exception: " + ioEx);
             }
         } else if ((fight = fightService.getFight(fileName)) != null) {
+            logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+            fightCleaner.clean();
+            fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getBodyHalf());
 
             byte[] audioFragment = fightService.getFightAudioData(fight);
             response.setContentType("audio/mpeg");
@@ -117,27 +150,34 @@ public class HomeController {
             try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(audioFragment)); OutputStream os = new BufferedOutputStream(response.getOutputStream())) {
                 org.apache.commons.io.IOUtils.copy(is, os);
                 response.flushBuffer();
-
-                availability = true;
-                fightCleaner.clean();
-                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getBodyHalf());
             } catch (ClientAbortException caEx) {
                 // Ignore.
             } catch (IOException ioEx) {
                 logger.error("Error presenting a downloadable file to client. Exception: " + ioEx);
                 throw new RuntimeException("IOError writing file to output stream");
             }
+        } else {
+            try {
+                logger.info("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr() + " Reason: File does not exist.");
+                connectionLog.setAvailable(false);
+                connectionLog.setInfo("File does not exist.");
+                response.sendRedirect("/error");
+            }  catch (IOException ioEx) {
+                logger.error("Error redirecting to exceeded page. Exception: " + ioEx);
+            }
+
         }
 
-        connectionLog.setAvailable(availability);
         connectionLogService.save(connectionLog);
     }
 
     @GetMapping("/info")
     public String getInfoPage(HttpServletRequest request) {
         String requestedItem = "info";
+        String requestMappingType = "get";
 
-        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+        logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
 
         return requestedItem;
     }
@@ -145,8 +185,10 @@ public class HomeController {
     @GetMapping("/error")
     public String getErrorPage(HttpServletRequest request) {
         String requestedItem = "error";
+        String requestMappingType = "get";
 
-        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+        logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
 
         return requestedItem;
     }
@@ -154,8 +196,10 @@ public class HomeController {
     @GetMapping("/exceededdownload")
     public String getExceededPage(HttpServletRequest request) {
         String requestedItem = "exceededdownload";
+        String requestMappingType = "get";
 
-        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), ZonedDateTime.now(), request.getRemoteAddr()));
+        logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
 
         return requestedItem;
     }

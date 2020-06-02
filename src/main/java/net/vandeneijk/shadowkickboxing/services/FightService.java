@@ -27,8 +27,8 @@ public class FightService {
         return fightRepository.findByRandomId(randomId);
     }
 
-    public long countBySpeedAndLengthAndDefensiveModeAndBodyHalf(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf) {
-        return fightRepository.countBySpeedAndLengthAndDefensiveModeAndBodyHalf(speed, length, defensiveMode, bodyHalf);
+    public long countBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf, ZonedDateTime zdtFirstDownload) {
+        return fightRepository.countBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(speed, length, defensiveMode, bodyHalf,zdtFirstDownload);
     }
 
     public boolean existsByRandomId(String randomId) {

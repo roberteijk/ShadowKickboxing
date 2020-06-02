@@ -121,6 +121,7 @@ public class SeedDatabase {
                 if (file != null) languageService.findByDescription(preAudioMeta.getLanguageDescription()).ifPresent(x -> audioService.save(new Audio(instruction, x, getAudioFileLengthMillis(file), readFileToByteArray(file))));
             } catch (IOException ioEx) {
                 logger.warn("Could not read of find file: " + preAudioMeta.getFileLocation());
+                ioEx.printStackTrace();
             }
         }
     }
@@ -165,7 +166,7 @@ public class SeedDatabase {
             for (Length length : lengthService.findAll()) {
                 for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
                     for (BodyHalf bodyHalf : bodyHalfService.findAll()) {
-                        long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndBodyHalf(speed, length, defensiveMode, bodyHalf);
+                        long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(speed, length, defensiveMode, bodyHalf, null);
                         for (long i = numberOfFightsByCriteria; i < 1; i++) {
                             fightFactory.createFight("English", speed, length, defensiveMode, bodyHalf);
                         }
@@ -185,6 +186,7 @@ public class SeedDatabase {
             return tempFile;
         } catch (IOException ioEx) {
             logger.warn("Could not create a file from a stream. Exception: " + ioEx);
+            ioEx.printStackTrace();
         }
         return null;
     }
@@ -196,6 +198,7 @@ public class SeedDatabase {
             return ((Long) properties.get("duration")).intValue() / 1000;
         } catch (UnsupportedAudioFileException | IOException miscEx) {
             logger.error("Error determining the length of an audio file for seeding database. Exception: " + miscEx);
+            miscEx.printStackTrace();
         }
         return 0;
     }
@@ -210,6 +213,7 @@ public class SeedDatabase {
             return baos.toByteArray();
         } catch (IOException ioEx) {
             logger.error("Error reading audio file to byte[] for seeding database. Exception: " + ioEx);
+            ioEx.printStackTrace();
         }
         return new byte[0];
     }

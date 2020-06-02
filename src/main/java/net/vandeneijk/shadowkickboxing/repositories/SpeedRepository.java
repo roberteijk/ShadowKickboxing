@@ -7,4 +7,9 @@ package net.vandeneijk.shadowkickboxing.repositories;
 import net.vandeneijk.shadowkickboxing.models.Speed;
 import org.springframework.data.repository.CrudRepository;
 
-public interface SpeedRepository extends CrudRepository<Speed, Long> {}
+import java.util.List;
+
+public interface SpeedRepository extends CrudRepository<Speed, Long> {
+
+    List<Speed> findAll();
+}

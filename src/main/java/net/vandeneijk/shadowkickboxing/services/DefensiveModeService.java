@@ -8,7 +8,6 @@ import net.vandeneijk.shadowkickboxing.models.DefensiveMode;
 import net.vandeneijk.shadowkickboxing.repositories.DefensiveModeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +33,6 @@ public class DefensiveModeService {
     }
 
     public List<DefensiveMode> getDefensiveModeList() {
-        List<DefensiveMode> defensiveModeList = new ArrayList<>();
-        defensiveModeRepository.findAll().forEach(defensiveModeList::add);
-        return defensiveModeList;
+        return defensiveModeRepository.findAll();
     }
 }

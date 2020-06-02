@@ -24,7 +24,12 @@ public class ConnectionLog {
     @NotNull
     private String requestedItemAs;
 
+    private String requestMappingType;
+
+    @NotNull
     private Boolean available;
+
+    private String info;
 
     @NotNull
     private ZonedDateTime zdtRequest;
@@ -34,10 +39,12 @@ public class ConnectionLog {
 
     protected ConnectionLog() {}
 
-    public ConnectionLog(@NotNull String requestedItem, @NotNull String requestedItemAs, @NotNull ZonedDateTime zdtRequest, @NotNull String requestIpAddress) {
+    public ConnectionLog(@NotNull String requestedItem, @NotNull String requestedItemAs, String requestMappingType, @NotNull Boolean available, String info, @NotNull ZonedDateTime zdtRequest, @NotNull String requestIpAddress) {
         this.requestedItem = requestedItem;
         this.requestedItemAs = requestedItemAs;
-        this.available = null;
+        this.requestMappingType = requestMappingType;
+        this.available = available;
+        this.info = info;
         this.zdtRequest = zdtRequest;
         this.requestIpAddress = requestIpAddress;
     }
@@ -54,12 +61,24 @@ public class ConnectionLog {
         return requestedItemAs;
     }
 
+    public String getRequestMappingType() {
+        return requestMappingType;
+    }
+
     public Boolean getAvailable() {
         return available;
     }
 
     public void setAvailable(Boolean available) {
         this.available = available;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     public ZonedDateTime getZdtRequest() {

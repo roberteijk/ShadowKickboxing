@@ -6,8 +6,8 @@
         <meta name="description" content="Generate your unique custom training files for shadow kickboxing in mp3 format. Train at your own level to create better reflexes and muscle memory.">
         <title>Robert's Shadow Kickboxing</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-        <link rel="stylesheet" href="resources/css/styles.css">
-        <link rel="icon" href="resources/images/favicon.ico">
+        <link rel="stylesheet" href="/resources/css/styles.css">
+        <link rel="icon" href="/resources/images/favicon.ico">
     </head>
     <body>
         <header lang="en" th:replace="fragments/header :: header"> </header>
@@ -41,7 +41,7 @@
                                     th:selected="${length.getNumberRounds() == 3}"></option>
                         </select>
                     </div>
-                    <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Download">
+                    <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Generate & Download">
                 </form>
             </div>
 
@@ -64,6 +64,14 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="length">upper/lower body training</label>
+                        <select class="form-control" id="bodyHalf" name="bodyHalf">
+                            <option th:each="bodyHalf : ${bodyHalfList}" th:value="${bodyHalf.bodyHalfId}"
+                                    th:text="${bodyHalf.description}"
+                                    th:selected="${bodyHalf.getBodyHalfId() == 0}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="length">defensive instructions</label>
                         <select class="form-control" id="defensiveMode" name="defensiveMode">
                             <option th:each="defensiveMode : ${defensiveModeList}" th:value="${defensiveMode.defensiveModeId}"
@@ -71,15 +79,7 @@
                                     th:selected="${defensiveMode.getDefensiveModeId() == 3}"></option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="length">body half to train</label>
-                        <select class="form-control" id="bodyHalf" name="bodyHalf">
-                            <option th:each="bodyHalf : ${bodyHalfList}" th:value="${bodyHalf.bodyHalfId}"
-                                    th:text="${bodyHalf.description}"
-                                    th:selected="${bodyHalf.getBodyHalfId() == 0}"></option>
-                        </select>
-                    </div>
-                    <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Download">
+                    <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Generate & Download">
                 </form>
             </div>
         </main>
@@ -92,5 +92,5 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-    <script src="resources/script/scripts.js" charset="UTF-8"></script>
+    <script src="/resources/script/scripts.js" charset="UTF-8"></script>
 </html>

@@ -8,7 +8,6 @@ import net.vandeneijk.shadowkickboxing.models.Speed;
 import net.vandeneijk.shadowkickboxing.repositories.SpeedRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +33,6 @@ public class SpeedService {
     }
 
     public List<Speed> getSpeedList() {
-        List<Speed> speedList = new ArrayList<>();
-        speedRepository.findAll().forEach(speedList::add);
-        return speedList;
+        return speedRepository.findAll();
     }
 }

@@ -7,4 +7,9 @@ package net.vandeneijk.shadowkickboxing.repositories;
 import net.vandeneijk.shadowkickboxing.models.Length;
 import org.springframework.data.repository.CrudRepository;
 
-public interface LengthRepository extends CrudRepository<Length, Long> {}
+import java.util.List;
+
+public interface LengthRepository extends CrudRepository<Length, Long> {
+
+    List<Length> findAll();
+}

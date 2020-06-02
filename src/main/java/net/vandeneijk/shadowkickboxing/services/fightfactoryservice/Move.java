@@ -12,7 +12,7 @@ public class Move {
 
     private List<Byte> bytesListAudioMove;
     private int totalMoveAudioLengthMillis;
-    private Instruction originalInstruction;
+    private final Instruction originalInstruction;
 
     public Move(List<Byte> bytesListAudioMove, int totalMoveAudioLengthMillis, Instruction originalInstruction) {
         this.bytesListAudioMove = bytesListAudioMove;

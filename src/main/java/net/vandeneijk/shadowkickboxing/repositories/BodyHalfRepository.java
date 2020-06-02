@@ -7,4 +7,9 @@ package net.vandeneijk.shadowkickboxing.repositories;
 import net.vandeneijk.shadowkickboxing.models.BodyHalf;
 import org.springframework.data.repository.CrudRepository;
 
-public interface BodyHalfRepository extends CrudRepository<BodyHalf, Long> {}
+import java.util.List;
+
+public interface BodyHalfRepository extends CrudRepository<BodyHalf, Long> {
+
+    List<BodyHalf> findAll();
+}
