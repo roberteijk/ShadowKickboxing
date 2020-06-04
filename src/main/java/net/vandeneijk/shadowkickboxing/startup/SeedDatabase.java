@@ -161,13 +161,15 @@ public class SeedDatabase {
     }
 
     private void seedFight() {
-        for (Speed speed : speedService.findAll()) {
-            for (Length length : lengthService.findAll()) {
-                for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
-                    for (Expertise expertise : expertiseService.findAll()) {
-                        long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
-                        for (long i = numberOfFightsByCriteria; i < 1; i++) {
-                            fightFactory.createFight("English", speed, length, defensiveMode, expertise);
+        for (int i = 1; i <= 7; i++) {
+            for (Speed speed : speedService.findAll()) {
+                for (Length length : lengthService.findAll()) {
+                    for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
+                        for (Expertise expertise : expertiseService.findAll()) {
+                            long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
+                            for (long j = numberOfFightsByCriteria; j < i; j++) {
+                                fightFactory.createFight("English", speed, length, defensiveMode, expertise);
+                            }
                         }
                     }
                 }
