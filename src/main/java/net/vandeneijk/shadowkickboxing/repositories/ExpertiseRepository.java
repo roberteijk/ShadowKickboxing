@@ -4,12 +4,12 @@
 
 package net.vandeneijk.shadowkickboxing.repositories;
 
-import net.vandeneijk.shadowkickboxing.models.BodyHalf;
+import net.vandeneijk.shadowkickboxing.models.Expertise;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface BodyHalfRepository extends CrudRepository<BodyHalf, Long> {
+public interface ExpertiseRepository extends CrudRepository<Expertise, Long> {
 
-    List<BodyHalf> findAll();
+    List<Expertise> findAll();
 }

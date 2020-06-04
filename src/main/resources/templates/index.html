@@ -8,6 +8,16 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
         <link rel="stylesheet" href="/resources/css/styles.css">
         <link rel="icon" href="/resources/images/favicon.ico">
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-4LKSDTW7R9"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-4LKSDTW7R9');
+        </script>
     </head>
     <body>
         <header lang="en" th:replace="fragments/header :: header"> </header>
@@ -25,6 +35,14 @@
             </div>
             <div class="row justify-content-center main-content-simple">
                 <form action="download" method="post">
+                    <div class="form-group">
+                        <label for="length">style of training</label>
+                        <select class="form-control" id="expertise" name="expertise">
+                            <option th:each="expertise : ${expertiseList}" th:value="${expertise.expertiseId}"
+                                    th:text="${expertise.description}"
+                                    th:selected="${expertise.getExpertiseId() == 0}"></option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="speed">speed of instructions</label>
                         <select class="form-control" id="speed" name="speed">
@@ -48,6 +66,14 @@
             <div class="row justify-content-center main-content-expert">
                 <form action="download" method="post">
                     <div class="form-group">
+                        <label for="length">style of training</label>
+                        <select class="form-control" id="expertise" name="expertise">
+                            <option th:each="expertise : ${expertiseList}" th:value="${expertise.expertiseId}"
+                                    th:text="${expertise.description}"
+                                    th:selected="${expertise.getExpertiseId() == 0}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="speed">speed of instructions</label>
                         <select class="form-control" id="speed" name="speed">
                             <option class="custom-dropdown" th:each="speed : ${speedList}" th:value="${speed.speedId}"
@@ -61,14 +87,6 @@
                             <option th:each="length : ${lengthList}" th:value="${length.lengthId}"
                                     th:text="${length.description}"
                                     th:selected="${length.getNumberRounds() == 3}"></option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="length">upper/lower body training</label>
-                        <select class="form-control" id="bodyHalf" name="bodyHalf">
-                            <option th:each="bodyHalf : ${bodyHalfList}" th:value="${bodyHalf.bodyHalfId}"
-                                    th:text="${bodyHalf.description}"
-                                    th:selected="${bodyHalf.getBodyHalfId() == 0}"></option>
                         </select>
                     </div>
                     <div class="form-group">

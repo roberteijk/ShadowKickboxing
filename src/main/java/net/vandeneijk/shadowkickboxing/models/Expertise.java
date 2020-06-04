@@ -11,10 +11,10 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @Entity
-public class BodyHalf {
+public class Expertise {
 
     @Id
-    private Long bodyHalfId;
+    private Long expertiseId;
 
     @NotNull
     private String description;
@@ -28,21 +28,21 @@ public class BodyHalf {
     @NotNull
     private Boolean allowLowerBody;
 
-    @OneToMany(mappedBy = "bodyHalf")
+    @OneToMany(mappedBy = "expertise")
     private Collection<Fight> fightCollection;
 
-    protected BodyHalf() {}
+    protected Expertise() {}
 
-    public BodyHalf(Long bodyHalfId, @NotNull String description, @NotNull String descriptionIn2Chars, @NotNull Boolean allowUpperBody, @NotNull Boolean allowLowerBody) {
-        this.bodyHalfId = bodyHalfId;
+    public Expertise(Long ExpertiseId, @NotNull String description, @NotNull String descriptionIn2Chars, @NotNull Boolean allowUpperBody, @NotNull Boolean allowLowerBody) {
+        this.expertiseId = ExpertiseId;
         this.description = description;
         this.descriptionIn2Chars = descriptionIn2Chars;
         this.allowUpperBody = allowUpperBody;
         this.allowLowerBody = allowLowerBody;
     }
 
-    public Long getBodyHalfId() {
-        return bodyHalfId;
+    public Long getExpertiseId() {
+        return expertiseId;
     }
 
     public String getDescription() {

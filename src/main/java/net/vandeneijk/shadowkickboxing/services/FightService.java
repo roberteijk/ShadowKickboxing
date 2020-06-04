@@ -27,8 +27,8 @@ public class FightService {
         return fightRepository.findByRandomId(randomId);
     }
 
-    public long countBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf, ZonedDateTime zdtFirstDownload) {
-        return fightRepository.countBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(speed, length, defensiveMode, bodyHalf,zdtFirstDownload);
+    public long countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, Expertise expertise, ZonedDateTime zdtFirstDownload) {
+        return fightRepository.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise,zdtFirstDownload);
     }
 
     public boolean existsByRandomId(String randomId) {
@@ -39,16 +39,10 @@ public class FightService {
         return fightAudioDataRepository.findById(fight.getFightAudioDataId()).get().getAudioFragment();
     }
 
-    public synchronized Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf) {
+    public synchronized Fight retrieveFreshFight(Speed speed, Length length, DefensiveMode defensiveMode, Expertise expertise) {
         Fight fight;
 
-        while ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(speed, length, defensiveMode, bodyHalf, null)) == null || ZonedDateTime.now().isBefore(fight.getZdtReservedUntil())) {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException iEx) {
-                iEx.printStackTrace();
-            }
-        }
+        if ((fight = fightRepository.findFirstBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null)) == null) return null;
 
         fight.setZdtReservedUntil(ZonedDateTime.now().plusSeconds(10));
         fightRepository.save(fight);
@@ -77,7 +71,7 @@ public class FightService {
         }
 
         Fight fight = findByRandomId(fightRandomId);
-        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)  && fight.getDefensiveMode().getDescriptionIn2Chars().equals(fightDefensiveModeCode) && fight.getBodyHalf().getDescriptionIn2Chars().equals(fightBodyHalfCode)) {
+        if (fight != null && fight.getSpeed().getDescriptionIn2Chars().equals(fightSpeedCode) && fight.getLength().getDescriptionIn2Chars().equals(fightLengthCode)  && fight.getDefensiveMode().getDescriptionIn2Chars().equals(fightDefensiveModeCode) && fight.getExpertise().getDescriptionIn2Chars().equals(fightBodyHalfCode)) {
             if (fight.getZdtFirstDownload() == null) {
                 fight.setZdtFirstDownload(ZonedDateTime.now());
                 save(fight);

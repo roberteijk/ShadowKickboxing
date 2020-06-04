@@ -42,19 +42,19 @@ public class Fight {
 
     @NotNull
     @ManyToOne
-    private BodyHalf bodyHalf;
+    private Expertise expertise;
 
     private Long fightAudioDataId;
 
     protected Fight() {}
 
-    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull BodyHalf bodyHalf) {
+    public Fight(@NotNull String randomId, @NotNull Language language, @NotNull Speed speed, @NotNull Length length, @NotNull DefensiveMode defensiveMode, @NotNull Expertise expertise) {
         this.randomId = randomId;
         this.language = language;
         this.speed = speed;
         this.length = length;
         this.defensiveMode = defensiveMode;
-        this.bodyHalf = bodyHalf;
+        this.expertise = expertise;
         zdtReservedUntil = ZonedDateTime.now();
     }
 
@@ -98,8 +98,8 @@ public class Fight {
         return defensiveMode;
     }
 
-    public BodyHalf getBodyHalf() {
-        return bodyHalf;
+    public Expertise getExpertise() {
+        return expertise;
     }
 
     public Long getFightAudioDataId() {
@@ -111,6 +111,6 @@ public class Fight {
     }
 
     public String getName() {
-        return "skb_" + randomId + speed.getDescriptionIn2Chars() + length.getDescriptionIn2Chars() + defensiveMode.getDescriptionIn2Chars() + bodyHalf.getDescriptionIn2Chars();
+        return "skb_" + randomId + speed.getDescriptionIn2Chars() + length.getDescriptionIn2Chars() + defensiveMode.getDescriptionIn2Chars() + expertise.getDescriptionIn2Chars();
     }
 }

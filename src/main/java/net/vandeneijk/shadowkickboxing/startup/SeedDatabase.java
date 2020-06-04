@@ -30,19 +30,19 @@ public class SeedDatabase {
     private final SpeedService speedService;
     private final LengthService lengthService;
     private final DefensiveModeService defensiveModeService;
-    private final BodyHalfService bodyHalfService;
+    private final ExpertiseService expertiseService;
     private final FightService fightService;
     private final FightFactory fightFactory;
 
     @Autowired
-    public SeedDatabase(LanguageService languageService, InstructionService instructionService, AudioService audioService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, BodyHalfService bodyHalfService, FightService fightService, FightFactory fightFactory) {
+    public SeedDatabase(LanguageService languageService, InstructionService instructionService, AudioService audioService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, ExpertiseService expertiseService, FightService fightService, FightFactory fightFactory) {
         this.languageService = languageService;
         this.instructionService = instructionService;
         this.audioService = audioService;
         this.speedService = speedService;
         this.lengthService = lengthService;
         this.defensiveModeService = defensiveModeService;
-        this.bodyHalfService = bodyHalfService;
+        this.expertiseService = expertiseService;
         this.fightService = fightService;
         this.fightFactory = fightFactory;
 
@@ -51,7 +51,7 @@ public class SeedDatabase {
         seedSpeed();
         seedLength();
         seedDefensiveMode();
-        seedBodyHalf();
+        seedExpertise();
         seedFight();
     }
 
@@ -147,28 +147,27 @@ public class SeedDatabase {
     private void seedDefensiveMode() {
         logger.info("Seeding database with DefensiveMode.");
 
-        defensiveModeService.save(new DefensiveMode(0L,"Block and evade", "be", true, true));
-        defensiveModeService.save(new DefensiveMode(1L,"Block only", "bo", true, false));
-        defensiveModeService.save(new DefensiveMode(2L,"Evade only", "eo", false, true));
-        defensiveModeService.save(new DefensiveMode(3L,"None", "no", false, false));
+        defensiveModeService.save(new DefensiveMode(0L,"Block & Evade", "be", true, true));
+        defensiveModeService.save(new DefensiveMode(1L,"Block Only", "bo", true, false));
+        defensiveModeService.save(new DefensiveMode(2L,"Evade Only", "eo", false, true));
+        defensiveModeService.save(new DefensiveMode(3L,"None (no defense)", "no", false, false));
     }
 
-    private void seedBodyHalf() {
-        logger.info("Seeding database with BodyHalf.");
+    private void seedExpertise() {
+        logger.info("Seeding database with Expertise.");
 
-        bodyHalfService.save(new BodyHalf(0L, "Full body", "fb", true, true));
-        bodyHalfService.save(new BodyHalf(1L, "Upper body (boxing)", "ub", true, false));
-        bodyHalfService.save(new BodyHalf(2L, "Lower body (kicking)", "lb", false, true));
+        expertiseService.save(new Expertise(0L, "Shadow Kickboxing (full body)", "fb", true, true));
+        expertiseService.save(new Expertise(1L, "Shadow Boxing (upper body)", "ub", true, false));
     }
 
     private void seedFight() {
         for (Speed speed : speedService.findAll()) {
             for (Length length : lengthService.findAll()) {
                 for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
-                    for (BodyHalf bodyHalf : bodyHalfService.findAll()) {
-                        long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(speed, length, defensiveMode, bodyHalf, null);
+                    for (Expertise expertise : expertiseService.findAll()) {
+                        long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
                         for (long i = numberOfFightsByCriteria; i < 1; i++) {
-                            fightFactory.createFight("English", speed, length, defensiveMode, bodyHalf);
+                            fightFactory.createFight("English", speed, length, defensiveMode, expertise);
                         }
                     }
                 }

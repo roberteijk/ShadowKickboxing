@@ -43,7 +43,7 @@ public class FightFactory {
     }
 
     @Async
-    public void createFight(String languageDescription, Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf) {
+    public void createFight(String languageDescription, Speed speed, Length length, DefensiveMode defensiveMode, Expertise expertise) {
         seedInstructionCallWeightDistribution();
         getAudioSilence();
 
@@ -52,7 +52,7 @@ public class FightFactory {
         List<List<Byte>> rounds = new ArrayList<>();
 
         while (rounds.size() < length.getNumberRounds()) {
-            rounds.add(createRound(roundLengthSeconds, language, speed, defensiveMode, bodyHalf));
+            rounds.add(createRound(roundLengthSeconds, language, speed, defensiveMode, expertise));
         }
 
         List<Byte> fight = new ArrayList<>();
@@ -60,15 +60,15 @@ public class FightFactory {
         addBreaksBetweenRounds(rounds, fight, language);
         addBreakBellAfterFight(fight, language);
 
-        writeFightToDatabase(fight, language, speed, length, defensiveMode, bodyHalf);
+        writeFightToDatabase(fight, language, speed, length, defensiveMode, expertise);
     }
 
 
-    private List<Byte> createRound(int roundLengthSeconds, Language language, Speed speed, DefensiveMode defensiveMode, BodyHalf bodyHalf) {
+    private List<Byte> createRound(int roundLengthSeconds, Language language, Speed speed, DefensiveMode defensiveMode, Expertise expertise) {
         List<Byte> round = new ArrayList<>();
         int roundLengthMillisRemaining = roundLengthSeconds * 1000;
         while (true) {
-            Move move = createMove(language, speed, roundLengthMillisRemaining, bodyHalf);
+            Move move = createMove(language, speed, roundLengthMillisRemaining, expertise);
             if (move == null) break;
 
             prependWithBlockIfApplicable(move, language, speed, defensiveMode, roundLengthMillisRemaining);
@@ -80,12 +80,12 @@ public class FightFactory {
         return round;
     }
 
-    private Move createMove(Language language, Speed speed, int roundLengthMillisRemaining, BodyHalf bodyHalf) {
+    private Move createMove(Language language, Speed speed, int roundLengthMillisRemaining, Expertise expertise) {
         Instruction instructionMove;
         do {
             long moveToAdd = instructionCallWeightDistribution.get((int) (Math.random() * instructionCallWeightDistribution.size()));
             instructionMove = instructionService.findById(moveToAdd).get();
-        } while ((instructionMove.isUseUpperBody() && !bodyHalf.isAllowUpperBody()) || (instructionMove.isUseLowerBody() && !bodyHalf.isAllowLowerBody()));
+        } while ((instructionMove.isUseUpperBody() && !expertise.isAllowUpperBody()) || (instructionMove.isUseLowerBody() && !expertise.isAllowLowerBody()));
 
         Audio audioMove = audioService.findByInstructionAndLanguage(instructionMove, language);
         int minExecutionTimeMillis = instructionMove.getMinExecutionTimeMillis();
@@ -183,14 +183,14 @@ public class FightFactory {
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
     }
 
-    private synchronized void writeFightToDatabase(List<Byte> fight, Language language, Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf) {
+    private synchronized void writeFightToDatabase(List<Byte> fight, Language language, Speed speed, Length length, DefensiveMode defensiveMode, Expertise expertise) {
         byte[] fightByteArray = new byte[fight.size()];
         for (int i = 0; i < fightByteArray.length; i++) fightByteArray[i] = fight.get(i);
 
         FightAudioData fightAudioData = new FightAudioData(fightByteArray);
-        fightService.save(new Fight(getRandomId(), language, speed, length, defensiveMode, bodyHalf), fightAudioData);
+        fightService.save(new Fight(getRandomId(), language, speed, length, defensiveMode, expertise), fightAudioData);
 
-        logger.info("Fight created and stored in database: " + speed.getDescriptionIn2Chars() + length.getDescriptionIn2Chars() + defensiveMode.getDescriptionIn2Chars() + bodyHalf.getDescriptionIn2Chars() + "   Size: " + fight.size());
+        logger.info("Fight created and stored in database: " + speed.getDescriptionIn2Chars() + length.getDescriptionIn2Chars() + defensiveMode.getDescriptionIn2Chars() + expertise.getDescriptionIn2Chars() + "   Size: " + fight.size());
     }
 
     private synchronized void seedInstructionCallWeightDistribution() {

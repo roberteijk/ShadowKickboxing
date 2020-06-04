@@ -14,14 +14,11 @@ public interface FightRepository extends CrudRepository<Fight, Long> {
 
     Fight findByRandomId(String randomId);
 
-    Fight findFirstBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf, ZonedDateTime zdtFirstDownload);
+    Fight findFirstBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, Expertise expertise, ZonedDateTime zdtFirstDownload);
 
-    long countBySpeedAndLengthAndDefensiveModeAndBodyHalfAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, BodyHalf bodyHalf, ZonedDateTime zdtFirstDownload);
+    long countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(Speed speed, Length length, DefensiveMode defensiveMode, Expertise expertise, ZonedDateTime zdtFirstDownload);
 
     boolean existsByRandomId(String randomId);
-
-//    @Transactional
-//    long deleteByZdtFirstDownloadBefore(ZonedDateTime zdt);
 
     List<Fight> findByZdtFirstDownloadBefore(ZonedDateTime zdt);
 }

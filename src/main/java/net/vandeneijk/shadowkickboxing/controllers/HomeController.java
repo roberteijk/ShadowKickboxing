@@ -36,7 +36,7 @@ public class HomeController {
     private final SpeedService speedService;
     private final LengthService lengthService;
     private final DefensiveModeService defensiveModeService;
-    private final BodyHalfService bodyHalfService;
+    private final ExpertiseService expertiseService;
     private final FightFactory fightFactory;
     private final FightCleaner fightCleaner;
     private final TrafficRegulator trafficRegulator;
@@ -44,12 +44,12 @@ public class HomeController {
 
     private final int[] downloadLimits = {3, 5, 9, 17, 33, 65};
 
-    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, BodyHalfService bodyHalfService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
+    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, ExpertiseService expertiseService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
         this.speedService = speedService;
         this.lengthService = lengthService;
         this.defensiveModeService = defensiveModeService;
-        this.bodyHalfService = bodyHalfService;
+        this.expertiseService = expertiseService;
         this.fightFactory = fightFactory;
         this.fightCleaner = fightCleaner;
         this.trafficRegulator = trafficRegulator;
@@ -64,9 +64,9 @@ public class HomeController {
         logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
         connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
 
+        model.addAttribute("expertiseList", expertiseService.getExpertiseList());
         model.addAttribute("speedList", speedService.getSpeedList());
         model.addAttribute("lengthList", lengthService.getLengthList());
-        model.addAttribute("bodyHalfList", bodyHalfService.getBodyHalfList());
         model.addAttribute("defensiveModeList", defensiveModeService.getDefensiveModeList());
 
         return requestedItem;
@@ -74,9 +74,9 @@ public class HomeController {
 
     @PostMapping("/download")
     public ModelAndView download(ModelAndView modelAndView,
+                                 @RequestParam("expertise") long expertiseId,
                                  @RequestParam("speed") long speedId,
                                  @RequestParam("length") long lengthId,
-                                 @RequestParam(value = "bodyHalf", defaultValue = "0") long bodyHalfId,
                                  @RequestParam(value = "defensiveMode", defaultValue = "3")
                                              long defensiveModeId, HttpServletRequest request) {
         String requestedItem = "download";
@@ -85,14 +85,21 @@ public class HomeController {
         ConnectionLog connectionLog = new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr());
 
         try {
+            Expertise expertise = expertiseService.findById(expertiseId).get();
             Speed speed = speedService.findById(speedId).get();
             Length length = lengthService.findById(lengthId).get();
-            BodyHalf bodyHalf = bodyHalfService.findById(bodyHalfId).get();
             DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
 
-            String fightName = fightService.retrieveFreshFight(speed, length, defensiveMode, bodyHalf).getName();
+            Fight fight = null;
+            while ((fight = fightService.retrieveFreshFight(speed, length, defensiveMode, expertise)) == null) {
+                try {
+                    Thread.sleep(333);
+                } catch (InterruptedException iEx) {
+                    iEx.printStackTrace();
+                }
+            }
 
-            modelAndView.setViewName("redirect:/download/" + fightName + ".mp3");
+            modelAndView.setViewName("redirect:/download/" + fight.getName() + ".mp3");
 
             logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
         } catch (NoSuchElementException nseEx) {
@@ -140,7 +147,7 @@ public class HomeController {
         } else if ((fight = fightService.getFight(fileName)) != null) {
             logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
             fightCleaner.clean();
-            fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getBodyHalf());
+            fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getExpertise());
 
             byte[] audioFragment = fightService.getFightAudioData(fight);
             response.setContentType("audio/mpeg");
