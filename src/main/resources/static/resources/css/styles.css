@@ -21,34 +21,16 @@ label, p {
     color: #555555;
 }
 
-a {
-    margin: 0 6px;
-}
-
-a:link {
-    color: #142850;
-}
-
-a:visited {
-    color: #142850;
-}
-
-a:hover {
-    color: #00a8cc;
-}
-
-a:active {
-    color: #142850;
-}
-
-
-
 .banner {
     background-color: #142850;
     height: 200px;
     margin-bottom: 10px;
     padding: 25px 0;
     text-align: center;
+}
+
+.banner-link:hover {
+    text-decoration: none;
 }
 
 .subtitleLine1 {
@@ -94,6 +76,22 @@ a:active {
     height: 25px;
 }
 
+.navigation-bar-link {
+    margin: 0 6px;
+    color: #142850;
+}
+
+.navigation-bar-link:visited {
+    color: #142850;
+}
+
+.navigation-bar-link:hover {
+    color: #00a8cc;
+}
+
+.navigation-bar-link:active {
+    color: #142850;
+}
 
 .btn-toggle-custom {
     font-family: robotoregular, sans-serif;
@@ -123,7 +121,98 @@ a:active {
     margin-top: 30px;
 }
 
+.tooltip-item {
+    position: relative;
+    display: flex;
+    font-family: robotoregular, sans-serif;
+    font-size: 1.5em;
+    color: #BBBBBB;
+}
+
+.tooltip-item-dropdown {
+    left: 92%;
+    bottom: 14px;
+}
+
+.tooltip-item-button {
+    left: 92%;
+    top: 17px;
+}
+
+.tooltip-item .tooltip-text {
+    visibility: hidden;
+    width: 300px;
+    font-family: robotoregular, sans-serif;
+    font-size: 1rem;
+    background-color: #555555;
+    color: #fff;
+    text-align: center;
+    white-space: pre-wrap;
+    padding: 5px 5px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 58%;
+    margin-left: -300px;
+    margin-bottom: 25px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip-item .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.tooltip-item:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
 .info {
     text-align: justify;
+}
+
+.info-tooltip-item .info-tooltip-text {
+    visibility: hidden;
+    width: 400px;
+    font-family: robotoregular, sans-serif;
+    font-size: 1rem;
+    background-color: #555555;
+    color: #fff;
+    text-align: center;
+    white-space: pre-wrap;
+    padding: 5px 5px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    margin-left: -200px;
+    margin-top: 30px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.info-tooltip-item .info-tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: -2%;
+    left: 58%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+}
+
+.info-tooltip-item:hover .info-tooltip-text {
+    visibility: visible;
+    opacity: 1;
 }
 

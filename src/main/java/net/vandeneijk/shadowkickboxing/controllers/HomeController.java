@@ -64,10 +64,21 @@ public class HomeController {
         logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
         connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
 
+        model.addAttribute("websiteDescription", getWebsiteDescription());
+        model.addAttribute("generalInfo", getGeneralInfo());
         model.addAttribute("expertiseList", expertiseService.getExpertiseList());
+        model.addAttribute("expertiseTitle", getExpertiseTitle());
+        model.addAttribute("expertiseInfo", getExpertiseInfo());
         model.addAttribute("speedList", speedService.getSpeedList());
+        model.addAttribute("speedTitle", getSpeedTitle());
+        model.addAttribute("speedInfo", getSpeedInfo());
         model.addAttribute("lengthList", lengthService.getLengthList());
+        model.addAttribute("lengthTitle", getLengthTitle());
+        model.addAttribute("lengthInfo", getLengthInfo());
         model.addAttribute("defensiveModeList", defensiveModeService.getDefensiveModeList());
+        model.addAttribute("defensiveModeTitle", getDefensiveModeTitle());
+        model.addAttribute("defensiveModeInfo", getDefensiveModeInfo());
+        model.addAttribute("generateAndDownloadButtonInfo", getGenerateAndDownloadButtonInfo());
 
         return requestedItem;
     }
@@ -178,17 +189,6 @@ public class HomeController {
         connectionLogService.save(connectionLog);
     }
 
-    @GetMapping("/info")
-    public String getInfoPage(HttpServletRequest request) {
-        String requestedItem = "info";
-        String requestMappingType = "get";
-
-        logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
-        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
-
-        return requestedItem;
-    }
-
     @GetMapping("/error")
     public String getErrorPage(HttpServletRequest request) {
         String requestedItem = "error";
@@ -209,5 +209,78 @@ public class HomeController {
         connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr()));
 
         return requestedItem;
+    }
+
+    // Placeholder for language implementation.
+    private String getWebsiteDescription() {
+        return "Generate your own custom shadow boxing or kickboxing training mp3 files for free. Excellent as home workout for beginners and advanced fighters.";
+    }
+
+    // Placeholder for language implementation.
+    private String getGeneralInfo() {
+        return "Robert's shadow kickboxing generator is a great tool to learn or improve your boxing and kickboxing moves. The exercises given by the mp3 audio file will improve your cardiovascular capacity, flexibility, and balance. But the most important benefit will probably be faster reflexes and coordination.\n" +
+                "\n" +
+                "You can practice shadow boxing or kickboxing as a beginner, novice, intermediate or advanced fighter. The speed and complexity of the training is customizable. To further improve you kicks, jabs and the like, you could include gloves, a heavy bag, or a mirror in your drills. With a headset you could even work out in the park. But at home is almost just as fun.\n" +
+                "\n" +
+                "Are you up to the challenge?\n" +
+                "\n" +
+                "Copyright 2020, Robert van den Eijk";
+    }
+
+    // Placeholder for language implementation.
+    private String getExpertiseTitle() {
+        return "style of training";
+    }
+
+    // Placeholder for language implementation.
+    private String getExpertiseInfo() {
+        return "Style of training determines which moves will be included in your training.\n" +
+                "\n" +
+                "For example, shadow kickboxing will allow the use of your hands, feet, knees, etc. while shadow boxing only allows you to use your hands.\n";
+    }
+
+    // Placeholder for language implementation.
+    private String getSpeedTitle() {
+        return "speed of instructions";
+    }
+
+    // Placeholder for language implementation.
+    private String getSpeedInfo() {
+        return "Speed of instructions determines the time you get to execute a command.\n" +
+                "\n" +
+                "For example, fast will test your reaction speed more than slow.\n";
+    }
+
+    // Placeholder for language implementation.
+    private String getLengthTitle() {
+        return "length of training";
+    }
+
+    // Placeholder for language implementation.
+    private String getLengthInfo() {
+        return "Length of training determines the number of training rounds in one file.\n" +
+                "\n" +
+                "Between rounds you get a 1-minute resting period.\n";
+    }
+
+    // Placeholder for language implementation.
+    private String getDefensiveModeTitle() {
+        return "defensive instructions";
+    }
+
+    // Placeholder for language implementation.
+    private String getDefensiveModeInfo() {
+        return "Defensive instructions determine whether you get block and/or evade instructions interlaced with offensive moves.\n" +
+                "\n" +
+                "Note that even with defensive moves enabled, offensive moves will still make up most of the instructions given.\n";
+    }
+
+    // Placeholder for language implementation.
+    private String getGenerateAndDownloadButtonInfo() {
+        return "A custom mp3 audio file will be generated and presented to you for download. The content of this audio file will depend on the chosen settings.\n" +
+                "\n" +
+                "Every file will have a unique combination of instructions and timings. even with the same specifications.\n" +
+                "\n" +
+                "Happy shadow (kick)boxing!!!\n";
     }
 }

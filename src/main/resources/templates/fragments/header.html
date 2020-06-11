@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <header>
-    <div class="banner container-fluid">
-        <h2 class="subtitleLine1 subtitle">Robert's</h2>
-        <h1 class="title">Shadow Kickboxing</h1>
-        <h2 class="subtitleLine2 subtitle">Generator</h2>
-        <p class="subSubtitle">beta</p>
-    </div>
+    <a class="banner-link" href="/">
+        <div class="banner container-fluid">
+            <h2 class="subtitleLine1 subtitle">Robert's</h2>
+            <h1 class="title">Shadow Kickboxing</h1>
+            <h2 class="subtitleLine2 subtitle">Generator</h2>
+            <p class="subSubtitle">beta</p>
+        </div>
+    </a>
+
     <div class="navigation-bar container-fluid">
-        <a href="/">home</a>
-        <a class="contact-link" href="">contact</a>
-        <a href="/info">info</a>
+        <a class="contact-link navigation-bar-link" href="">contact</a>
+        <span class="info-tooltip-item navigation-bar-link">info<span class="info-tooltip-text" th:text="${generalInfo}"></span></span>
     </div>
 </header>

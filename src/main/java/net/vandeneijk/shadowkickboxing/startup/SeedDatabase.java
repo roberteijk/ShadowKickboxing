@@ -166,7 +166,7 @@ public class SeedDatabase {
                 for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
                     for (Expertise expertise : expertiseService.findAll()) {
                         long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
-                        for (long i = numberOfFightsByCriteria; i < 7; i++) {
+                        for (long i = numberOfFightsByCriteria; i < 1; i++) {
                             fightFactory.createFight("English", speed, length, defensiveMode, expertise);
                         }
                     }
