@@ -218,13 +218,13 @@ public class HomeController {
 
     // Placeholder for language implementation.
     private String getGeneralInfo() {
-        return "Robert's shadow kickboxing generator is a great tool to learn or improve your boxing and kickboxing moves. The exercises given by the mp3 audio file will improve your cardiovascular capacity, flexibility, and balance. But the most important benefit will probably be faster reflexes and coordination.\n" +
+        return "Robert's shadow kickboxing generator is a great tool to learn or improve your boxing and kickboxing skills. The exercises given by the mp3 audio file will increase your cardiovascular capacity, flexibility, and balance. But the most important benefit will probably be faster reflexes and coordination.\n" +
                 "\n" +
-                "You can practice shadow boxing or kickboxing as a beginner, novice, intermediate or advanced fighter. The speed and complexity of the training is customizable. To further improve you kicks, jabs and the like, you could include gloves, a heavy bag, or a mirror in your drills. With a headset you could even work out in the park. But at home is almost just as fun.\n" +
+                "You can practice shadow boxing or kickboxing as a beginner, novice, intermediate or even advanced fighter. The speed and complexity of the training are customizable. To further develop you kicks, jabs and the like, you could include gloves, a heavy bag, or a mirror in your drills. With a headset you could even work out in the park. But at home is almost just as fun.\n" +
                 "\n" +
                 "Are you up to the challenge?\n" +
                 "\n" +
-                "Copyright 2020, Robert van den Eijk";
+                "Copyright 2020, Robert van den Eijk\n";
     }
 
     // Placeholder for language implementation.
