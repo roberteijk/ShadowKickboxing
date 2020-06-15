@@ -18,6 +18,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Component
 public class SeedDatabase {
@@ -161,18 +162,23 @@ public class SeedDatabase {
     }
 
     private void seedFight() {
-        for (Speed speed : speedService.findAll()) {
-            for (Length length : lengthService.findAll()) {
-                for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
-                    for (Expertise expertise : expertiseService.findAll()) {
-                        long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
-                        for (long i = numberOfFightsByCriteria; i < 1; i++) {
-                            fightFactory.createFight("English", speed, length, defensiveMode, expertise);
+        Map<Integer, Runnable> fightsToCreate = new TreeMap<>();
+        int count = 0;
+
+        for (int i = 1; i <= 3; i++) {
+            for (Speed speed : speedService.findAll()) {
+                for (Length length : lengthService.findAll()) {
+                    for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
+                        for (Expertise expertise : expertiseService.findAll()) {
+                            long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
+                            if (numberOfFightsByCriteria < i) fightsToCreate.put(count++, () -> {fightFactory.createFight("English", speed, length, defensiveMode, expertise);});
                         }
                     }
                 }
             }
         }
+
+        fightsToCreate.forEach((k, v) -> {v.run();});
     }
 
     private File getFileFromStream(InputStream in) {

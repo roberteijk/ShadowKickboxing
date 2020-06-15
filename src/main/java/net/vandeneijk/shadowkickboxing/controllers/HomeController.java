@@ -189,6 +189,22 @@ public class HomeController {
         connectionLogService.save(connectionLog);
     }
 
+    // TODO Remove when not on top of Google search results.
+    @GetMapping("/info")
+    public void getInfoPage(HttpServletRequest request, HttpServletResponse response) {
+        String requestedItem = "info";
+        String requestMappingType = "get";
+
+        logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+        connectionLogService.save(new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "redirected to /", ZonedDateTime.now(), request.getRemoteAddr()));
+
+        try {
+            response.sendRedirect("/");
+        }  catch (IOException ioEx) {
+            logger.error("Error redirecting to exceeded page. Exception: " + ioEx);
+        }
+    }
+
     @GetMapping("/error")
     public String getErrorPage(HttpServletRequest request) {
         String requestedItem = "error";

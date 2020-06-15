@@ -98,7 +98,7 @@ public class FightService {
         fightRepository.save(fight);
     }
 
-    public synchronized void save(Fight fight, FightAudioData fightAudioData) {
+    public void save(Fight fight, FightAudioData fightAudioData) {
         fightAudioDataRepository.save(fightAudioData);
         fight.setFightAudioDataId(fightAudioData.getFightAudioDataId());
         fightRepository.save(fight);
