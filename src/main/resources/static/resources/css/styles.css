@@ -21,6 +21,8 @@ label, p {
     color: #555555;
 }
 
+
+
 .banner {
     background-color: #142850;
     height: 200px;
@@ -93,32 +95,40 @@ label, p {
     color: #142850;
 }
 
+.main-content-toggle {
+    text-align: center;
+}
+
 .btn-toggle-custom {
     font-family: robotoregular, sans-serif;
     font-size: 1em;
     margin-top: 45px;
 }
 
-.main-content-simple {
+.main-content {
     margin-top: 50px;
     text-align: center;
 }
 
 .main-content-expert {
-    margin-top: 50px;
-    text-align: center;
     display: none;
 }
 
-.custom-dropdown {
-    left: 50%;
-    transform: translateX(-50%);
+.form-group {
+    width: 270px;
+    margin: 20px auto;
+}
+
+.button-group {
+    width: 270px;
+    margin: 28px auto;
 }
 
 .btn-download-custom {
     font-family: robotoregular, sans-serif;
     font-size: 1.4em;
     margin-top: 30px;
+    width: 270px;
 }
 
 .tooltip-item {
@@ -130,12 +140,12 @@ label, p {
 }
 
 .tooltip-item-dropdown {
-    left: 92%;
+    left: 255px;
     bottom: 14px;
 }
 
 .tooltip-item-button {
-    left: 92%;
+    left: 255px;
     top: 17px;
 }
 

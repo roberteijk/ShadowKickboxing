@@ -7,13 +7,13 @@ $(".contact-link").click(function (event) {
 });
 
 $("#simple-mode").click(function () {
-    $(".main-content-simple").css("display", "flex");
+    $(".main-content-simple").css("display", "block");
     $(".main-content-expert").css("display", "none");
 });
 
 $("#expert-mode").click(function () {
     $(".main-content-simple").css("display", "none");
-    $(".main-content-expert").css("display", "flex");
+    $(".main-content-expert").css("display", "block");
 });
 
 function reverse(str){

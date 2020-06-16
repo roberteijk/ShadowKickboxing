@@ -27,7 +27,7 @@
         <header lang="en" th:replace="fragments/header :: header"></header>
 
         <main>
-            <div class="row justify-content-center main-content-toggle">
+            <div class="main-content-toggle">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-outline-secondary btn-sm active btn-toggle-custom">
                         <input type="radio" name="options" id="simple-mode" checked>Simple
@@ -37,7 +37,7 @@
                     </label>
                 </div>
             </div>
-            <div class="row justify-content-center main-content-simple">
+            <div class="main-content main-content-simple">
                 <form action="download" method="post">
                     <div class="form-group">
                         <label for="expertise" th:text="${expertiseTitle}"></label>
@@ -52,7 +52,7 @@
                         <label for="speed" th:text="${speedTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${speedInfo}"></span></span>
                         <select class="form-control" id="speed" name="speed">
-                            <option class="custom-dropdown" th:each="speed : ${speedList}" th:value="${speed.speedId}"
+                            <option th:each="speed : ${speedList}" th:value="${speed.speedId}"
                                     th:text="${speed.description}"
                                     th:selected="${speed.getExecutionMillisMultiplier() == 1.0}"></option>
                         </select>
@@ -66,13 +66,14 @@
                                     th:selected="${length.getNumberRounds() == 3}"></option>
                         </select>
                     </div>
-                    <span class="tooltip-item tooltip-item-button"><sup>?</sup><span class="tooltip-text" th:text="${generateAndDownloadButtonInfo}"></span></span>
-                    <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Generate & Download">
-
+                    <div class="button-group">
+                        <span class="tooltip-item tooltip-item-button"><sup>?</sup><span class="tooltip-text" th:text="${generateAndDownloadButtonInfo}"></span></span>
+                        <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Generate & Download">
+                    </div>
                 </form>
             </div>
 
-            <div class="row justify-content-center main-content-expert">
+            <div class="main-content main-content-expert">
                 <form action="download" method="post">
                     <div class="form-group">
                         <label for="expertise-expert" th:text="${expertiseTitle}"></label>
@@ -87,7 +88,7 @@
                         <label for="speed-expert" th:text="${speedTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${speedInfo}"></span></span>
                         <select class="form-control" id="speed-expert" name="speed">
-                            <option class="custom-dropdown" th:each="speed : ${speedList}" th:value="${speed.speedId}"
+                            <option th:each="speed : ${speedList}" th:value="${speed.speedId}"
                                     th:text="${speed.description}"
                                     th:selected="${speed.getExecutionMillisMultiplier() == 1.0}"></option>
                         </select>
@@ -111,8 +112,10 @@
                                     th:selected="${defensiveMode.getDefensiveModeId() == 3}"></option>
                         </select>
                     </div>
-                    <span class="tooltip-item tooltip-item-button"><sup>?</sup><span class="tooltip-text" th:text="${generateAndDownloadButtonInfo}"></span></span>
-                    <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Generate & Download">
+                    <div class="button-group">
+                        <span class="tooltip-item tooltip-item-button"><sup>?</sup><span class="tooltip-text" th:text="${generateAndDownloadButtonInfo}"></span></span>
+                        <input type="submit" class="btn btn-outline-dark btn-lg btn-download-custom" value="Generate & Download">
+                    </div>
                 </form>
             </div>
         </main>
