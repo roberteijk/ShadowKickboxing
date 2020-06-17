@@ -42,7 +42,7 @@ public class HomeController {
     private final TrafficRegulator trafficRegulator;
     private final ConnectionLogService connectionLogService;
 
-    private final int[] downloadLimits = {3, 5, 9, 17, 33, 65};
+    private final int[] downloadLimits = {5, 9, 17, 33, 65, 129};
 
     public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, ExpertiseService expertiseService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
         this.fightService = fightService;
@@ -95,31 +95,42 @@ public class HomeController {
 
         ConnectionLog connectionLog = new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr());
 
-        try {
-            Expertise expertise = expertiseService.findById(expertiseId).get();
-            Speed speed = speedService.findById(speedId).get();
-            Length length = lengthService.findById(lengthId).get();
-            DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
-
-            Fight fight = null;
-            while ((fight = fightService.retrieveFreshFight(speed, length, defensiveMode, expertise)) == null) {
-                try {
-                    Thread.sleep(333);
-                } catch (InterruptedException iEx) {
-                    iEx.printStackTrace();
-                }
-            }
-
-            modelAndView.setViewName("redirect:/download/" + fight.getName() + ".mp3");
-
-            logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
-        } catch (NoSuchElementException nseEx) {
-            modelAndView.setViewName("redirect:/error");
-
-            logger.info("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr() + " Reason: Incorrect @RequestParam values.");
+        if (!trafficRegulator.isTrafficAllowed("download", request.getRemoteAddr(), ZonedDateTime.now(), downloadLimits)) {
+            logger.info("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr() + " Reason: TrafficRegulator.");
             connectionLog.setAvailable(false);
-            connectionLog.setInfo("Incorrect @RequestParam values.");
+            connectionLog.setInfo("TrafficRegulator");
+            modelAndView.setViewName("redirect:/exceededdownload");
+        } else {
+            try {
+                Expertise expertise = expertiseService.findById(expertiseId).get();
+                Speed speed = speedService.findById(speedId).get();
+                Length length = lengthService.findById(lengthId).get();
+                DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
+
+                Fight fight = null;
+                while ((fight = fightService.retrieveFreshFight(speed, length, defensiveMode, expertise)) == null) {
+                    try {
+                        Thread.sleep(333);
+                    } catch (InterruptedException iEx) {
+                        iEx.printStackTrace();
+                    }
+                }
+
+                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getExpertise());
+
+
+                modelAndView.setViewName("redirect:/download/" + fight.getName() + ".mp3");
+
+                logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
+            } catch (NoSuchElementException nseEx) {
+                modelAndView.setViewName("redirect:/error");
+
+                logger.info("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr() + " Reason: Incorrect @RequestParam values.");
+                connectionLog.setAvailable(false);
+                connectionLog.setInfo("Incorrect @RequestParam values.");
+            }
         }
+
 
         connectionLogService.save(connectionLog);
 
@@ -146,7 +157,7 @@ public class HomeController {
         ConnectionLog connectionLog = new ConnectionLog(requestedItem, request.getRequestURI(), requestMappingType, true, "", ZonedDateTime.now(), request.getRemoteAddr());
 
         Fight fight;
-        if (!trafficRegulator.isTrafficAllowed("download", request.getRemoteAddr(), ZonedDateTime.now(), downloadLimits)) {
+        if (!trafficRegulator.isTrafficAllowed("download/filename", request.getRemoteAddr(), ZonedDateTime.now(), downloadLimits)) {
             try {
                 logger.info("Refused page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr() + " Reason: TrafficRegulator.");
                 connectionLog.setAvailable(false);
@@ -158,7 +169,6 @@ public class HomeController {
         } else if ((fight = fightService.getFight(fileName)) != null) {
             logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
             fightCleaner.clean();
-            fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getExpertise());
 
             byte[] audioFragment = fightService.getFightAudioData(fight);
             response.setContentType("audio/mpeg");
