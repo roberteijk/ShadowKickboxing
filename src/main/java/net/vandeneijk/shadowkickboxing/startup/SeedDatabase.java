@@ -8,6 +8,7 @@ import net.vandeneijk.shadowkickboxing.models.*;
 import net.vandeneijk.shadowkickboxing.services.*;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -48,12 +50,48 @@ public class SeedDatabase {
         this.fightFactory = fightFactory;
 
         seedLanguage();
+        seedExpertise();
+        seedDefensiveMode();
         seedInstructionAndAudio();
         seedSpeed();
         seedLength();
-        seedDefensiveMode();
-        seedExpertise();
         seedFight();
+    }
+    
+    private static class PreInstructionMeta {
+        private final String instructionDescription;
+        private final String[] expertiseDescriptionsIn2Chars;
+        private final Double callFrequencyWeight;
+        private final Integer minExecutionTimeMillis;
+        private final Integer maxExecutionTimeMillis;
+
+        private PreInstructionMeta(String instructionDescription, String[] expertiseDescriptionsIn2Chars, Double callFrequencyWeight, Integer minExecutionTimeMillis, Integer maxExecutionTimeMillis) {
+            this.instructionDescription = instructionDescription;
+            this.expertiseDescriptionsIn2Chars = expertiseDescriptionsIn2Chars;
+            this.callFrequencyWeight = callFrequencyWeight;
+            this.minExecutionTimeMillis = minExecutionTimeMillis;
+            this.maxExecutionTimeMillis = maxExecutionTimeMillis;
+        }
+
+        private String getInstructionDescription() {
+            return instructionDescription;
+        }
+
+        private String[] getExpertiseDescriptionsIn2Chars() {
+            return expertiseDescriptionsIn2Chars;
+        }
+
+        private Double getCallFrequencyWeight() {
+            return callFrequencyWeight;
+        }
+
+        private Integer getMinExecutionTimeMillis() {
+            return minExecutionTimeMillis;
+        }
+
+        private Integer getMaxExecutionTimeMillis() {
+            return maxExecutionTimeMillis;
+        }
     }
 
     private static class PreAudioMeta {
@@ -80,39 +118,75 @@ public class SeedDatabase {
         languageService.saveIfDescriptionUnique(new Language("English"));
     }
 
+    private void seedExpertise() {
+        logger.info("Seeding database with Expertise.");
+
+        expertiseService.save(new Expertise(0L, "Shadow Kickboxing (full body)", "fb", true, true));
+        expertiseService.save(new Expertise(1L, "Shadow Boxing (upper body)", "ub", true, false));
+    }
+
+    private void seedDefensiveMode() {
+        logger.info("Seeding database with DefensiveMode.");
+
+        defensiveModeService.save(new DefensiveMode(0L,"Block & Evade", "be", true, true));
+        defensiveModeService.save(new DefensiveMode(1L,"Block Only", "bo", true, false));
+        defensiveModeService.save(new DefensiveMode(2L,"Evade Only", "eo", false, true));
+        defensiveModeService.save(new DefensiveMode(3L,"None (no defense)", "no", false, false));
+    }
+
     private void seedInstructionAndAudio() {
         logger.info("Seeding database with Instruction and Audio.");
 
-        saveInstructionWithAudio(new Instruction("silence", false), new PreAudioMeta("audio/silence.mp3", "generic"));
-        saveInstructionWithAudio(new Instruction("block", false), new PreAudioMeta("audio/block.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("evade", false), new PreAudioMeta("audio/evade.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("silence", false), false, false, new PreAudioMeta("audio/silence.mp3", "generic"));
+        saveInstructionWithAudio(new Instruction("block", false), false, false, new PreAudioMeta("audio/block.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("evade", false), false, false, new PreAudioMeta("audio/evade.mp3", "English"));
 
-        saveInstructionWithAudio(new Instruction("10 seconds break", false), new PreAudioMeta("audio/10-seconds-break.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("1 minute break", false), new PreAudioMeta("audio/1-minute-break.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("break bell end of fight", false), new PreAudioMeta("audio/break-bell-end-fight.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("10 seconds break", false), false, false, new PreAudioMeta("audio/10-seconds-break.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("1 minute break", false), false, false, new PreAudioMeta("audio/1-minute-break.mp3", "English"));
+        saveInstructionWithAudio(new Instruction("break bell end of fight", false), false, false, new PreAudioMeta("audio/break-bell-end-fight.mp3", "English"));
 
-        saveInstructionWithAudio(new Instruction("jab", true, true, false, true, true, 1.0, 500, 1000), new PreAudioMeta("audio/jab.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("double jab", true, true, false, true, true, 1.0, 600, 1100), new PreAudioMeta("audio/double-jab.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("cross", true, true, false, true, true, 0.9, 500, 1000), new PreAudioMeta("audio/cross.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left hook head", true, true, false, true, true, 0.5, 600, 1100), new PreAudioMeta("audio/left-hook-head.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right hook head", true, true, false, true, true, 0.5, 600, 1100), new PreAudioMeta("audio/right-hook-head.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left uppercut", true, true, false, true, true, 0.4, 600, 1100), new PreAudioMeta("audio/left-uppercut.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right uppercut", true, true, false, true, true, 0.4, 600, 1100), new PreAudioMeta("audio/right-uppercut.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left hook body", true, true, false, true, true, 0.4, 600, 1200), new PreAudioMeta("audio/left-hook-body.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right hook body", true, true, false, true, true, 0.25, 600, 1200), new PreAudioMeta("audio/right-hook-body.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left low kick", true, false, true, true, true, 0.3, 900, 1500), new PreAudioMeta("audio/left-low-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right low kick", true, false, true, true, true, 0.3, 900, 1500), new PreAudioMeta("audio/right-low-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("clinch left knee", true, true, true, false, false, 0.25, 1500, 2400), new PreAudioMeta("audio/clinch-left-knee.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("clinch right knee", true, true, true, false, false, 0.25, 1500, 2400), new PreAudioMeta("audio/clinch-right-knee.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left front kick", true, false, true, true, true, 0.4, 900, 1400), new PreAudioMeta("audio/left-front-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right front kick", true, false, true, true, true, 0.25, 900, 1400), new PreAudioMeta("audio/right-front-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left middle kick", true, false, true, true, false, 0.15, 1100, 1800), new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right middle kick", true, false, true, true, false, 0.15, 900, 1800), new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("left high kick", true, false, true, true, true, 0.1, 1100, 1800), new PreAudioMeta("audio/left-high-kick.mp3", "English"));
-        saveInstructionWithAudio(new Instruction("right high kick", true, false, true, true, true, 0.1, 900, 1800), new PreAudioMeta("audio/right-high-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("jab", new String[]{"fb", "ub"}, 1.0, 500, 1000)), true, true, new PreAudioMeta("audio/jab.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("cross", new String[]{"fb", "ub"}, 0.9, 500, 1000)), true, true, new PreAudioMeta("audio/cross.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("double jab", new String[]{"fb", "ub"}, 1.0, 600, 1100)), true, true, new PreAudioMeta("audio/double-jab.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left hook head", new String[]{"fb", "ub"}, 0.5, 600, 1100)), true, true, new PreAudioMeta("audio/left-hook-head.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right hook head", new String[]{"fb", "ub"}, 0.5, 600, 1100)), true, true, new PreAudioMeta("audio/right-hook-head.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left uppercut", new String[]{"fb", "ub"}, 0.4, 600, 1100)), true, true, new PreAudioMeta("audio/left-uppercut.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right uppercut", new String[]{"fb", "ub"}, 0.4, 600, 1100)), true, true, new PreAudioMeta("audio/right-uppercut.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left hook body", new String[]{"fb", "ub"}, 0.4, 600, 1200)), true, true, new PreAudioMeta("audio/left-hook-body.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right hook body", new String[]{"fb", "ub"}, 0.25, 600, 1200)), true, true, new PreAudioMeta("audio/right-hook-body.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left low kick", new String[]{"fb"}, 0.3, 900, 1500)),true, true, new PreAudioMeta("audio/left-low-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right low kick", new String[]{"fb"}, 0.3, 900, 1500)), true, true, new PreAudioMeta("audio/right-low-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("clinch left knee", new String[]{"fb"}, 0.25, 1500, 2400)), false, false, new PreAudioMeta("audio/clinch-left-knee.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("clinch right knee", new String[]{"fb"}, 0.25, 1500, 2400)), false, false, new PreAudioMeta("audio/clinch-right-knee.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left front kick", new String[]{"fb"}, 0.4, 900, 1400)), true, true, new PreAudioMeta("audio/left-front-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right front kick", new String[]{"fb"}, 0.25, 900, 1400)), true, true, new PreAudioMeta("audio/right-front-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left middle kick", new String[]{"fb"}, 0.15, 1100, 1800)), true, false, new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right middle kick", new String[]{"fb"}, 0.15, 900, 1800)), true, false, new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left high kick", new String[]{"fb"}, 0.1, 1100, 1800)), true, true, new PreAudioMeta("audio/left-high-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right high kick", new String[]{"fb"}, 0.1, 900, 1800)), true, true, new PreAudioMeta("audio/right-high-kick.mp3", "English"));
     }
 
-    private void saveInstructionWithAudio(Instruction instruction, PreAudioMeta... preAudioMetaArray) {
+    private Instruction buildMoveInstruction(PreInstructionMeta preInstructionMeta) {
+        Instruction instruction = new Instruction(preInstructionMeta.getInstructionDescription(), true, preInstructionMeta.getCallFrequencyWeight(), preInstructionMeta.getMinExecutionTimeMillis(), preInstructionMeta.getMaxExecutionTimeMillis());
+        addExpertiseToInstruction(instruction, preInstructionMeta.getExpertiseDescriptionsIn2Chars());
+        addDefensiveModeToInstruction(instruction);
+
+        return instruction;
+    }
+
+    private void addExpertiseToInstruction(Instruction instruction, String[] expertiseDescriptionsIn2Chars) {
+        for (String expertiseDescriptionIn2Chars : expertiseDescriptionsIn2Chars) instruction.addExpertiseToCollection(expertiseService.findByDescriptionIn2Chars(expertiseDescriptionIn2Chars));
+    }
+
+    private void addDefensiveModeToInstruction(Instruction instruction, String[] defensiveModeDescriptionsIn2Chars) {
+        for (String defensiveModeDescriptionIn2Chars : defensiveModeDescriptionsIn2Chars) instruction.addDefensiveModeToCCollection(defensiveModeService.findByDescriptionIn2Chars(defensiveModeDescriptionIn2Chars));
+    }
+
+    private void addDefensiveModeToInstruction(Instruction instruction) {
+        defensiveModeService.findAll().forEach(instruction::addDefensiveModeToCCollection);
+    }
+
+    private void saveInstructionWithAudio(Instruction instruction, boolean saveBlockVariant, boolean saveEvadeVariant, PreAudioMeta... preAudioMetaArray) {
         if (!instructionService.saveIfDescriptionUnique(instruction)) return;
 
         for (PreAudioMeta preAudioMeta : preAudioMetaArray) {
@@ -125,7 +199,28 @@ public class SeedDatabase {
                 ioEx.printStackTrace();
             }
         }
+
+        if (saveBlockVariant) saveDefensiveInstructionVariants(instruction, "block",  new String[]{"be", "bo"});
+        if (saveEvadeVariant) saveDefensiveInstructionVariants(instruction, "evade", new String[]{"be", "eo"});
     }
+
+    private void saveDefensiveInstructionVariants(Instruction originalInstruction, String instructionDescriptionToProcess, String[] defensiveModeDescriptionsIn2Chars) {
+        Instruction defensiveInstruction = new Instruction(instructionDescriptionToProcess + " " + originalInstruction.getDescription(), originalInstruction.isMove(), originalInstruction.getCallFrequencyWeight() * 0.1, originalInstruction.getMinExecutionTimeMillis() + 400, originalInstruction.getMaxExecutionTimeMillis() + 400);
+        defensiveInstruction.setExpertiseSet(new HashSet<Expertise>(originalInstruction.getExpertiseSet()));
+        addDefensiveModeToInstruction(defensiveInstruction, defensiveModeDescriptionsIn2Chars);
+        if (!instructionService.saveIfDescriptionUnique(defensiveInstruction)) return;
+
+        for (Audio audio : audioService.findByInstruction(originalInstruction)) {
+            Audio audioToPrepend = audioService.findByInstructionAndLanguage(instructionService.findByDescription(instructionDescriptionToProcess).get(), audio.getLanguage());
+            byte[] audioFragmentToPrepend = audioToPrepend.getAudioFragment();
+            byte[] audioFragmentOriginalInstruction = audio.getAudioFragment();
+            byte[] bothAudioFragments = ArrayUtils.addAll(audioFragmentToPrepend, audioFragmentOriginalInstruction);
+            Integer bothAudioFragmentMillis = audioToPrepend.getLengthMillis() + audio.getLengthMillis();
+
+            audioService.save(new Audio(defensiveInstruction, audio.getLanguage(), bothAudioFragmentMillis, bothAudioFragments));
+        }
+    }
+
 
     private void seedSpeed() {
         logger.info("Seeding database with Speed.");
@@ -145,27 +240,11 @@ public class SeedDatabase {
         lengthService.save(new Length(2L, "Championship Fight (5 rounds)", "05", 5));
     }
 
-    private void seedDefensiveMode() {
-        logger.info("Seeding database with DefensiveMode.");
-
-        defensiveModeService.save(new DefensiveMode(0L,"Block & Evade", "be", true, true));
-        defensiveModeService.save(new DefensiveMode(1L,"Block Only", "bo", true, false));
-        defensiveModeService.save(new DefensiveMode(2L,"Evade Only", "eo", false, true));
-        defensiveModeService.save(new DefensiveMode(3L,"None (no defense)", "no", false, false));
-    }
-
-    private void seedExpertise() {
-        logger.info("Seeding database with Expertise.");
-
-        expertiseService.save(new Expertise(0L, "Shadow Kickboxing (full body)", "fb", true, true));
-        expertiseService.save(new Expertise(1L, "Shadow Boxing (upper body)", "ub", true, false));
-    }
-
     private void seedFight() {
         Map<Integer, Runnable> fightsToCreate = new TreeMap<>();
         int count = 0;
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 1; i++) {
             for (Speed speed : speedService.findAll()) {
                 for (Length length : lengthService.findAll()) {
                     for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {

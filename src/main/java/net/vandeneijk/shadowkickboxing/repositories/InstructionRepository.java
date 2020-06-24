@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface InstructionRepository extends CrudRepository<Instruction, Long> {
 
     Optional<Instruction> findByDescription(String description);
+
 }

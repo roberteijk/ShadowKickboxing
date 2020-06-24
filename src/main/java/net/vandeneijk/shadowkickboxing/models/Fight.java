@@ -15,8 +15,8 @@ public class Fight {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long fightId;
 
-    @Column(unique = true)
     @NotNull
+    @Column(unique = true)
     private String randomId;
 
     @NotNull

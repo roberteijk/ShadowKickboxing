@@ -12,4 +12,6 @@ import java.util.List;
 public interface DefensiveModeRepository extends CrudRepository<DefensiveMode, Long> {
 
     List<DefensiveMode> findAll();
+
+    DefensiveMode findByDescriptionIn2Chars(String descriptionIn2Chars);
 }

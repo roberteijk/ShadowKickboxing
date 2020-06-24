@@ -8,6 +8,7 @@ import net.vandeneijk.shadowkickboxing.models.*;
 import net.vandeneijk.shadowkickboxing.services.*;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightCleaner;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
+import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactoryJob;
 import net.vandeneijk.shadowkickboxing.services.tafficregulatorservice.TrafficRegulator;
 import net.vandeneijk.shadowkickboxing.startup.SeedDatabase;
 import org.apache.catalina.connector.ClientAbortException;
@@ -32,6 +33,7 @@ public class HomeController {
 
     private static final Logger logger = LoggerFactory.getLogger(SeedDatabase.class);
 
+    private final InstructionService instructionService;
     private final FightService fightService;
     private final SpeedService speedService;
     private final LengthService lengthService;
@@ -44,7 +46,8 @@ public class HomeController {
 
     private final int[] downloadLimits = {5, 9, 17, 33, 65, 129};
 
-    public HomeController(FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, ExpertiseService expertiseService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
+    public HomeController(InstructionService instructionService, FightService fightService, SpeedService speedService, LengthService lengthService, DefensiveModeService defensiveModeService, ExpertiseService expertiseService, FightFactory fightFactory, FightCleaner fightCleaner, TrafficRegulator trafficRegulator, ConnectionLogService connectionLogService) {
+        this.instructionService = instructionService;
         this.fightService = fightService;
         this.speedService = speedService;
         this.lengthService = lengthService;
@@ -107,6 +110,8 @@ public class HomeController {
                 Length length = lengthService.findById(lengthId).get();
                 DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
 
+                new FightFactoryJob("English", instructionService.findAll(), expertise, defensiveMode, speed, length); // TODO Remove. Only temp for testing.
+
                 Fight fight = null;
                 while ((fight = fightService.retrieveFreshFight(speed, length, defensiveMode, expertise)) == null) {
                     try {
@@ -116,10 +121,10 @@ public class HomeController {
                     }
                 }
 
-                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getExpertise());
+//                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getExpertise());
 
 
-                modelAndView.setViewName("redirect:/download/" + fight.getName() + ".mp3");
+//                modelAndView.setViewName("redirect:/download/" + fight.getName() + ".mp3");
 
                 logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
             } catch (NoSuchElementException nseEx) {

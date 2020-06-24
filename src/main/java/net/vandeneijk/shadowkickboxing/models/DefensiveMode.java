@@ -4,22 +4,23 @@
 
 package net.vandeneijk.shadowkickboxing.models;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity
-public class DefensiveMode {
+public class DefensiveMode implements InstructionPreFilter {
 
     @Id
     private Long defensiveModeId;
 
     @NotNull
+    @Column(unique = true)
     private String description;
 
     @NotNull
+    @Column(unique = true)
     private String descriptionIn2Chars;
 
     @NotNull
@@ -27,6 +28,9 @@ public class DefensiveMode {
 
     @NotNull
     private Boolean allowEvade;
+
+    @ManyToMany(mappedBy = "defensiveModeSet")
+    private Collection<Instruction> instructionCollection;
 
     @OneToMany(mappedBy = "defensiveMode")
     private Collection<Fight> fightCollection;
@@ -59,5 +63,22 @@ public class DefensiveMode {
 
     public Boolean isAllowEvade() {
         return allowEvade;
+    }
+
+    public Collection<Instruction> getInstructionCollection() {
+        return instructionCollection;
+    }
+
+    public void setInstructionCollection(Collection<Instruction> instructionCollection) {
+        this.instructionCollection = instructionCollection;
+    }
+
+    public void filter(Set<Instruction> instructions) {
+        instructions.removeIf(x -> !x.getDefensiveModeSet().contains(this));
+    }
+
+    @Override
+    public String toString() {
+        return descriptionIn2Chars;
     }
 }

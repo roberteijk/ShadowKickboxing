@@ -32,6 +32,10 @@ public class DefensiveModeService {
         return defensiveModeRepository.findById(id);
     }
 
+    public DefensiveMode findByDescriptionIn2Chars(String descriptionIn2Chars) {
+        return defensiveModeRepository.findByDescriptionIn2Chars(descriptionIn2Chars);
+    }
+
     public List<DefensiveMode> getDefensiveModeList() {
         return defensiveModeRepository.findAll();
     }

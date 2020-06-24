@@ -4,6 +4,7 @@
 
 package net.vandeneijk.shadowkickboxing.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
@@ -15,9 +16,11 @@ public class OffensiveMode {
     private Long offensiveModeId;
 
     @NotNull
+    @Column(unique = true)
     private String description;
 
     @NotNull
+    @Column(unique = true)
     private String descriptionIn2Chars;
 
     @NotNull

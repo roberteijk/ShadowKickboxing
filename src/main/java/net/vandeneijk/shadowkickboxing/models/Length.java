@@ -4,6 +4,7 @@
 
 package net.vandeneijk.shadowkickboxing.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -11,15 +12,17 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @Entity
-public class Length {
+public class Length implements InstructionPostModifier {
 
     @Id
     private Long lengthId;
 
     @NotNull
+    @Column(unique = true)
     private String description;
 
     @NotNull
+    @Column(unique = true)
     private String descriptionIn2Chars;
 
     @NotNull

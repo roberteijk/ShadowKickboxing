@@ -1,0 +1,47 @@
+/**
+ * Created by Robert van den Eijk on 22-6-2020.
+ */
+
+package net.vandeneijk.shadowkickboxing.services.fightfactoryservice;
+
+import net.vandeneijk.shadowkickboxing.models.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class FightFactoryJob {
+
+    private final String languageDescription;
+    private final Set<Instruction> instructions = new HashSet<>();
+    private final Set<InstructionPreFilter> instructionPreFilters = new HashSet<>();
+    private final Set<InstructionPostModifier> instructionPostModifiers = new HashSet<>();
+    private final List<Long> instructionCallWeightDistribution = new ArrayList<>();
+
+    public FightFactoryJob(String languageDescription, Iterable<Instruction> instructions, Expertise expertise, DefensiveMode defensiveMode, Speed speed, Length length) {
+        this.languageDescription = languageDescription;
+        instructions.forEach(this.instructions::add);
+        instructionPreFilters.add(expertise);
+        instructionPreFilters.add(defensiveMode);
+        instructionPostModifiers.add(speed);
+        instructionPostModifiers.add(length);
+
+        applyPreFilters();
+        seedInstructionCallWeightDistribution();
+    }
+
+    private void applyPreFilters() {
+        instructionPreFilters.forEach(x -> x.filter(instructions));
+    }
+
+    private synchronized void seedInstructionCallWeightDistribution() {
+
+        for (Instruction instruction : instructions) {
+            if (!instruction.isMove()) continue;
+            for (int i = 0; i < instruction.getCallFrequencyWeight() * 1000; i++) {
+                instructionCallWeightDistribution.add(instruction.getInstructionId());
+            }
+        }
+    }
+}

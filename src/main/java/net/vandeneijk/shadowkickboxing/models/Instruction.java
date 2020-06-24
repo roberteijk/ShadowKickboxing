@@ -7,6 +7,8 @@ package net.vandeneijk.shadowkickboxing.models;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Instruction {
@@ -22,17 +24,23 @@ public class Instruction {
     @NotNull
     private Boolean move;
 
-    @NotNull
-    private Boolean useUpperBody;
+    @ManyToMany
+    private Set<Expertise> expertiseSet = new HashSet<>();
 
-    @NotNull
-    private Boolean useLowerBody;
+    @ManyToMany
+    private Set<DefensiveMode> defensiveModeSet = new HashSet<>();
 
-    @NotNull
-    private Boolean canBlock;
-
-    @NotNull
-    private Boolean canEvade;
+//    @NotNull
+//    private Boolean useUpperBody;
+//
+//    @NotNull
+//    private Boolean useLowerBody;
+//
+//    @NotNull
+//    private Boolean canBlock;
+//
+//    @NotNull
+//    private Boolean canEvade;
 
     @NotNull
     private Double callFrequencyWeight;
@@ -49,19 +57,19 @@ public class Instruction {
     protected Instruction() {}
 
     public Instruction(@NotNull String description, @NotNull Boolean move) {
-        this(description, move, false, false, false, false, 1.0, 0, 0);
+        this(description, move, /*false, false, false, false,*/ 1.0, 0, 0);
     }
 
-    public Instruction(@NotNull String description, @NotNull Boolean move, @NotNull Boolean useUpperBody, @NotNull Boolean useLowerBody, @NotNull Boolean canBlock, @NotNull Boolean canEvade, @NotNull Double callFrequencyWeight, @NotNull Integer minExecutionTimeMillis, @NotNull Integer maxExecutionTimeMillis) {
-        if (callFrequencyWeight < 0.01 || callFrequencyWeight > 1.0) throw new IllegalArgumentException("callFrequencyWeight should have a value between 0.01 and 1.0.");
+    public Instruction(@NotNull String description, @NotNull Boolean move, /*@NotNull Boolean useUpperBody, @NotNull Boolean useLowerBody, @NotNull Boolean canBlock, @NotNull Boolean canEvade,*/ @NotNull Double callFrequencyWeight, @NotNull Integer minExecutionTimeMillis, @NotNull Integer maxExecutionTimeMillis) {
+        if (callFrequencyWeight < 0.001 || callFrequencyWeight > 1.0) throw new IllegalArgumentException("callFrequencyWeight should have a value between 0.001 and 1.0.");
         if (minExecutionTimeMillis < 0 || minExecutionTimeMillis > 10000) throw new IllegalArgumentException("minExecutionTimeMillis should have a value between 0 and 10000.");
         if (maxExecutionTimeMillis < 0 || maxExecutionTimeMillis > 10000) throw new IllegalArgumentException("maxExecutionTimeMillis should have a value between 0 and 10000.");
         this.description = description;
         this.move = move;
-        this.useUpperBody = useUpperBody;
-        this.useLowerBody = useLowerBody;
-        this.canBlock = canBlock;
-        this.canEvade = canEvade;
+//        this.useUpperBody = useUpperBody;
+//        this.useLowerBody = useLowerBody;
+//        this.canBlock = canBlock;
+//        this.canEvade = canEvade;
         this.callFrequencyWeight = callFrequencyWeight;
         this.minExecutionTimeMillis = minExecutionTimeMillis;
         this.maxExecutionTimeMillis = maxExecutionTimeMillis;
@@ -79,21 +87,45 @@ public class Instruction {
         return move;
     }
 
-    public Boolean isUseUpperBody() {
-        return useUpperBody;
+    public Set<Expertise> getExpertiseSet() {
+        return expertiseSet;
     }
 
-    public Boolean isUseLowerBody() {
-        return useLowerBody;
+    public void addExpertiseToCollection(Expertise expertise) {
+        expertiseSet.add(expertise);
     }
 
-    public Boolean isCanBlock() {
-        return canBlock;
+    public void setExpertiseSet(Set<Expertise> expertiseSet) {
+        this.expertiseSet = expertiseSet;
     }
 
-    public Boolean isCanEvade() {
-        return canEvade;
+    public Set<DefensiveMode> getDefensiveModeSet() {
+        return defensiveModeSet;
     }
+
+    public void addDefensiveModeToCCollection(DefensiveMode defensiveMode) {
+        defensiveModeSet.add(defensiveMode);
+    }
+
+    public void setDefensiveModeSet(Set<DefensiveMode> defensiveModeSet) {
+        this.defensiveModeSet = defensiveModeSet;
+    }
+
+//    public Boolean isUseUpperBody() {
+//        return useUpperBody;
+//    }
+//
+//    public Boolean isUseLowerBody() {
+//        return useLowerBody;
+//    }
+//
+//    public Boolean isCanBlock() {
+//        return canBlock;
+//    }
+//
+//    public Boolean isCanEvade() {
+//        return canEvade;
+//    }
 
     public Double getCallFrequencyWeight() {
         return callFrequencyWeight;
@@ -113,5 +145,25 @@ public class Instruction {
 
     public void setAudioCollection(Collection<Audio> audioCollection) {
         this.audioCollection = audioCollection;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Instruction that = (Instruction) o;
+
+        return description.equals(that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return description.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return description + "   " + expertiseSet + "  " + defensiveModeSet;
     }
 }

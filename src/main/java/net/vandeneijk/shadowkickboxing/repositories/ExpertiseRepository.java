@@ -12,4 +12,6 @@ import java.util.List;
 public interface ExpertiseRepository extends CrudRepository<Expertise, Long> {
 
     List<Expertise> findAll();
+
+    Expertise findByDescriptionIn2Chars(String descriptionIn2Chars);
 }

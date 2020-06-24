@@ -32,6 +32,10 @@ public class ExpertiseService {
         return expertiseRepository.findById(id);
     }
 
+    public Expertise findByDescriptionIn2Chars(String descriptionIn2Chars) {
+        return expertiseRepository.findByDescriptionIn2Chars(descriptionIn2Chars);
+    }
+
     public List<Expertise> getExpertiseList() {
         return expertiseRepository.findAll();
     }

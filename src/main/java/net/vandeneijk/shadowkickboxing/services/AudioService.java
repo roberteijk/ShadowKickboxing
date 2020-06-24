@@ -26,4 +26,8 @@ public class AudioService {
     public Audio findByInstructionAndLanguage(Instruction instruction, Language language) {
         return audioRepository.findByInstructionAndLanguage(instruction, language);
     }
+
+    public Iterable<Audio> findByInstruction(Instruction instruction) {
+        return audioRepository.findByInstruction(instruction);
+    }
 }
