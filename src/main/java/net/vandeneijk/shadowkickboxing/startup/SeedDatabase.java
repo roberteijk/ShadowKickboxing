@@ -7,6 +7,7 @@ package net.vandeneijk.shadowkickboxing.startup;
 import net.vandeneijk.shadowkickboxing.models.*;
 import net.vandeneijk.shadowkickboxing.services.*;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
+import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactoryJob;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -250,7 +251,7 @@ public class SeedDatabase {
                     for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
                         for (Expertise expertise : expertiseService.findAll()) {
                             long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
-                            if (numberOfFightsByCriteria < i) fightsToCreate.put(count++, () -> {fightFactory.createFight("English", speed, length, defensiveMode, expertise);});
+                            if (numberOfFightsByCriteria < i) fightsToCreate.put(count++, () -> {fightFactory.createFight(new FightFactoryJob("English", instructionService.findAll(), expertise, defensiveMode, speed, length));});
                         }
                     }
                 }

@@ -78,6 +78,21 @@ public class Expertise implements InstructionPreFilter {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Expertise expertise = (Expertise) o;
+
+        return descriptionIn2Chars.equals(expertise.descriptionIn2Chars);
+    }
+
+    @Override
+    public int hashCode() {
+        return descriptionIn2Chars.hashCode();
+    }
+
+    @Override
     public String toString() {
         return descriptionIn2Chars;
     }

@@ -24,10 +24,10 @@ public class Instruction {
     @NotNull
     private Boolean move;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Expertise> expertiseSet = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<DefensiveMode> defensiveModeSet = new HashSet<>();
 
 //    @NotNull

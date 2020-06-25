@@ -110,8 +110,6 @@ public class HomeController {
                 Length length = lengthService.findById(lengthId).get();
                 DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
 
-                new FightFactoryJob("English", instructionService.findAll(), expertise, defensiveMode, speed, length); // TODO Remove. Only temp for testing.
-
                 Fight fight = null;
                 while ((fight = fightService.retrieveFreshFight(speed, length, defensiveMode, expertise)) == null) {
                     try {
@@ -121,10 +119,9 @@ public class HomeController {
                     }
                 }
 
-//                fightFactory.createFight("English", fight.getSpeed(), fight.getLength(), fight.getDefensiveMode(), fight.getExpertise());
+                fightFactory.createFight(new FightFactoryJob("English", instructionService.findAll(), expertise, defensiveMode, speed, length));
 
-
-//                modelAndView.setViewName("redirect:/download/" + fight.getName() + ".mp3");
+                modelAndView.setViewName("redirect:/download/" + fight.getName() + ".mp3");
 
                 logger.info("Page \"" + requestedItem + "\" (" + requestMappingType + ") requested by: " + request.getRemoteAddr());
             } catch (NoSuchElementException nseEx) {
