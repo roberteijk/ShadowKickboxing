@@ -122,8 +122,9 @@ public class SeedDatabase {
     private void seedExpertise() {
         logger.info("Seeding database with Expertise.");
 
-        expertiseService.save(new Expertise(0L, "Shadow Kickboxing (full body)", "fb", true, true));
-        expertiseService.save(new Expertise(1L, "Shadow Boxing (upper body)", "ub", true, false));
+        expertiseService.save(new Expertise(0L, "Shadow Kickboxing", "fb", true, true));
+        expertiseService.save(new Expertise(1L, "Shadow Kickboxing with Elbows", "fe", true, true));
+        expertiseService.save(new Expertise(2L, "Shadow Boxing (upper body only)", "ub", true, false));
     }
 
     private void seedDefensiveMode() {
@@ -146,25 +147,34 @@ public class SeedDatabase {
         saveInstructionWithAudio(new Instruction("1 minute break", false), false, false, new PreAudioMeta("audio/1-minute-break.mp3", "English"));
         saveInstructionWithAudio(new Instruction("break bell end of fight", false), false, false, new PreAudioMeta("audio/break-bell-end-fight.mp3", "English"));
 
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("jab", new String[]{"fb", "ub"}, 1.0, 500, 1000)), true, true, new PreAudioMeta("audio/jab.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("cross", new String[]{"fb", "ub"}, 0.9, 500, 1000)), true, true, new PreAudioMeta("audio/cross.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("double jab", new String[]{"fb", "ub"}, 1.0, 600, 1100)), true, true, new PreAudioMeta("audio/double-jab.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left hook head", new String[]{"fb", "ub"}, 0.5, 600, 1100)), true, true, new PreAudioMeta("audio/left-hook-head.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right hook head", new String[]{"fb", "ub"}, 0.5, 600, 1100)), true, true, new PreAudioMeta("audio/right-hook-head.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left uppercut", new String[]{"fb", "ub"}, 0.4, 600, 1100)), true, true, new PreAudioMeta("audio/left-uppercut.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right uppercut", new String[]{"fb", "ub"}, 0.4, 600, 1100)), true, true, new PreAudioMeta("audio/right-uppercut.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left hook body", new String[]{"fb", "ub"}, 0.4, 600, 1200)), true, true, new PreAudioMeta("audio/left-hook-body.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right hook body", new String[]{"fb", "ub"}, 0.25, 600, 1200)), true, true, new PreAudioMeta("audio/right-hook-body.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left low kick", new String[]{"fb"}, 0.3, 900, 1500)),true, true, new PreAudioMeta("audio/left-low-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right low kick", new String[]{"fb"}, 0.3, 900, 1500)), true, true, new PreAudioMeta("audio/right-low-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("clinch left knee", new String[]{"fb"}, 0.25, 1500, 2400)), false, false, new PreAudioMeta("audio/clinch-left-knee.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("clinch right knee", new String[]{"fb"}, 0.25, 1500, 2400)), false, false, new PreAudioMeta("audio/clinch-right-knee.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left front kick", new String[]{"fb"}, 0.4, 900, 1400)), true, true, new PreAudioMeta("audio/left-front-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right front kick", new String[]{"fb"}, 0.25, 900, 1400)), true, true, new PreAudioMeta("audio/right-front-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left middle kick", new String[]{"fb"}, 0.15, 1100, 1800)), true, false, new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right middle kick", new String[]{"fb"}, 0.15, 900, 1800)), true, false, new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left high kick", new String[]{"fb"}, 0.1, 1100, 1800)), true, true, new PreAudioMeta("audio/left-high-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right high kick", new String[]{"fb"}, 0.1, 900, 1800)), true, true, new PreAudioMeta("audio/right-high-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("jab", new String[]{"fb", "fe", "ub"}, 1.0, 500, 1000)), true, true, new PreAudioMeta("audio/jab.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("cross", new String[]{"fb", "fe", "ub"}, 0.9, 500, 1000)), true, true, new PreAudioMeta("audio/cross.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("double jab", new String[]{"fb", "fe", "ub"}, 1.0, 600, 1100)), true, true, new PreAudioMeta("audio/double-jab.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("jab cross", new String[]{"fb", "fe", "ub"}, 0.5, 750, 1250)), true, true, new PreAudioMeta("audio/jab-cross.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("double cross", new String[]{"fb", "fe", "ub"}, 0.5, 800, 1300)), true, true, new PreAudioMeta("audio/double-cross.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left hook head", new String[]{"fb", "fe", "ub"}, 0.5, 600, 1100)), true, true, new PreAudioMeta("audio/left-hook-head.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right hook head", new String[]{"fb", "fe", "ub"}, 0.5, 600, 1100)), true, true, new PreAudioMeta("audio/right-hook-head.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left uppercut", new String[]{"fb", "fe", "ub"}, 0.4, 600, 1100)), true, true, new PreAudioMeta("audio/left-uppercut.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right uppercut", new String[]{"fb", "fe", "ub"}, 0.4, 600, 1100)), true, true, new PreAudioMeta("audio/right-uppercut.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left hook body", new String[]{"fb", "fe", "ub"}, 0.4, 600, 1200)), true, true, new PreAudioMeta("audio/left-hook-body.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right hook body", new String[]{"fb", "fe", "ub"}, 0.25, 600, 1200)), true, true, new PreAudioMeta("audio/right-hook-body.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("double jab cross", new String[]{"fb", "fe", "ub"}, 0.25, 850, 1350)), true, true, new PreAudioMeta("audio/double-jab-cross.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left low kick", new String[]{"fb", "fe"}, 0.3, 900, 1500)),true, true, new PreAudioMeta("audio/left-low-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right low kick", new String[]{"fb", "fe"}, 0.3, 900, 1500)), true, true, new PreAudioMeta("audio/right-low-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("clinch left knee", new String[]{"fb", "fe"}, 0.25, 1500, 2400)), false, false, new PreAudioMeta("audio/clinch-left-knee.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("clinch right knee", new String[]{"fb", "fe"}, 0.25, 1500, 2400)), false, false, new PreAudioMeta("audio/clinch-right-knee.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left front kick", new String[]{"fb", "fe"}, 0.4, 900, 1400)), true, true, new PreAudioMeta("audio/left-front-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right front kick", new String[]{"fb", "fe"}, 0.25, 900, 1400)), true, true, new PreAudioMeta("audio/right-front-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left middle kick", new String[]{"fb", "fe"}, 0.15, 1100, 1800)), true, false, new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right middle kick", new String[]{"fb", "fe"}, 0.15, 900, 1800)), true, false, new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left high kick", new String[]{"fb", "fe"}, 0.1, 1100, 1800)), true, true, new PreAudioMeta("audio/left-high-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right high kick", new String[]{"fb", "fe"}, 0.1, 900, 1800)), true, true, new PreAudioMeta("audio/right-high-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow downward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/left-elbow-downward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow downward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/right-elbow-downward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow sideways", new String[]{"fe"}, 0.1, 600, 1100)), true, true, new PreAudioMeta("audio/left-elbow-sideways.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow sideways", new String[]{"fe"}, 0.1, 600, 1100)), true, true, new PreAudioMeta("audio/right-elbow-sideways.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow upward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/left-elbow-upward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow upward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/right-elbow-upward.mp3", "English"));
     }
 
     private Instruction buildMoveInstruction(PreInstructionMeta preInstructionMeta) {
