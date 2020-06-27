@@ -104,7 +104,7 @@ public class FightFactory {
         if (Math.random() < 0.9) return;
 
         int maxInnerRoundBreakMillis = roundLengthMillisRemaining - move.getTotalMoveAudioLengthMillis();
-        if (maxInnerRoundBreakMillis > 2000 * fightFactoryJob.getSpeed().getExecutionMillisMultiplier()) maxInnerRoundBreakMillis = (int) (((Math.random() * 1500) + 500) * fightFactoryJob.getSpeed().getExecutionMillisMultiplier());
+        if (maxInnerRoundBreakMillis > 1500 * fightFactoryJob.getSpeed().getExecutionMillisMultiplier()) maxInnerRoundBreakMillis = (int) (((Math.random() * 1000) + 500) * fightFactoryJob.getSpeed().getExecutionMillisMultiplier());
         else maxInnerRoundBreakMillis = (int) (Math.random() * maxInnerRoundBreakMillis);
 
         List<Byte> bytesListAudioMove = new ArrayList<>();

@@ -123,7 +123,7 @@ public class SeedDatabase {
         logger.info("Seeding database with Expertise.");
 
         expertiseService.save(new Expertise(0L, "Shadow Kickboxing", "fb", true, true));
-        expertiseService.save(new Expertise(1L, "Shadow Kickboxing with Elbows", "fe", true, true));
+        expertiseService.save(new Expertise(1L, "Shadow Kickboxing + Elbows", "fe", true, true));
         expertiseService.save(new Expertise(2L, "Shadow Boxing (upper body only)", "ub", true, false));
     }
 
@@ -148,7 +148,7 @@ public class SeedDatabase {
         saveInstructionWithAudio(new Instruction("break bell end of fight", false), false, false, new PreAudioMeta("audio/break-bell-end-fight.mp3", "English"));
 
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("jab", new String[]{"fb", "fe", "ub"}, 1.0, 500, 1000)), true, true, new PreAudioMeta("audio/jab.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("cross", new String[]{"fb", "fe", "ub"}, 0.9, 500, 1000)), true, true, new PreAudioMeta("audio/cross.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("cross", new String[]{"fb", "fe", "ub"}, 0.9, 550, 1050)), true, true, new PreAudioMeta("audio/cross.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("double jab", new String[]{"fb", "fe", "ub"}, 1.0, 600, 1100)), true, true, new PreAudioMeta("audio/double-jab.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("jab cross", new String[]{"fb", "fe", "ub"}, 0.5, 750, 1250)), true, true, new PreAudioMeta("audio/jab-cross.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("double cross", new String[]{"fb", "fe", "ub"}, 0.5, 800, 1300)), true, true, new PreAudioMeta("audio/double-cross.mp3", "English"));
@@ -167,14 +167,14 @@ public class SeedDatabase {
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right front kick", new String[]{"fb", "fe"}, 0.25, 900, 1400)), true, true, new PreAudioMeta("audio/right-front-kick.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left middle kick", new String[]{"fb", "fe"}, 0.15, 1100, 1800)), true, false, new PreAudioMeta("audio/left-middle-kick.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right middle kick", new String[]{"fb", "fe"}, 0.15, 900, 1800)), true, false, new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left high kick", new String[]{"fb", "fe"}, 0.1, 1100, 1800)), true, true, new PreAudioMeta("audio/left-high-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right high kick", new String[]{"fb", "fe"}, 0.1, 900, 1800)), true, true, new PreAudioMeta("audio/right-high-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow downward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/left-elbow-downward.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow downward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/right-elbow-downward.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow sideways", new String[]{"fe"}, 0.1, 600, 1100)), true, true, new PreAudioMeta("audio/left-elbow-sideways.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow sideways", new String[]{"fe"}, 0.1, 600, 1100)), true, true, new PreAudioMeta("audio/right-elbow-sideways.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow upward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/left-elbow-upward.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow upward", new String[]{"fe"}, 0.1, 600, 1100)), false, true, new PreAudioMeta("audio/right-elbow-upward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left high kick", new String[]{"fb", "fe"}, 0.1, 1300, 2000)), true, true, new PreAudioMeta("audio/left-high-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right high kick", new String[]{"fb", "fe"}, 0.1, 1000, 1900)), true, true, new PreAudioMeta("audio/right-high-kick.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow downward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/left-elbow-downward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow downward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/right-elbow-downward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow sideways", new String[]{"fe"}, 0.1, 900, 1400)), true, true, new PreAudioMeta("audio/left-elbow-sideways.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow sideways", new String[]{"fe"}, 0.1, 900, 1400)), true, true, new PreAudioMeta("audio/right-elbow-sideways.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow upward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/left-elbow-upward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow upward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/right-elbow-upward.mp3", "English"));
     }
 
     private Instruction buildMoveInstruction(PreInstructionMeta preInstructionMeta) {
