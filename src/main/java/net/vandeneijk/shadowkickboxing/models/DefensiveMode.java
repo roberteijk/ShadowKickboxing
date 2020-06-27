@@ -23,12 +23,6 @@ public class DefensiveMode implements InstructionPreFilter {
     @Column(unique = true)
     private String descriptionIn2Chars;
 
-    @NotNull
-    private Boolean allowBlock;
-
-    @NotNull
-    private Boolean allowEvade;
-
     @ManyToMany(mappedBy = "defensiveModeSet")
     private Collection<Instruction> instructionCollection;
 
@@ -37,12 +31,10 @@ public class DefensiveMode implements InstructionPreFilter {
 
     protected DefensiveMode() {}
 
-    public DefensiveMode(Long defensiveModeId, @NotNull String description, @NotNull String descriptionIn2Chars, @NotNull Boolean allowBlock, @NotNull Boolean allowEvade) {
+    public DefensiveMode(Long defensiveModeId, @NotNull String description, @NotNull String descriptionIn2Chars) {
         this.defensiveModeId = defensiveModeId;
         this.description = description;
         this.descriptionIn2Chars = descriptionIn2Chars;
-        this.allowBlock = allowBlock;
-        this.allowEvade = allowEvade;
     }
 
     public Long getDefensiveModeId() {
@@ -55,14 +47,6 @@ public class DefensiveMode implements InstructionPreFilter {
 
     public String getDescriptionIn2Chars() {
         return descriptionIn2Chars;
-    }
-
-    public Boolean isAllowBlock() {
-        return allowBlock;
-    }
-
-    public Boolean isAllowEvade() {
-        return allowEvade;
     }
 
     public Collection<Instruction> getInstructionCollection() {

@@ -23,12 +23,6 @@ public class Expertise implements InstructionPreFilter {
     @Column(unique = true)
     private String descriptionIn2Chars;
 
-    @NotNull
-    private Boolean allowUpperBody;
-
-    @NotNull
-    private Boolean allowLowerBody;
-
     @ManyToMany(mappedBy = "expertiseSet")
     private Collection<Instruction> instructionCollection;
 
@@ -37,12 +31,10 @@ public class Expertise implements InstructionPreFilter {
 
     protected Expertise() {}
 
-    public Expertise(Long ExpertiseId, @NotNull String description, @NotNull String descriptionIn2Chars, @NotNull Boolean allowUpperBody, @NotNull Boolean allowLowerBody) {
+    public Expertise(Long ExpertiseId, @NotNull String description, @NotNull String descriptionIn2Chars) {
         this.expertiseId = ExpertiseId;
         this.description = description;
         this.descriptionIn2Chars = descriptionIn2Chars;
-        this.allowUpperBody = allowUpperBody;
-        this.allowLowerBody = allowLowerBody;
     }
 
     public Long getExpertiseId() {
@@ -55,14 +47,6 @@ public class Expertise implements InstructionPreFilter {
 
     public String getDescriptionIn2Chars() {
         return descriptionIn2Chars;
-    }
-
-    public Boolean isAllowUpperBody() {
-        return allowUpperBody;
-    }
-
-    public Boolean isAllowLowerBody() {
-        return allowLowerBody;
     }
 
     public Collection<Instruction> getInstructionCollection() {

@@ -122,18 +122,18 @@ public class SeedDatabase {
     private void seedExpertise() {
         logger.info("Seeding database with Expertise.");
 
-        expertiseService.save(new Expertise(0L, "Shadow Kickboxing", "fb", true, true));
-        expertiseService.save(new Expertise(1L, "Shadow Kickboxing + Elbows", "fe", true, true));
-        expertiseService.save(new Expertise(2L, "Shadow Boxing (upper body only)", "ub", true, false));
+        expertiseService.save(new Expertise(0L, "Shadow Kickboxing", "fb"));
+        expertiseService.save(new Expertise(1L, "Shadow Kickboxing + Elbows", "fe"));
+        expertiseService.save(new Expertise(2L, "Shadow Boxing (upper body only)", "ub"));
     }
 
     private void seedDefensiveMode() {
         logger.info("Seeding database with DefensiveMode.");
 
-        defensiveModeService.save(new DefensiveMode(0L,"Block & Evade", "be", true, true));
-        defensiveModeService.save(new DefensiveMode(1L,"Block Only", "bo", true, false));
-        defensiveModeService.save(new DefensiveMode(2L,"Evade Only", "eo", false, true));
-        defensiveModeService.save(new DefensiveMode(3L,"None (no defense)", "no", false, false));
+        defensiveModeService.save(new DefensiveMode(0L,"Block & Evade", "be"));
+        defensiveModeService.save(new DefensiveMode(1L,"Block Only", "bo"));
+        defensiveModeService.save(new DefensiveMode(2L,"Evade Only", "eo"));
+        defensiveModeService.save(new DefensiveMode(3L,"None (no defense)", "no"));
     }
 
     private void seedInstructionAndAudio() {
