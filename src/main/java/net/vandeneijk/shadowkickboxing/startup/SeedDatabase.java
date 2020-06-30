@@ -169,12 +169,12 @@ public class SeedDatabase {
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right middle kick", new String[]{"fb", "fe"}, 0.15, 900, 1800)), true, false, new PreAudioMeta("audio/right-middle-kick.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left high kick", new String[]{"fb", "fe"}, 0.1, 1300, 2000)), true, true, new PreAudioMeta("audio/left-high-kick.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right high kick", new String[]{"fb", "fe"}, 0.1, 1000, 1900)), true, true, new PreAudioMeta("audio/right-high-kick.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow downward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/left-elbow-downward.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow downward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/right-elbow-downward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow downward", new String[]{"fe"}, 0.04, 900, 1400)), false, true, new PreAudioMeta("audio/left-elbow-downward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow downward", new String[]{"fe"}, 0.04, 900, 1400)), false, true, new PreAudioMeta("audio/right-elbow-downward.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow sideways", new String[]{"fe"}, 0.1, 900, 1400)), true, true, new PreAudioMeta("audio/left-elbow-sideways.mp3", "English"));
         saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow sideways", new String[]{"fe"}, 0.1, 900, 1400)), true, true, new PreAudioMeta("audio/right-elbow-sideways.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow upward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/left-elbow-upward.mp3", "English"));
-        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow upward", new String[]{"fe"}, 0.1, 900, 1400)), false, true, new PreAudioMeta("audio/right-elbow-upward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("left elbow upward", new String[]{"fe"}, 0.04, 900, 1400)), false, true, new PreAudioMeta("audio/left-elbow-upward.mp3", "English"));
+        saveInstructionWithAudio(buildMoveInstruction(new PreInstructionMeta("right elbow upward", new String[]{"fe"}, 0.04, 900, 1400)), false, true, new PreAudioMeta("audio/right-elbow-upward.mp3", "English"));
     }
 
     private Instruction buildMoveInstruction(PreInstructionMeta preInstructionMeta) {
@@ -255,7 +255,7 @@ public class SeedDatabase {
         Map<Integer, Runnable> fightsToCreate = new TreeMap<>();
         int count = 0;
 
-        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 7; i++) {
             for (Speed speed : speedService.findAll()) {
                 for (Length length : lengthService.findAll()) {
                     for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
