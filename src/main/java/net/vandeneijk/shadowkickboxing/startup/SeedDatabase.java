@@ -7,7 +7,6 @@ package net.vandeneijk.shadowkickboxing.startup;
 import net.vandeneijk.shadowkickboxing.models.*;
 import net.vandeneijk.shadowkickboxing.services.*;
 import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactory;
-import net.vandeneijk.shadowkickboxing.services.fightfactoryservice.FightFactoryJob;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeMap;
 
 @Component
 public class SeedDatabase {
@@ -56,7 +54,6 @@ public class SeedDatabase {
         seedInstructionAndAudio();
         seedSpeed();
         seedLength();
-        seedFight();
     }
     
     private static class PreInstructionMeta {
@@ -249,26 +246,6 @@ public class SeedDatabase {
         lengthService.save(new Length(0L, "Practice (1 round)", "01", 1));
         lengthService.save(new Length(1L, "Full Fight (3 rounds)", "03", 3));
         lengthService.save(new Length(2L, "Championship Fight (5 rounds)", "05", 5));
-    }
-
-    private void seedFight() {
-        Map<Integer, Runnable> fightsToCreate = new TreeMap<>();
-        int count = 0;
-
-        for (int i = 1; i <= 7; i++) {
-            for (Speed speed : speedService.findAll()) {
-                for (Length length : lengthService.findAll()) {
-                    for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
-                        for (Expertise expertise : expertiseService.findAll()) {
-                            long numberOfFightsByCriteria = fightService.countBySpeedAndLengthAndDefensiveModeAndExpertiseAndZdtFirstDownload(speed, length, defensiveMode, expertise, null);
-                            if (numberOfFightsByCriteria < i) fightsToCreate.put(count++, () -> {fightFactory.createFight(new FightFactoryJob("English", instructionService.findAll(), expertise, defensiveMode, speed, length));});
-                        }
-                    }
-                }
-            }
-        }
-
-        fightsToCreate.forEach((k, v) -> {v.run();});
     }
 
     private File getFileFromStream(InputStream in) {
