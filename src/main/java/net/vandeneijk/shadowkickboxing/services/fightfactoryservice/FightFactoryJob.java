@@ -20,7 +20,6 @@ public class FightFactoryJob {
     private final Set<InstructionPreFilter> instructionPreFilters = new HashSet<>();
     private final Speed speed;
     private final Length length;
-    private final Set<InstructionPostModifier> instructionPostModifiers = new HashSet<>();
     private final List<Long> instructionIdWeightDistribution = new ArrayList<>();
 
     public FightFactoryJob(String languageDescription, Iterable<Instruction> instructions, Expertise expertise, DefensiveMode defensiveMode, Speed speed, Length length) {
@@ -32,8 +31,6 @@ public class FightFactoryJob {
         instructionPreFilters.add(defensiveMode);
         this.speed = speed;
         this.length = length;
-        instructionPostModifiers.add(speed);
-        instructionPostModifiers.add(length);
 
         applyPreFilters();
         seedInstructionCallWeightDistribution();
