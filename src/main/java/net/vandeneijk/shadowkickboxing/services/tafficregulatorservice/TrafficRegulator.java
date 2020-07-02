@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TrafficRegulator {
@@ -24,6 +22,15 @@ public class TrafficRegulator {
     public boolean isTrafficAllowed(String pageId, String trafficId, ZonedDateTime zdtToLog , int ... maxAllowedTrafficPerMagnitudeOfSecond) {
         if (maxAllowedTrafficPerMagnitudeOfSecond.length > 7) throw new IllegalArgumentException("Only a maximum of 7 magnitudes is allowed.");
 
+        long startMillis = System.currentTimeMillis();
+        cleanTrafficRegulator();
+        boolean returnValue = determineIfTrafficAllowed(pageId, trafficId, zdtToLog, maxAllowedTrafficPerMagnitudeOfSecond);
+        logger.info("TrafficRegulator cleanup, registration and testing for client " + trafficId + " requesting " + pageId + " took " + (System.currentTimeMillis() - startMillis) + " milliseconds.");
+
+        return returnValue;
+    }
+
+    private boolean determineIfTrafficAllowed(String pageId, String trafficId, ZonedDateTime zdtToLog , int ... maxAllowedTrafficPerMagnitudeOfSecond) {
         Map<Integer, ArrayDeque<ZonedDateTime>> interActionsOfOneClient = getMapByPageIdAndTrafficId(pageId, trafficId);
 
         boolean returnValue = true;
@@ -61,5 +68,39 @@ public class TrafficRegulator {
         }
 
         return interActionsOfOneClient;
+    }
+
+    public void cleanTrafficRegulator() {
+        Set<String> interactionOfClientsToRemove = collectClientsToRemove();
+        removeClientsFromInteractionsOfAllClientsOfAllPageIds(interactionOfClientsToRemove);
+    }
+
+    private Set<String> collectClientsToRemove() {
+        Set<String> interactionOfClientsToRemove = new HashSet<>();
+
+        OUTER: for (Map<String, Map<Integer, ArrayDeque<ZonedDateTime>>> interactionsOfAllClients : interactionsOfAllClientsOfAllPageIds.values()) {
+            for (String interactionOfClient : interactionsOfAllClients.keySet()) {
+                Map<Integer, ArrayDeque<ZonedDateTime>> interactions = interactionsOfAllClients.get(interactionOfClient);
+
+                int countStart = 0;
+                for (Integer magnitudeOfSecondsOfInteractions : interactions.keySet()) {
+                    ArrayDeque<ZonedDateTime> zdtOfInteractions = interactions.get(magnitudeOfSecondsOfInteractions);
+                    final int count = countStart++; // To circumvent the effectively final requirement.
+                    if (zdtOfInteractions.stream().anyMatch(o -> o.isAfter(ZonedDateTime.now().minusSeconds((long) (Math.pow(10, count)))))) break OUTER;
+                }
+
+                interactionOfClientsToRemove.add(interactionOfClient);
+            }
+        }
+
+        return interactionOfClientsToRemove;
+    }
+
+    private void removeClientsFromInteractionsOfAllClientsOfAllPageIds(Set<String> interactionOfClientsToRemove) {
+        for (Map<String, Map<Integer, ArrayDeque<ZonedDateTime>>> interactionsOfAllClients : interactionsOfAllClientsOfAllPageIds.values()) {
+            interactionOfClientsToRemove.forEach(interactionsOfAllClients::remove);
+        }
+
+        interactionOfClientsToRemove.forEach(x -> logger.info("TrafficRegulator removed client " + x + " from memory."));
     }
 }

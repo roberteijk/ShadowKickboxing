@@ -48,7 +48,7 @@ public class SeedDatabasePostStartup implements ApplicationListener<ApplicationR
         Map<Integer, Runnable> fightsToCreate = new TreeMap<>();
         int count = 0;
 
-        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 7; i++) {
             for (Speed speed : speedService.findAll()) {
                 for (Length length : lengthService.findAll()) {
                     for (DefensiveMode defensiveMode : defensiveModeService.findAll()) {
