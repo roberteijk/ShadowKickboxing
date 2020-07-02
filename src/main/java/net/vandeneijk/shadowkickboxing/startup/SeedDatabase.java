@@ -219,7 +219,7 @@ public class SeedDatabase {
         if (!instructionService.saveIfDescriptionUnique(defensiveInstruction)) return;
 
         for (Audio audio : audioService.findByInstruction(originalInstruction)) {
-            Audio audioToPrepend = audioService.findByInstructionAndLanguage(instructionService.findByDescription(instructionDescriptionToProcess).get(), audio.getLanguage());
+            Audio audioToPrepend = audioService.findByInstructionAndLanguage(instructionService.findByDescription(instructionDescriptionToProcess).orElseThrow(() -> new IllegalStateException("Could not find Instruction by description.")), audio.getLanguage());
             byte[] audioFragmentToPrepend = audioToPrepend.getAudioFragment();
             byte[] audioFragmentOriginalInstruction = audio.getAudioFragment();
             byte[] bothAudioFragments = ArrayUtils.addAll(audioFragmentToPrepend, audioFragmentOriginalInstruction);

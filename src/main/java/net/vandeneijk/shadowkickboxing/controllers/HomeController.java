@@ -105,10 +105,10 @@ public class HomeController {
             modelAndView.setViewName("redirect:/exceededdownload");
         } else {
             try {
-                Expertise expertise = expertiseService.findById(expertiseId).get();
-                Speed speed = speedService.findById(speedId).get();
-                Length length = lengthService.findById(lengthId).get();
-                DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).get();
+                Expertise expertise = expertiseService.findById(expertiseId).orElseThrow(() -> new IllegalStateException("Could not find Expertise by ID."));
+                Speed speed = speedService.findById(speedId).orElseThrow(() -> new IllegalStateException("Could not find Speed by ID."));
+                Length length = lengthService.findById(lengthId).orElseThrow(() -> new IllegalStateException("Could not find Length by ID."));
+                DefensiveMode defensiveMode = defensiveModeService.findById(defensiveModeId).orElseThrow(() -> new IllegalStateException("Could not find DefensiveMode by ID."));
 
                 Fight fight = null;
                 while ((fight = fightService.retrieveFreshFight(speed, length, defensiveMode, expertise)) == null) {

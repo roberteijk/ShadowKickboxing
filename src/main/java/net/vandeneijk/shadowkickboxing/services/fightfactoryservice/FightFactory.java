@@ -77,7 +77,7 @@ public class FightFactory {
     }
 
     private Move createMove(int roundLengthMillisRemaining, Language language, FightFactoryJob fightFactoryJob) {
-        Instruction instructionForMove = instructionService.findById(fightFactoryJob.getRandomInstructionId()).get();;
+        Instruction instructionForMove = instructionService.findById(fightFactoryJob.getRandomInstructionId()).orElseThrow(() -> new IllegalStateException("Could not find Instruction by ID."));
 
         Audio audioMove = audioService.findByInstructionAndLanguage(instructionForMove, language);
         int minExecutionTimeMillis = instructionForMove.getMinExecutionTimeMillis();
@@ -119,14 +119,14 @@ public class FightFactory {
     }
 
     private void addCountdownBeforeStartFight(List<Byte> fight, Language language) {
-        Instruction instruction10SecondsBreak = instructionService.findByDescription("10 seconds break").get();
+        Instruction instruction10SecondsBreak = instructionService.findByDescription("10 seconds break").orElseThrow(() -> new IllegalStateException("Could not find Instruction by description."));
         Audio audio10SecondsBreak = audioService.findByInstructionAndLanguage(instruction10SecondsBreak, language);
 
         for (byte value : audio10SecondsBreak.getAudioFragment()) fight.add(value);
     }
 
     private void addBreaksBetweenRounds(List<List<Byte>> rounds, List<Byte> fight, Language language) {
-        Instruction instruction1MinuteBreak = instructionService.findByDescription("1 minute break").get();
+        Instruction instruction1MinuteBreak = instructionService.findByDescription("1 minute break").orElseThrow(() -> new IllegalStateException("Could not find Instruction by description."));
         Audio audio1MinuteBreak = audioService.findByInstructionAndLanguage(instruction1MinuteBreak, language);
 
         for (int i = 0; i < rounds.size(); i++) {
@@ -136,7 +136,7 @@ public class FightFactory {
     }
 
     private void addBreakBellAfterFight(List<Byte> fight, Language language) {
-        Instruction instructionBreakBell = instructionService.findByDescription("break bell end of fight").get();
+        Instruction instructionBreakBell = instructionService.findByDescription("break bell end of fight").orElseThrow(() -> new IllegalStateException("Could not find Instruction by description."));
         Audio audioBreakBell = audioService.findByInstructionAndLanguage(instructionBreakBell, language);
 
         for (byte value : audioBreakBell.getAudioFragment()) fight.add(value);
@@ -154,8 +154,8 @@ public class FightFactory {
 
     private synchronized void getAudioSilence() {
         if (audioSilence != null) return;
-        Instruction instruction = instructionService.findByDescription("silence").get();
-        Language language = languageService.findByDescription("generic").get();
+        Instruction instruction = instructionService.findByDescription("silence").orElseThrow(() -> new IllegalStateException("Could not find Instruction by description."));
+        Language language = languageService.findByDescription("generic").orElseThrow(() -> new IllegalStateException("Could not find Instruction by description."));
         audioSilence = audioService.findByInstructionAndLanguage(instruction, language);
         silenceLengthMillis = audioSilence.getLengthMillis();
     }
