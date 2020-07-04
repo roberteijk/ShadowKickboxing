@@ -2,7 +2,7 @@
 
 ## Introduction
 
-App for shadow kickboxing training and to practice the Spring framework. This project is still in early development.
+App for shadow kickboxing training and for practicing the Spring framework. This project is still in development.
 
 
 ## Acknowledgements
@@ -10,7 +10,7 @@ App for shadow kickboxing training and to practice the Spring framework. This pr
 #### Fight
 
 * By design, defensive moves are not part of the implementation. User will be called to defend against offensive moves instead (block/evade).
-* Currently, it is assume the user uses an orthodox stance.
+* Currently, it is assumed the user uses an orthodox stance. However, the calls themselves are stance agnostic but there is a slight difference in timing between left and right.
 
 
 ## Temporary notes
