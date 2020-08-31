@@ -43,7 +43,8 @@
                         <label for="expertise" th:text="${expertiseTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${expertiseInfo}"></span></span>
                         <select class="form-control" id="expertise" name="expertise">
-                            <option th:each="expertise : ${expertiseList}" th:value="${expertise.expertiseId}"
+                            <option th:each="expertise : ${expertiseList}"
+                                    th:value="${expertise.expertiseId}"
                                     th:text="${expertise.description}"
                                     th:selected="${expertise.getExpertiseId() == 0}"></option>
                         </select>
@@ -52,7 +53,8 @@
                         <label for="speed" th:text="${speedTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${speedInfo}"></span></span>
                         <select class="form-control" id="speed" name="speed">
-                            <option th:each="speed : ${speedList}" th:value="${speed.speedId}"
+                            <option th:each="speed : ${speedList}"
+                                    th:value="${speed.speedId}"
                                     th:text="${speed.description}"
                                     th:selected="${speed.getExecutionMillisMultiplier() == 1.0}"></option>
                         </select>
@@ -61,7 +63,8 @@
                         <label for="length" th:text="${lengthTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${lengthInfo}"></span></span>
                         <select class="form-control" id="length" name="length">
-                            <option th:each="length : ${lengthList}" th:value="${length.lengthId}"
+                            <option th:each="length : ${lengthList}"
+                                    th:value="${length.lengthId}"
                                     th:text="${length.description}"
                                     th:selected="${length.getNumberRounds() == 3}"></option>
                         </select>
@@ -79,7 +82,8 @@
                         <label for="expertise-expert" th:text="${expertiseTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${expertiseInfo}"></span></span>
                         <select class="form-control" id="expertise-expert" name="expertise">
-                            <option th:each="expertise : ${expertiseList}" th:value="${expertise.expertiseId}"
+                            <option th:each="expertise : ${expertiseList}"
+                                    th:value="${expertise.expertiseId}"
                                     th:text="${expertise.description}"
                                     th:selected="${expertise.getExpertiseId() == 0}"></option>
                         </select>
@@ -88,7 +92,8 @@
                         <label for="speed-expert" th:text="${speedTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${speedInfo}"></span></span>
                         <select class="form-control" id="speed-expert" name="speed">
-                            <option th:each="speed : ${speedList}" th:value="${speed.speedId}"
+                            <option th:each="speed : ${speedList}"
+                                    th:value="${speed.speedId}"
                                     th:text="${speed.description}"
                                     th:selected="${speed.getExecutionMillisMultiplier() == 1.0}"></option>
                         </select>
@@ -97,7 +102,8 @@
                         <label for="length-expert" th:text="${lengthTitle}"></label>
                         <span class="tooltip-item tooltip-item-dropdown"><sup>?</sup><span class="tooltip-text" th:text="${lengthInfo}"></span></span>
                         <select class="form-control" id="length-expert" name="length">
-                            <option th:each="length : ${lengthList}" th:value="${length.lengthId}"
+                            <option th:each="length : ${lengthList}"
+                                    th:value="${length.lengthId}"
                                     th:text="${length.description}"
                                     th:selected="${length.getNumberRounds() == 3}"></option>
                         </select>
